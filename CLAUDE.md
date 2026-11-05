@@ -4,10 +4,11 @@ University group project for *Information Organization*: a website that organize
 
 - Requirements: [docs/PRD.md](docs/PRD.md) (read it before planning any feature)
 - Assignment text: [group_project_description.md](group_project_description.md)
+- Tasks and progress: [docs/TASKS.md](docs/TASKS.md). Prompts refer to tasks by ID (e.g. "work on W4"): check the task's "needs" are done, read the PRD sections it cites, and tick it when its "Done when" holds.
 
 ## Deadlines and capacity
 - Mid-term description: **19 Nov 2026**. Final delivery (website, annotated dataset, vocabulary, presentation, ACM report): **21 Dec 2026**.
-- 1–2 part-time coders + 1 report writer. **Prefer the smallest change that satisfies a course requirement.** Don't add features outside PRD §9 without asking; use the cut order in PRD §12 when scope must shrink.
+- Team of 3, part-time: George (dataset, vocabulary, ML), Liam (web app, report), Ioanna (UI wireframes, personas, user journeys). **Prefer the smallest change that satisfies a course requirement.** Don't add features outside PRD §9 without asking; use the cut order in PRD §12 when scope must shrink.
 
 ## Key decisions (details in the PRD)
 | Topic | Decision |
@@ -34,6 +35,7 @@ University group project for *Information Organization*: a website that organize
 - `data/gold|annotated/`: gold labels and the exported annotated dataset. Every data-quality decision is logged in `data/quality_log.md` (it feeds the report).
 - `vocab/`: hand-authored SKOS seed + generated exports.
 - `src/kpi_catalog/{data,vocab,ml,web}/` + `db.py`.
+- `docs/TASKS.md`: task tracker. `docs/user-journeys.md`, `docs/wireframes/`, `docs/demo-script.md`: Ioanna's UX inputs for the web pages and the demo.
 - `exploration.ipynb`: scratch notebook.
 
 ## Conventions
@@ -50,5 +52,6 @@ Every new, changed or removed feature or decision must be recorded **in the same
 | `docs/PRD.md` | The decision and its reason: scope, features (§9), schema (§4), vocabulary (§5), ML (§6), personas and use cases (§7–8), site map and permissions (§10), milestones (§12), open questions (§14). Update "At a glance" if the big picture changes, the Status line in the header, and add a row to the **Change log (§15)**. | Setup steps |
 | `CLAUDE.md` | Anything a future session needs to work correctly: key decisions table, commands, layout, conventions. One line per decision, pointing to the PRD section. | Feature details already in the PRD |
 | `README.md` | What a newcomer needs: what the site does, current status, setup and run commands, data sources. | Design rationale |
+| `docs/TASKS.md` | Task status (tick when done), new tasks with the next free ID, changed owners or dates | Decisions and their reasons |
 
-Before finishing a task, check all three files against the change: renamed concepts, commands, paths, counts.
+Before finishing a task, check all three files against the change (renamed concepts, commands, paths, counts) and tick the task in `docs/TASKS.md`.

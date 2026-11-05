@@ -19,7 +19,7 @@ Group project for the course *Information Organization*.
 The full scope, personas, use cases and plan are in **[docs/PRD.md](docs/PRD.md)**.
 
 ## Status
-Planning. The dataset is chosen and profiled, and the PRD is written. Next: data cleaning, vocabulary v0, first tagging run (mid-term: 19 Nov 2026; final: 21 Dec 2026).
+Planning. The dataset is chosen and profiled, and the PRD is written. Next: data cleaning, vocabulary v0, first tagging run (mid-term: 19 Nov 2026; final: 21 Dec 2026). Tasks and progress are tracked in [docs/TASKS.md](docs/TASKS.md).
 
 ## Setup
 Requires [uv](https://docs.astral.sh/uv/) and Python 3.14.
@@ -43,6 +43,6 @@ Neither external source declares a licence, so they are downloaded at pinned ver
 When you add, change or remove a feature, record it in the same piece of work: the decision and its reason in [docs/PRD.md](docs/PRD.md) (including a row in its change log, §15), working conventions in [CLAUDE.md](CLAUDE.md), and setup or usage changes here. CLAUDE.md lists what goes where.
 
 ## Team
-- _TBD_: data, vocabulary, ML
-- _TBD_: web app
-- _TBD_: report and presentation
+- Ioanna: UI wireframes, personas, user journeys
+- Liam: web app (back and front) and report
+- George: dataset, ontology, ML
