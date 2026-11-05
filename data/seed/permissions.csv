@@ -1,0 +1,10 @@
+permission_id,code,description
+PRM-01,tag.add_community,Add community tags to definitions
+PRM-02,definition.view_unpublished,"See drafts, in-review and rejected definitions of the division"
+PRM-03,definition.view_unpublished_all,See unpublished definitions of every division
+PRM-04,definition.propose,Create drafts and submit them for review
+PRM-05,definition.edit,Edit approved definitions
+PRM-06,definition.deprecate,Deprecate approved definitions
+PRM-07,definition.approve,"Approve, reject or request changes"
+PRM-08,tag.manage,Validate ML tags and promote community tags
+PRM-09,governance.manage,Governance flags page and TTL export

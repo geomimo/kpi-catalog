@@ -1,0 +1,9 @@
+division_id,code,name,description
+DIV-001,FIN,Finance,"Group finance: accounting, controlling, treasury, tax and the banking arm's finance."
+DIV-002,COM,Commercial,"Buying, pricing and sales across stores, online, food-to-go and mobile."
+DIV-003,MKT,Marketing,"Brand, campaigns, media spend and loyalty communication."
+DIV-004,PRD,Product,"The online shop, the app and the paid membership."
+DIV-005,OPS,Operations,"Stores operations, supply chain, logistics and own-brand production."
+DIV-006,PPL,People,"HR: workforce, engagement and wellbeing."
+DIV-007,RSK,Risk & Compliance,"Risk, compliance and the insurance arm."
+DIV-008,DAT,Data & Analytics,"The data platform, the semantic layer and data governance."

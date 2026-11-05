@@ -1,0 +1,15 @@
+from_definition_id,to_definition_id,relationship_type,note
+DEF-0083,DEF-0084,related_to,"S3: shared column emp_sat, different measures"
+DEF-0083,DEF-0085,related_to,"S3: shared column emp_sat, different measures"
+DEF-0084,DEF-0085,related_to,"S3: shared column emp_sat, different measures"
+DEF-0089,DEF-0090,related_to,"S3: shared column cust_fb, different measures"
+DEF-0089,DEF-0091,related_to,"S3: shared column cust_fb, different measures"
+DEF-0090,DEF-0091,related_to,"S3: shared column cust_fb, different measures"
+DEF-0092,DEF-0093,related_to,"S3: shared column op_eff, different measures"
+DEF-0092,DEF-0094,related_to,"S3: shared column op_eff, different measures"
+DEF-0093,DEF-0094,related_to,"S3: shared column op_eff, different measures"
+DEF-0078,DEF-0077,subset_of,shared column mkt_spend: the digital budget is part of total marketing expenditure
+DEF-0079,DEF-0077,subset_of,shared column mkt_spend: advertising is part of total marketing expenditure
+DEF-0095,DEF-0096,related_to,"shared column ship_cost, different measures"
+DEF-0095,DEF-0097,related_to,shared column ship_cost: cost to us vs fee charged to customers
+DEF-0081,DEF-0082,related_to,UC2: net vs gross product revenue

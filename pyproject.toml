@@ -13,11 +13,24 @@ dependencies = [
     "ipykernel>=7.4.0",
     "jupyter>=1.1.1",
     "pandas>=3.1.0",
+    "pyyaml>=6.0.3",
 ]
 
 [project.scripts]
 kpi-catalog = "kpi_catalog:main"
+kpigen = "kpigen.cli:main"
 
 [build-system]
 requires = ["uv_build>=0.12.7,<0.13.0"]
 build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = ["kpi_catalog", "kpigen"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

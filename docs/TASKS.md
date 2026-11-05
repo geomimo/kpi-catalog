@@ -18,7 +18,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
 | Ioanna | UI wireframes, personas, user journeys | U | W (personas, journeys) |
 | Everyone | Decisions, presentation, final checks | P | — |
 
-**Critical path to the mid-term:** M1 (ML stack installs on 3.14) and D3 (`schema.sql`) unblock the rest → D4–D7 (seed passes validation) → M2 (first tagging run). Liam builds W1–W3 on the sample catalog until D7 lands.
+**Critical path to the mid-term:** M1 (ML stack installs on 3.14) and D3 (`schema.sql`, written, awaiting Liam's review) unblock the rest → D4–D5 (review the drafts and write the `TODO(george)` texts) → M2 (first tagging run). Liam can build W1–W3 on the generated seed in `data/seed/` now; only the placeholder texts will change.
 
 ---
 
@@ -32,23 +32,23 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
 ### George
 - [ ] **M1 · Check the ML stack on Python 3.14** · by 7 Nov · §6 Risk
   - Done when: `sentence-transformers` installs with `uv add` and `all-MiniLM-L6-v2` encodes a sentence. If it doesn't, the project is pinned to 3.13 and the docs say so.
-- [ ] **D1 · Commit the existing `kpigen` unchanged** · by 6 Nov · §3.4
+- [x] **D1 · Commit the existing `kpigen` unchanged** · by 6 Nov · §3.4 · *dropped 5 Nov: there was no existing generator; D6 wrote it from scratch*
   - Done when: it is in `kpigen/` on main, so the rework has a baseline to diff against.
-- [ ] **D2 · Download the pinned sources** · by 8 Nov · §3.2 · needs D1
+- [x] **D2 · Download the pinned sources** · by 8 Nov · §3.2
   - Done when: one command fills `data/raw/` with HF `testcontext_file1.csv` @ `c148c8c` and the three dbt YAMLs @ `c54c8fb`, git tracks nothing in `data/raw/`, and the retrieval date is noted for the report.
-- [ ] **D3 · Write `schema.sql`** · by 9 Nov · F0, §4
+- [ ] **D3 · Write `schema.sql`** *(in progress: written and used by validation; awaiting Liam's review)* · by 9 Nov · F0, §4
   - Done when: every table, foreign key, `CHECK` and `UNIQUE` from §4 is in it, it runs in `sqlite3` without errors, and Liam has reviewed it (W2 builds on it).
 - [ ] **P3 · Decide the *quality* theme** · by 10 Nov · §14 Q2
   - Add one hand-written quality KPI, or leave the theme empty. Done when: the decision is in the PRD and D4 follows it.
-- [ ] **D4 · Write the curation files** · by 12 Nov · §3.3–3.4 · needs D2, P3
-  - `domain_to_division.csv`, `kpis.csv`, `row_to_kpi.csv`, `exclusions.csv`. Done when: every HF row and dbt metric appears exactly once in `row_to_kpi.csv` or `exclusions.csv`, the exclusion counts match §3.3 (or §3.3 is updated), and a second team member has reviewed the files.
-- [ ] **D5 · Write `scenarios.yaml`** · by 13 Nov · §3.4 · needs D4, P2, U2
+- [ ] **D4 · Write the curation files** *(in progress: decisions drafted; George writes the 60 KPI descriptions, then a second member reviews)* · by 12 Nov · §3.3–3.4 · needs D2, P3
+  - `domain_to_division.csv`, `kpis.csv`, `row_to_kpi.csv`, `exclusions.csv`, `relationships.csv`. Done when: every HF row and dbt metric appears exactly once in `row_to_kpi.csv` or `exclusions.csv`, the exclusion counts match §3.3 (or §3.3 is updated), and a second team member has reviewed the files.
+- [ ] **D5 · Write `scenarios.yaml`** *(in progress: fixtures with fixed IDs drafted; George writes the conflict-case texts, Katerina's draft label and ~35 community tags, and confirms the supersession pair)* · by 13 Nov · §3.4 · needs D4, P2, U2
   - Done when: every fixture listed in §3.4 is present with a fixed ID, and every step of the user journeys (U2) has the seed data it needs.
 - [ ] **V1 · Vocabulary v0** · by 14 Nov · §5
   - Hand-authored `vocab/kpi-vocabulary.ttl` with the Category (Balanced Scorecard + themes), Business line, Measure Type and Metric Type schemes. Every concept has a `skos:definition`, because the ML encodes it. Done when: rdflib parses the file without errors.
-- [ ] **D6 · Rework `kpigen`** · by 15 Nov · F0, §3.4 · needs D3, D4, D5
+- [x] **D6 · Write `kpigen`** · by 15 Nov · F0, §3.4 · needs D3, D4, D5
   - Seed 42, reference date 2026-10-01, no network or LLM calls. Random fill: ~50 users, owners, statuses, review history, ~35 dashboards, ~40 community tags. `uv run kpigen` entry point. Done when: it writes `data/seed/*.csv` and `excluded.csv` with ~105 definitions, and two runs give byte-identical files.
-- [ ] **D7 · Validate the seed** · by 15 Nov · §3.6 · needs D6
+- [x] **D7 · Validate the seed** · by 15 Nov · §3.6 · needs D6
   - Load into SQLite with `schema.sql`, plus the seven business rules in `tests/test_seed_rules.py`. Done when: `uv run kpigen` fails on a deliberately broken seed and passes on the real one.
 - [ ] **D8 · Start `data/quality_log.md`** · by 17 Nov · §3.7 · needs D4
   - Done when: findings S1–S6, every exclusion reason, the seeded *Operating Expenses* error and the lessons from the sample catalog are logged. Feeds R1 and R3.
@@ -59,7 +59,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
 - [ ] **W1 · Flask skeleton** · by 12 Nov · §10–11
   - App factory in `src/kpi_catalog/web/`, base layout with navbar, small classless CSS, a placeholder for every page in the site map. Done when: `uv run flask --app kpi_catalog.web run --debug` serves every route.
 - [ ] **W2 · Database loader (`db.py`)** · by 15 Nov · §4, §11 · needs D3
-  - Creates `instance/catalog.sqlite` from `schema.sql`, loads `data/seed/*.csv`, builds the FTS5 index. Use the sample catalog until D7 lands. Done when: it loads the real seed with foreign keys enforced.
+  - Creates `instance/catalog.sqlite` from `schema.sql`, loads `data/seed/*.csv`, builds the FTS5 index. Use the generated seed in `data/seed/`. Done when: it loads the real seed with foreign keys enforced.
 - [ ] **W3 · "Log in as" and permission checks** · by 19 Nov · F1, §4.1, §4.5, §10 · needs W2
   - Switcher with seed users grouped by division and persona shortcuts; one check function (user, permission, division); the visibility rule for unpublished definitions. Done when: pytest covers every cell of the §10 capability table.
 - [ ] **R1 · Mid-term description** · draft by 16 Nov, submit 19 Nov · §13 mid-term checklist

@@ -13,7 +13,7 @@ University group project for *Information Organization*: a website that organize
 ## Key decisions (details in the PRD)
 | Topic | Decision |
 |---|---|
-| Dataset | Not fixed yet; the earlier sample catalog was inspiration only. A reworked, deterministic `kpigen` (fixed seed, no LLM calls at run time) generates `data/seed/*.csv` (~105 definitions). KPI text is **real** (HF `kavish218/multi_domain_dataset` @ `c148c8c`, dbt `jaffle-sl-template` @ `c54c8fb`, downloaded into git-ignored `data/raw/`) plus a few hand-written conflict cases; the organization around it is synthetic. Rows that don't fit the retail-group profile are excluded with a reason. See PRD §3. |
+| Dataset | Not fixed yet; the earlier sample catalog was inspiration only. A deterministic `kpigen`, written from scratch (fixed seed, no LLM or network calls at generation time), generates `data/seed/*.csv` (105 definitions); free text still to be hand-written is marked `TODO(george)`. KPI text is **real** (HF `kavish218/multi_domain_dataset` @ `c148c8c`, dbt `jaffle-sl-template` @ `c54c8fb`, downloaded into git-ignored `data/raw/`) plus a few hand-written conflict cases; the organization around it is synthetic. Rows that don't fit the retail-group profile are excluded with a reason. See PRD §3. |
 | Schema | `schema.sql` is the single source of truth (PRD §4): the seed is validated against it and the app is built from it. IDs are fixed in the curation files and never renumbered. |
 | Stack | Flask + Jinja + SQLite (FTS5), Python 3.14 via uv. Local demo only, no hosting. |
 | Roles | 5 division-scoped roles (Observer, Contributor, Curator, Reviewer, Admin). "Log in as" any seed user (no real auth); permissions are checked for real. No admin management UI. |
@@ -26,11 +26,15 @@ University group project for *Information Organization*: a website that organize
 ## Commands
 - `uv sync`: install dependencies
 - `uv add <pkg>`: add a dependency (use uv, never pip)
-- Planned: `uv run kpigen` (generate + validate seed), `uv run kpi-catalog build` (load → tag → flag), `uv run flask --app kpi_catalog.web run --debug`
+- `uv run kpigen download`: fetch the pinned sources into `data/raw/` (the only network step)
+- `uv run kpigen`: generate `data/seed/` and validate it (`schema.sql` + `tests/test_seed_rules.py`); `--strict` also fails on `TODO(george)` placeholders
+- `uv run pytest`: generator and seed tests
+- Planned: `uv run kpi-catalog build` (load → tag → flag), `uv run flask --app kpi_catalog.web run --debug`
 
 ## Layout (planned, see PRD §11)
 - `schema.sql`: the one schema definition.
-- `kpigen/`: seed generator; `kpigen/curation/*.csv` and `kpigen/scenarios.yaml` hold every hand-made data decision. `data/seed/` is its output and is never edited by hand; change the curation files or the generator instead.
+- `src/kpigen/`: seed generator code. `kpigen/curation/*.csv` (domain_to_division, kpis, row_to_kpi, exclusions, relationships) and `kpigen/scenarios.yaml` hold every hand-made data decision. `data/seed/` is its output and is never edited by hand; change the curation files or the generator instead.
+- `tests/test_seed_rules.py`: the PRD §3.6 business rules every seed must pass; `tests/test_kpigen.py`: generator tests.
 - `data/raw/`: pinned source downloads (git-ignored; never commit them).
 - `data/gold|annotated/`: gold labels and the exported annotated dataset. Every data-quality decision is logged in `data/quality_log.md` (it feeds the report).
 - `vocab/`: hand-authored SKOS seed + generated exports.

@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Course** | Information Organization, group project |
-| **Status** | Draft v3, 5 Nov 2026. Schema derived from the app requirements; data-generation plan agreed. History in [§15](#15-change-log) |
+| **Status** | Draft v4, 5 Nov 2026. `kpigen` and `schema.sql` written; the seed validates; curation drafts and hand-written texts pending review. History in [§15](#15-change-log) |
 | **Deadlines** | Mid-term description **19 Nov 2026** · Final delivery **21 Dec 2026** |
 | **Team** | **A** = George (dataset, vocabulary, ML) · **B** = Liam (web app) · **W** = Liam (report) and Ioanna (personas, user journeys, UI wireframes). Slides owner still open ([§14](#14-open-questions)) |
 | **Tasks and progress** | [`docs/TASKS.md`](TASKS.md) |
@@ -15,7 +15,7 @@ Guiding rule: **build the smallest thing that satisfies every course requirement
 
 ## At a glance (5-minute read)
 
-**Status (5 Nov 2026):** planning is done (this PRD). A sample catalog exists, but only as inspiration. The real seed data will be produced by a reworked `kpigen` generator ([§3](#3-collection-and-generation-plan)). The website, vocabulary and ML are not started.
+**Status (5 Nov 2026):** planning is done (this PRD). The seed generator `kpigen` (written from scratch; there was no earlier generator to rework) and `schema.sql` exist, and the generated seed passes validation. The curation files are drafts awaiting review, and the hand-written texts are placeholders ([§3](#3-collection-and-generation-plan)). The website, vocabulary and ML are not started.
 
 **The problem.** In a company with many departments, the same KPI name means different things: *Turnover* is counted one way in Finance, another in Commercial and a third in Product. Different names also mean the same thing (*Inventory Turnover* = *Stock Turnover Rate*). New employees can't tell which KPIs matter to them or what they mean, and departments argue about numbers that were never comparable.
 
@@ -25,7 +25,7 @@ Guiding rule: **build the smallest thing that satisfies every course requirement
 
 | Part | What it does | Why (course requirement) |
 |---|---|---|
-| **Seed data** (`kpigen`) | A deterministic script builds ~105 **real** KPI definitions (from Hugging Face, dbt and a few hand-written conflict cases), plus a **synthetic** organization around them (users, roles, reviews, dashboards) | The collection we organize: real content, with a realistic organization around it ([§3](#3-collection-and-generation-plan)) |
+| **Seed data** (`kpigen`) | A deterministic script builds 105 **real** KPI definitions (from Hugging Face, dbt and a few hand-written conflict cases), plus a **synthetic** organization around them (users, roles, reviews, dashboards) | The collection we organize: real content, with a realistic organization around it ([§3](#3-collection-and-generation-plan)) |
 | **SKOS vocabulary** | Controlled lists: Category (Balanced Scorecard), Business line (NAICS), Division, Measure Type, Metric Type, and a KPI Glossary with synonyms | Formal organization in a standard format ([§5](#5-controlled-vocabulary-skos)) |
 | **Community tags** | Anyone can add free tags. They are shown apart from official tags, and curators promote good ones into the vocabulary | Informal organization, connected to the formal one |
 | **ML** (sentence embeddings) | Tags every definition with a theme and a business line, flags wrong units, finds synonyms and diverging definitions, and suggests tags while someone writes a definition | "Simple ML to auto-tag", and it keeps the catalog organized as it grows ([§6](#6-ml-approach)) |
@@ -100,7 +100,7 @@ Guiding rule: **build the smallest thing that satisfies every course requirement
 | dbt Labs [`jaffle-sl-template`](https://github.com/dbt-labs/jaffle-sl-template): `orders.yml`, `order_items.yml`, `customers.yml` | commit `c54c8fb8bea86c0c4d3d5c588d55f8de9de57ade` | Semantic Layer metrics: names, descriptions, formulas, lineage (17 metrics); they fit Acme's food-to-go business | None declared |
 | Hand-written conflict cases (in `scenarios.yaml`) | in repo | Turnover, Active Users, ATOPU, Gross Margin % per division (~6–8 definitions) | Ours |
 
-Because neither external source declares a licence, the generator **downloads them at the pinned versions** into the git-ignored folder `data/raw/` and **never commits copies**. The report cites both with their version and retrieval date.
+Because neither external source declares a licence, the generator **downloads them at the pinned versions** into the git-ignored folder `data/raw/` and **never commits copies**. The report cites both with their version and retrieval date (first retrieved 5 Nov 2026; `kpigen download` checks each file against a pinned SHA-256, so a later retrieval gives the same bytes).
 
 ### 3.3 What gets excluded (expected)
 | Reason | Rows |
@@ -109,14 +109,14 @@ Because neither external source declares a licence, the generator **downloads th
 | Not a quantitative measure: *Accounts Payable Due Date* (a date) | 2 |
 | Doesn't fit the company profile: hospital (patients, medical supplies, healthcare facility) | 6 |
 | Doesn't fit the company profile: household tax (personal finance) | 2 |
-| Doesn't fit the company profile: municipality infrastructure spending | 1 |
+| Doesn't fit the company profile: municipality infrastructure spending | 2 |
 | Doesn't fit the company profile: car, electronics and pharmaceutical defect rates | 3 |
 | dbt template examples, not business KPIs (*Twice Orders*, *Orders (Fill nulls with 0)*) | 2 |
 
-**Expected result:** about 83 HF + 15 dbt + 6–8 hand-written = **~105 definitions** of roughly 50 KPIs. Removing the defect rates leaves the Category theme *quality* with no example ([§14](#14-open-questions)).
+**Result:** 82 HF + 15 dbt + 8 hand-written (7 conflict cases + Katerina's UC3 draft) = **105 definitions** of 60 KPIs. (The earlier estimate counted 1 municipality row; the pinned file has 2, rows 25 and 41.) Removing the defect rates leaves the Category theme *quality* with no example ([§14](#14-open-questions)).
 
-### 3.4 The generator: `kpigen`, reworked
-We rework the existing `kpigen` (committed to the repo first) with GenAI help, rather than starting over.
+### 3.4 The generator: `kpigen`
+There was no earlier generator to rework, so `kpigen` was written from scratch with GenAI help (code in `src/kpigen/`). `uv run kpigen download` fetches the pinned sources and checks their SHA-256; `uv run kpigen` generates and validates without any network or LLM call.
 
 ```
 data/raw/ (downloaded, pinned)     kpigen/curation/*.csv    kpigen/scenarios.yaml
@@ -137,6 +137,9 @@ data/raw/ (downloaded, pinned)     kpigen/curation/*.csv    kpigen/scenarios.yam
 | `kpis.csv` | KPI | Fixed `kpi_id`, slug, name, and a division-neutral description |
 | `row_to_kpi.csv` | Source row (HF row number / dbt metric) | Fixed `definition_id`, the KPI it belongs to (every merge or split happens here), the label the division uses, **unit**, **grain** |
 | `exclusions.csv` | Excluded source row | Reason (from [§3.3](#33-what-gets-excluded-expected)); copied to `data/seed/excluded.csv` |
+| `relationships.csv` | Hand-curated link between two definitions | `related_to` / `subset_of` links for findings S3 (shared column names) and gross vs net product revenue. dbt lineage is derived from the YAML (ratio → numerator/denominator, derived → inputs, cumulative → `cumulative_of`, filtered simple metric → `subset_of`); ATOPU lineage is in `scenarios.yaml` |
+
+**Who writes what.** GenAI may draft the *decisions* in these files (grouping, division, unit, grain, exclusions) for two team members to review, but never free text: division-neutral KPI descriptions, the hand-written conflict-case definitions and the community-tag labels are written by a person. Until then they hold a `TODO(george)` placeholder; `uv run kpigen` warns about them and `uv run kpigen --strict` fails.
 
 **`kpigen/scenarios.yaml`** (fixtures copied exactly, with fixed IDs):
 - **People:**
@@ -158,8 +161,8 @@ data/raw/ (downloaded, pinned)     kpigen/curation/*.csv    kpigen/scenarios.yam
   - *Operating Expenses* with unit `score` (a **deliberately seeded error**, documented in the quality log).
   - One real synonym pair under two different KPIs.
   - One false friend (*Inventory Amount* vs *Investment Amount*).
-  - Community-tag variants: `north-star`, `northstar`, `North Star`, `board-pack`, `profitability`.
-  - One definition correctly superseded by a newer version.
+  - Community-tag variants: `north-star`, `northstar`, `North Star`, `board-pack`, `profitability` (fixture labels keep exactly their fixture uses, so the UC4 story stays stable).
+  - One definition correctly superseded by a newer version (draft: Finance *Capital Expenditure*, `hf:24` → `hf:40`; to be confirmed).
 
 **Random fill (seeded)** around the fixtures:
 - About 50 users with 1–2 division-scoped roles each.
@@ -249,7 +252,7 @@ The app has one check function: *does user U hold a role with permission P in di
 | Table | Columns (constraints) | In seed |
 |---|---|---|
 | `kpis` | `kpi_id` PK · `slug` UNIQUE · `name` · `description` (division-neutral) · `created_at` | ✅ |
-| `definitions` | `definition_id` PK · `kpi_id` FK · `division_id` FK · `display_name` (the label this division uses) · `definition_text` · `metric_type` ∈ {base, simple, ratio, derived, cumulative} · `formula` NULL · `unit` ∈ {EUR, USD, %, ratio, times, count, score} · `grain` ∈ {daily, weekly, monthly, quarterly} · `source_table` NULL · `source_column` NULL · `related_columns` NULL · `owner_user_id` FK · `status` ∈ {draft, in_review, approved, rejected, deprecated} · `version` ≥ 1 · `superseded_by_id` FK NULL · `created_at` · `updated_at` · `origin` ∈ {huggingface, dbt, handwritten, app} · `origin_ref` | ✅ |
+| `definitions` (several per KPI and division allowed, told apart by `source_table`) | `definition_id` PK · `kpi_id` FK · `division_id` FK · `display_name` (the label this division uses) · `definition_text` · `metric_type` ∈ {base, simple, ratio, derived, cumulative} · `formula` NULL · `unit` ∈ {EUR, USD, %, ratio, times, count, score} · `grain` ∈ {daily, weekly, monthly, quarterly} · `source_table` NULL · `source_column` NULL · `related_columns` NULL · `owner_user_id` FK · `status` ∈ {draft, in_review, approved, rejected, deprecated} · `version` ≥ 1 · `superseded_by_id` FK NULL · `created_at` · `updated_at` · `origin` ∈ {huggingface, dbt, handwritten, app} · `origin_ref` | ✅ |
 | `kpi_relationships` | `relationship_id` PK · `from_definition_id` FK · `to_definition_id` FK · `relationship_type` ∈ {composed_of, subset_of, cumulative_of, related_to} · `role` ∈ {numerator, denominator, input} NULL · `alias` NULL · `offset_window` NULL · `origin` | ✅ |
 | `reviews` | `review_id` PK · `definition_id` FK · `reviewer_user_id` FK · `decision` ∈ {approved, rejected, changes_requested} · `comment` · `reviewed_at` | ✅ |
 | `assets` | `asset_id` PK · `asset_type` ∈ {dashboard, report} · `name` UNIQUE · `description` · `tool` · `url` · `division_id` FK · `owner_user_id` FK · `created_at` | ✅ |
@@ -448,7 +451,7 @@ Embeddings for the seed data are **computed offline once**; the web app only enc
 
 | ID | Feature | Priority | Use case | Course requirement | Owner |
 |---|---|---|---|---|---|
-| F0 | **Seed generation**: reworked `kpigen`, curation files, `scenarios.yaml`, `schema.sql`, validation ([§3](#3-collection-and-generation-plan)) | MVP | all | dataset, data quality | A |
+| F0 | **Seed generation**: `kpigen`, curation files, `scenarios.yaml`, `schema.sql`, validation ([§3](#3-collection-and-generation-plan)) | MVP | all | dataset, data quality | A |
 | F1 | Navbar + **"log in as" switcher** (seed users grouped by division; persona shortcuts); permissions checked through `user_roles` × `role_permissions` | MVP | all | website, interactions | B |
 | F2 | **Browse with facets** from official tags and fields: Division, Category (2-level), Business line, Measure Type, Metric Type, Grain, Status; a **separate "Community tags" filter**; A–Z index | MVP | UC1 | formal + informal org | B |
 | F3 | **Keyword search** (SQLite FTS5 over KPI names, labels, definition text, official and community tags) with **query expansion through SKOS altLabels**; each result shows why it matched (e.g. "matched community tag #board-pack") | MVP | UC2 | vocabulary integration | B + A |
@@ -520,13 +523,14 @@ catalog.sqlite ──► Flask app ──► export ──► data/annotated/, v
 **Planned layout**
 ```
 schema.sql                  the single schema definition (generator validation + app database)
-kpigen/                     seed generator (reworked)
-  curation/                 domain_to_division.csv, kpis.csv, row_to_kpi.csv, exclusions.csv
+kpigen/                     hand-edited generator inputs
+  curation/                 domain_to_division.csv, kpis.csv, row_to_kpi.csv, exclusions.csv, relationships.csv
   scenarios.yaml            fixtures + hand-written conflict cases
 data/raw/                   pinned source downloads (git-ignored)
 data/seed/                  generator output; never edited by hand
 data/{gold,annotated}/      gold labels; exported annotated dataset
 vocab/                      hand-authored SKOS seed + generated exports
+src/kpigen/                 seed generator: download, inputs + coverage check, generate, write, validate
 src/kpi_catalog/
   db.py                     create from schema.sql + load seed CSVs
   vocab/skos.py             load / query / export SKOS; unit → measure type; official tags
@@ -536,16 +540,17 @@ src/kpi_catalog/
   auth.py                   log-in-as + permission check
   web/                      Flask app factory, routes, templates/, static/
 tests/test_seed_rules.py    business-rule checks (§3.6)
+tests/test_kpigen.py        generator tests (determinism, coverage, validation catches errors)
 docs/PRD.md
 ```
 
-**Planned commands:** `uv run kpigen` (generate + validate seed) · `uv run kpi-catalog build` (load → tag → flag; reuses the existing `kpi-catalog` script entry point) · `uv run flask --app kpi_catalog.web run --debug`.
+**Commands:** `uv run kpigen download` (pinned sources) · `uv run kpigen` (generate + validate seed) · `uv run kpi-catalog build` (load → tag → flag; reuses the existing `kpi-catalog` script entry point) · `uv run flask --app kpi_catalog.web run --debug`.
 
 ## 12. Milestones
 
 | Dates | Milestone | A (data/ML) | B (web) | W (writer) |
 |---|---|---|---|---|
-| **4–19 Nov** | **Mid-term** | Commit kpigen; write `schema.sql`, curation files and `scenarios.yaml`; rework kpigen until validation passes; quality log; vocab v0; first tagging run | Flask skeleton, DB loader, log-in-as, base layout, site map (can start on the sample data while the generator is reworked) | Mid-term description ([checklist](#mid-term-checklist-19-nov)), persona drafts, case-study draft |
+| **4–19 Nov** | **Mid-term** | Write kpigen, `schema.sql`, curation files and `scenarios.yaml` until validation passes; quality log; vocab v0; first tagging run | Flask skeleton, DB loader, log-in-as, base layout, site map (can start on the generated seed; texts are placeholders until D4/D5 are reviewed) | Mid-term description ([checklist](#mid-term-checklist-19-nov)), persona drafts, case-study draft |
 | 20 Nov–3 Dec | Core catalog | SKOS v1, gold set + evaluation, unit check | Browse, facets, search, KPI page (tags, divergence, lineage, used-in, versions), vocabulary pages | Report skeleton in the ACM Overleaf template; collection + data-quality sections |
 | 4–12 Dec | Workflows | Suggestions API, similarity flags, TTL export | Editor + submit, review queue, tag validation, community tags + promotion, governance flags | Use-case write-ups, ML section; **12 Dec: OWL go/no-go** |
 | 13–17 Dec | Polish | Final metrics, annotated export | UX polish, scripted demo path per persona | Screenshots, site-map figure, reflection section |
@@ -605,7 +610,7 @@ docs/PRD.md
 3. **Thresholds:** `τ_min`, `τ_high`, `τ_low`, tuned on the gold set.
 4. **NAICS codes:** check every Business line code against NAICS 2022.
 5. **OWL (S1):** go/no-go on 12 Dec.
-6. **Team split:** resolved 5 Nov (see the header; George owns the kpigen rework). Still open: who makes the slides and leads the demo (task P4).
+6. **Team split:** resolved 5 Nov (see the header; George owns `kpigen`). Still open: who makes the slides and leads the demo (task P4).
 
 ## 15. Change log
 
@@ -619,3 +624,4 @@ Every change to a feature or decision gets a row here, with the PRD sections it 
 | 5 Nov 2026 | v3 | Dataset to be generated by a reworked, deterministic `kpigen` from real KPI text plus hand-written conflict cases; retail-group company profile with exclusion rule; Business line replaces Industry; `schema.sql` as the single schema; fixed IDs; official vs community tags shown separately; ML tags marked "auto" | top, §1–§6, §9–§14 |
 | 5 Nov 2026 | v3 | Rule added: every feature change is recorded in PRD, CLAUDE.md and README.md where it belongs; this change log added | §15 |
 | 5 Nov 2026 | v3 | Team split recorded (George = A; Liam = B + report; Ioanna = personas, user journeys, UI wireframes); task tracker `docs/TASKS.md` added | header, §14 |
+| 5 Nov 2026 | v4 | No earlier `kpigen` existed: written from scratch (`src/kpigen/`, `kpigen download` with pinned hashes); `schema.sql` written; new curation file `relationships.csv`; GenAI drafts curation decisions but free text stays `TODO(george)`; several definitions per KPI × division allowed; 2 municipality rows (not 1) excluded → 82 HF, 105 definitions of 60 KPIs | header, top, §3.3, §3.4, §4.2, §11, §12 |

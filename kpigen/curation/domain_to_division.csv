@@ -1,0 +1,16 @@
+hf_domain,division_code,business_line,note
+in finance,FIN,GroupWide,
+in accounting,FIN,GroupWide,
+in corporate,FIN,GroupWide,
+in banking,FIN,Banking,draft: could also be RSK
+in real estate,FIN,Property,draft: tenants of the shopping centres
+in insurance,RSK,Insurance,
+in retail,COM,Stores,
+in telecommunications,COM,Mobile,draft: the mobile network is sold through Commercial
+in e-commerce,PRD,Online,
+in saas,PRD,Membership,subscription = paid membership
+in marketing,MKT,GroupWide,
+in human resources,PPL,GroupWide,
+in manufacturing,OPS,OwnBrandProduction,
+in supply chain,OPS,GroupWide,
+in logistics,OPS,GroupWide,

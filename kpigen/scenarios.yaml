@@ -1,0 +1,163 @@
+# kpigen scenarios: the fixed organisation and the demo fixtures (PRD §3.4, §7, §8).
+# Every ID here is fixed and must never be renumbered. kpigen copies these exactly and fills the
+# rest of the organisation around them with a seeded random generator.
+#
+# Free text marked TODO(george) must be written by a person (CLAUDE.md: no LLM-written KPI names,
+# definitions or tags). `uv run kpigen` warns about them; `uv run kpigen --strict` fails on them.
+
+company:
+  name: Acme                      # P2: company name still open; change it only here
+  email_domain: acme.example
+  bi_url: https://bi.acme.example
+
+generation:
+  random_seed: 42
+  reference_date: "2026-10-01"      # "today" for the seed: nothing is dated after it
+  earliest_date: "2024-01-08"       # first definition dates from here
+  users_total: 53                 # USR-001 .. USR-053, fixtures included
+  assets_total: 35
+  community_tag_uses_per_label: 3 # random community taggings on top of the fixtures
+
+divisions:
+  - {division_id: DIV-001, code: FIN, name: Finance, description: "Group finance: accounting, controlling, treasury, tax and the banking arm's finance."}
+  - {division_id: DIV-002, code: COM, name: Commercial, description: "Buying, pricing and sales across stores, online, food-to-go and mobile."}
+  - {division_id: DIV-003, code: MKT, name: Marketing, description: "Brand, campaigns, media spend and loyalty communication."}
+  - {division_id: DIV-004, code: PRD, name: Product, description: "The online shop, the app and the paid membership."}
+  - {division_id: DIV-005, code: OPS, name: Operations, description: "Stores operations, supply chain, logistics and own-brand production."}
+  - {division_id: DIV-006, code: PPL, name: People, description: "HR: workforce, engagement and wellbeing."}
+  - {division_id: DIV-007, code: RSK, name: Risk & Compliance, description: "Risk, compliance and the insurance arm."}
+  - {division_id: DIV-008, code: DAT, name: Data & Analytics, description: "The data platform, the semantic layer and data governance."}
+
+roles:
+  - {role_id: ROL-01, code: observer, name: Observer, description: "Reads published definitions and adds community tags."}
+  - {role_id: ROL-02, code: contributor, name: Contributor, description: "Proposes definitions in their division and submits them for review."}
+  - {role_id: ROL-03, code: curator, name: Curator, description: "Proposes, edits and deprecates definitions and manages tags in their division."}
+  - {role_id: ROL-04, code: reviewer, name: Reviewer, description: "Approves, rejects or requests changes to submitted definitions in their division."}
+  - {role_id: ROL-05, code: admin, name: Admin, description: "Group-wide governance: every permission in every division."}
+
+# PRD §4.1 permission table
+permissions:
+  - {permission_id: PRM-01, code: tag.add_community, description: "Add community tags to definitions", roles: [observer, contributor, curator, reviewer, admin]}
+  - {permission_id: PRM-02, code: definition.view_unpublished, description: "See drafts, in-review and rejected definitions of the division", roles: [contributor, curator, reviewer]}
+  - {permission_id: PRM-03, code: definition.view_unpublished_all, description: "See unpublished definitions of every division", roles: [admin]}
+  - {permission_id: PRM-04, code: definition.propose, description: "Create drafts and submit them for review", roles: [contributor, curator, admin]}
+  - {permission_id: PRM-05, code: definition.edit, description: "Edit approved definitions", roles: [curator, admin]}
+  - {permission_id: PRM-06, code: definition.deprecate, description: "Deprecate approved definitions", roles: [curator, admin]}
+  - {permission_id: PRM-07, code: definition.approve, description: "Approve, reject or request changes", roles: [reviewer, admin]}
+  - {permission_id: PRM-08, code: tag.manage, description: "Validate ML tags and promote community tags", roles: [curator, admin]}
+  - {permission_id: PRM-09, code: governance.manage, description: "Governance flags page and TTL export", roles: [admin]}
+
+# Persona and supporting users (PRD §7). The random fill never reuses these IDs.
+users:
+  - user_id: USR-005
+    full_name: Emma Papadopoulos
+    home_division: FIN
+    job_title: Business Analyst
+    created_at: "2026-10-01T08:00:00Z"
+    roles: [{role: observer, division: FIN}]
+  - user_id: USR-007
+    full_name: Katerina Okafor
+    home_division: COM
+    job_title: Commercial Analytics Lead
+    created_at: "2024-01-08T09:00:00Z"
+    roles: [{role: curator, division: COM}]
+  - user_id: USR-008
+    full_name: Dimitris Jansen
+    home_division: COM
+    job_title: Commercial Controller
+    created_at: "2024-01-08T09:00:00Z"
+    roles: [{role: reviewer, division: COM}]
+  - user_id: USR-009
+    full_name: Anna Okafor
+    home_division: COM
+    job_title: BI Developer
+    created_at: "2024-03-04T09:00:00Z"
+    roles: [{role: contributor, division: COM}]
+  - user_id: USR-053
+    full_name: Noah Garcia
+    home_division: DAT
+    job_title: Data Governance Lead
+    created_at: "2024-01-08T09:00:00Z"
+    roles: [{role: admin, division: null}]
+
+# Hand-written conflict cases (PRD §3.2, UC2) and Katerina's draft (UC3).
+# Structure is fixed; the texts are George's to write.
+handwritten_definitions:
+  - {definition_id: DEF-0301, ref: turnover_fin, kpi_id: KPI-0058, division: FIN, display_name: Turnover, metric_type: base, unit: EUR, grain: monthly,
+     definition_text: "TODO(george): Finance turnover = booked revenue", formula: "TODO(george)"}
+  - {definition_id: DEF-0302, ref: turnover_com, kpi_id: KPI-0058, division: COM, display_name: Turnover, metric_type: base, unit: USD, grain: monthly, owner: USR-007,
+     definition_text: "TODO(george): Commercial turnover = product revenue excluding tax", formula: "TODO(george)"}
+  - {definition_id: DEF-0303, ref: turnover_prd, kpi_id: KPI-0058, division: PRD, display_name: Turnover, metric_type: base, unit: EUR, grain: monthly,
+     definition_text: "TODO(george): Product turnover = gross completed purchases before refunds", formula: "TODO(george)"}
+  - {definition_id: DEF-0304, ref: active_users_prd, kpi_id: KPI-0059, division: PRD, display_name: Active Users, metric_type: base, unit: count, grain: monthly,
+     definition_text: "TODO(george): Product active users = transacting in the last 30 days", formula: "TODO(george)"}
+  - {definition_id: DEF-0305, ref: active_users_mkt, kpi_id: KPI-0059, division: MKT, display_name: Active Users, metric_type: base, unit: count, grain: monthly,
+     definition_text: "TODO(george): Marketing active users = any session in the last 30 days", formula: "TODO(george)"}
+  - {definition_id: DEF-0306, ref: atopu_prd, kpi_id: KPI-0060, division: PRD, display_name: ATOPU, metric_type: ratio, unit: EUR, grain: monthly,
+     definition_text: "TODO(george): Product turnover / Product active users", formula: "TODO(george)"}
+  - {definition_id: DEF-0307, ref: atopu_fin, kpi_id: KPI-0060, division: FIN, display_name: ATOPU, metric_type: ratio, unit: EUR, grain: monthly,
+     definition_text: "TODO(george): Finance turnover / Product active users", formula: "TODO(george)"}
+  - {definition_id: DEF-0310, ref: katerina_draft, kpi_id: KPI-0018, division: COM, display_name: "TODO(george): near-duplicate label of an existing inventory-turnover label",
+     metric_type: base, unit: times, grain: monthly, owner: USR-007, definition_text: "TODO(george)", formula: null}
+
+# Lineage between hand-written definitions (UC2: ATOPU).
+handwritten_relationships:
+  - {from: DEF-0306, to: DEF-0303, type: composed_of, role: numerator}
+  - {from: DEF-0306, to: DEF-0304, type: composed_of, role: denominator}
+  - {from: DEF-0307, to: DEF-0301, type: composed_of, role: numerator}
+  - {from: DEF-0307, to: DEF-0304, type: composed_of, role: denominator}   # Finance divides by PRODUCT's active users
+
+# Fixed status, owner and history for scenario definitions. Everything else is random.
+#   changes_requested_before: a "changes requested" review precedes the current status
+definition_fixtures:
+  # UC2: all conflict cases published (both Active Users approved)
+  - {definition_id: DEF-0301, status: approved}
+  - {definition_id: DEF-0302, status: approved}
+  - {definition_id: DEF-0303, status: approved}
+  - {definition_id: DEF-0304, status: approved}
+  - {definition_id: DEF-0305, status: approved}
+  - {definition_id: DEF-0306, status: approved}
+  - {definition_id: DEF-0307, status: approved}
+  - {definition_id: DEF-0081, status: approved}    # Net Product Revenue (gross vs net)
+  - {definition_id: DEF-0082, status: approved}    # Gross Revenue from Product Sales
+  # UC1: Finance definitions in the Finance Weekly Flash Report
+  - {definition_id: DEF-0001, status: approved}    # Total Liabilities
+  - {definition_id: DEF-0005, status: approved}    # Total Revenue
+  - {definition_id: DEF-0009, status: approved}    # Net Income
+  # UC3: Katerina's draft and Dimitris's review queue (Commercial)
+  - {definition_id: DEF-0310, status: draft, owner: USR-007}
+  - {definition_id: DEF-0087, status: in_review, owner: USR-009}                                 # Stock Turnover Rate
+  - {definition_id: DEF-0090, status: in_review, owner: USR-009, changes_requested_before: true} # Net Promoter Score (NPS)
+  - {definition_id: DEF-0210, status: in_review, owner: USR-007}                                 # Median Revenue (dbt)
+  # UC4: the seeded unit error is published, so the unit check has something to catch
+  - {definition_id: DEF-0007, status: approved}    # Operating Expenses, unit = score on purpose
+  # UC4: the synonym pair and the false friend are published
+  - {definition_id: DEF-0006, status: approved}    # Product Revenue
+  - {definition_id: DEF-0080, status: approved}    # Total Product Sales
+  - {definition_id: DEF-0029, status: approved}    # Inventory Amount
+  - {definition_id: DEF-0030, status: approved}    # Investment Amount
+  # UC4: one definition correctly superseded by a newer version (same KPI, same division)
+  # TODO(george): confirm hf:24 -> hf:40 (Capital Expenditure, Finance) works as a real v1 -> v2
+  - {definition_id: DEF-0025, status: deprecated, version: 1, superseded_by: DEF-0041}
+  - {definition_id: DEF-0041, status: approved, version: 2}
+
+assets:
+  - asset_id: AST-001
+    asset_type: report
+    name: Finance Weekly Flash Report
+    description: Weekly flash report of the group's headline financials.
+    tool: Excel
+    division: FIN
+    owner: USR-005
+    definitions: [DEF-0001, DEF-0005, DEF-0007, DEF-0009, DEF-0301, DEF-0307]
+
+community_tags:
+  # TODO(george): add about 35 more community tag labels (free text a user might type)
+  labels: [north-star, northstar, North Star, board-pack, profitability]
+  # Fixed taggings for UC4 (tagged by random users)
+  fixtures:
+    - {label: north-star, definitions: [DEF-0301, DEF-0306, DEF-0304]}
+    - {label: northstar, definitions: [DEF-0307]}
+    - {label: North Star, definitions: [DEF-0305]}
+    - {label: board-pack, definitions: [DEF-0001, DEF-0005, DEF-0009, DEF-0307]}
+    - {label: profitability, definitions: [DEF-0009, DEF-0214]}

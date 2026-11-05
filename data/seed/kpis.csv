@@ -1,0 +1,61 @@
+kpi_id,slug,name,description,created_at
+KPI-0001,total-liabilities,Total Liabilities,TODO(george),2025-12-25T08:15:00Z
+KPI-0002,total-equity,Total Equity,TODO(george),2025-01-11T12:30:00Z
+KPI-0003,portfolio-equity,Portfolio Equity,TODO(george),2025-04-19T14:45:00Z
+KPI-0004,total-revenue,Total Revenue,TODO(george),2025-11-24T16:00:00Z
+KPI-0005,product-revenue,Product Revenue,TODO(george),2026-05-07T17:30:00Z
+KPI-0006,operating-expenses,Operating Expenses,TODO(george),2026-07-29T15:15:00Z
+KPI-0007,facility-operating-costs,Facility Operating Costs,TODO(george),2025-05-04T12:15:00Z
+KPI-0008,net-income,Net Income,TODO(george),2026-07-20T17:00:00Z
+KPI-0009,project-net-income,Project Net Income,TODO(george),2025-10-04T15:45:00Z
+KPI-0010,quick-ratio,Quick Ratio,TODO(george),2025-09-15T11:00:00Z
+KPI-0011,investment-amount,Investment Amount,TODO(george),2025-05-17T12:45:00Z
+KPI-0012,invoice-amount,Invoice Amount,TODO(george),2025-09-13T13:00:00Z
+KPI-0013,inventory-amount,Inventory Amount,TODO(george),2025-07-18T16:15:00Z
+KPI-0014,accounts-payable-due,Accounts Payable Due,TODO(george),2024-11-25T17:45:00Z
+KPI-0015,accounts-receivable-outstanding,Accounts Receivable Outstanding,TODO(george),2025-11-26T15:00:00Z
+KPI-0016,tax-liability,Tax Liability,TODO(george),2024-09-05T09:15:00Z
+KPI-0017,interest-income,Interest Income,TODO(george),2026-01-21T15:00:00Z
+KPI-0018,inventory-turnover,Inventory Turnover,TODO(george),2025-01-19T10:00:00Z
+KPI-0019,capital-expenditure,Capital Expenditure,TODO(george),2024-09-07T12:45:00Z
+KPI-0020,sales-revenue,Sales Revenue,TODO(george),2024-09-20T08:00:00Z
+KPI-0021,website-traffic,Website Traffic,TODO(george),2026-05-26T09:15:00Z
+KPI-0022,claims-settled,Claims Settled,TODO(george),2025-12-10T15:00:00Z
+KPI-0023,customer-churn-rate,Customer Churn Rate,TODO(george),2025-11-07T16:15:00Z
+KPI-0024,loan-default-rate,Loan Default Rate,TODO(george),2024-02-25T12:30:00Z
+KPI-0025,total-marketing-expenditure,Total Marketing Expenditure,TODO(george),2025-10-30T14:15:00Z
+KPI-0026,digital-marketing-budget,Digital Marketing Budget,TODO(george),2025-01-15T15:00:00Z
+KPI-0027,advertising-spend,Advertising Spend,TODO(george),2025-07-09T09:45:00Z
+KPI-0028,total-product-sales,Total Product Sales,TODO(george),2025-02-18T09:30:00Z
+KPI-0029,net-product-revenue,Net Product Revenue,TODO(george),2026-01-12T15:00:00Z
+KPI-0030,gross-product-revenue,Gross Revenue from Product Sales,TODO(george),2025-12-08T12:15:00Z
+KPI-0031,employee-satisfaction-index,Employee Satisfaction Index,TODO(george),2026-06-05T08:00:00Z
+KPI-0032,employee-engagement-score,Employee Engagement Score,TODO(george),2025-10-18T16:45:00Z
+KPI-0033,staff-wellbeing-index,Staff Wellbeing Index,TODO(george),2026-06-26T17:15:00Z
+KPI-0034,customer-satisfaction-score,Customer Satisfaction Score,TODO(george),2026-07-24T11:45:00Z
+KPI-0035,net-promoter-score,Net Promoter Score,TODO(george),2026-08-23T12:30:00Z
+KPI-0036,customer-experience-rating,Customer Experience Rating,TODO(george),2026-02-15T08:45:00Z
+KPI-0037,operational-efficiency-ratio,Operational Efficiency Ratio,TODO(george),2025-09-01T17:30:00Z
+KPI-0038,resource-utilization-rate,Resource Utilization Rate,TODO(george),2026-08-14T15:00:00Z
+KPI-0039,productivity-rate,Productivity Rate,TODO(george),2026-07-29T11:15:00Z
+KPI-0040,shipping-expenses,Total Shipping Expenses,TODO(george),2025-11-27T10:30:00Z
+KPI-0041,freight-costs,Freight Costs,TODO(george),2026-08-16T09:15:00Z
+KPI-0042,delivery-charges,Delivery Charges,TODO(george),2026-09-02T14:30:00Z
+KPI-0043,order-total,Order Total,TODO(george),2026-02-01T12:45:00Z
+KPI-0044,large-orders,Large Orders,TODO(george),2026-05-15T17:15:00Z
+KPI-0045,orders,Orders,TODO(george),2025-11-17T08:30:00Z
+KPI-0046,food-orders,Food Orders,TODO(george),2025-11-24T13:45:00Z
+KPI-0047,orders-last-7-days,Orders Last 7 Days,TODO(george),2026-08-26T14:30:00Z
+KPI-0048,revenue,Revenue,TODO(george),2026-07-24T13:30:00Z
+KPI-0049,order-cost,Order Cost,TODO(george),2026-01-01T17:00:00Z
+KPI-0050,median-revenue,Median Revenue,TODO(george),2026-09-09T16:15:00Z
+KPI-0051,food-revenue,Food Revenue,TODO(george),2026-06-04T13:15:00Z
+KPI-0052,food-revenue-pct,Food Revenue %,TODO(george),2024-05-20T16:30:00Z
+KPI-0053,revenue-growth-mom,Revenue Growth % M/M,TODO(george),2026-05-21T11:30:00Z
+KPI-0054,order-gross-profit,Order Gross Profit,TODO(george),2025-04-11T13:00:00Z
+KPI-0055,cumulative-revenue,Cumulative Revenue,TODO(george),2026-06-13T16:30:00Z
+KPI-0056,customers-with-orders,Customers with Orders,TODO(george),2025-12-19T15:45:00Z
+KPI-0057,new-customers,New Customers,TODO(george),2026-03-01T13:45:00Z
+KPI-0058,turnover,Turnover,TODO(george),2025-11-03T14:00:00Z
+KPI-0059,active-users,Active Users,TODO(george),2024-12-12T09:00:00Z
+KPI-0060,atopu,Average Turnover per Active User,TODO(george),2025-09-15T16:00:00Z

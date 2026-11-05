@@ -1,0 +1,28 @@
+origin,origin_ref,term,reason_code,reason
+huggingface,hf:19,Tax Liability,off_profile,Doesn't fit the company profile: household tax (personal finance)
+huggingface,hf:25,Capital Expenditure,off_profile,Doesn't fit the company profile: municipality infrastructure spending
+huggingface,hf:31,Accounts Payable Due Date,not_a_measure,Not a quantitative measure: a due date
+huggingface,hf:35,Tax Liability Due,off_profile,Doesn't fit the company profile: household tax (personal finance)
+huggingface,hf:41,Capital Expenditure Spending,off_profile,Doesn't fit the company profile: municipality infrastructure spending
+huggingface,hf:42,Inventory Amount,off_profile,Doesn't fit the company profile: hospital
+huggingface,hf:44,Accounts Payable Due,off_profile,Doesn't fit the company profile: hospital
+huggingface,hf:45,Accounts Payable Due Date,not_a_measure,Not a quantitative measure: a due date
+huggingface,hf:46,Accounts Receivable Outstanding,off_profile,Doesn't fit the company profile: hospital
+huggingface,hf:51,Interest Income from Investments,off_profile,Doesn't fit the company profile: hospital
+huggingface,hf:52,Inventory Turnover Ratio,off_profile,Doesn't fit the company profile: hospital
+huggingface,hf:54,Quick Assets to Liabilities Ratio,off_profile,Doesn't fit the company profile: hospital
+huggingface,hf:73,Product Defect Rate,off_profile,"Doesn't fit the company profile: car, electronics and pharmaceutical defect rates"
+huggingface,hf:74,Product Defect Rate,off_profile,"Doesn't fit the company profile: car, electronics and pharmaceutical defect rates"
+huggingface,hf:75,Product Defect Rate,off_profile,"Doesn't fit the company profile: car, electronics and pharmaceutical defect rates"
+huggingface,hf:97,Department Identifier,not_a_measure,Not a quantitative measure: education identifier
+huggingface,hf:98,Division ID,not_a_measure,Not a quantitative measure: education identifier
+huggingface,hf:99,Program Identifier,not_a_measure,Not a quantitative measure: education identifier
+huggingface,hf:100,Academic Center ID,not_a_measure,Not a quantitative measure: education identifier
+huggingface,hf:101,College ID,not_a_measure,Not a quantitative measure: education identifier
+huggingface,hf:102,Student Identifier,not_a_measure,Not a quantitative measure: education identifier
+huggingface,hf:103,Scholar ID,not_a_measure,Not a quantitative measure: education identifier
+huggingface,hf:104,Pupil Identifier,not_a_measure,Not a quantitative measure: education identifier
+huggingface,hf:105,Graduate Student ID,not_a_measure,Not a quantitative measure: education identifier
+huggingface,hf:106,Exchange Student Identifier,not_a_measure,Not a quantitative measure: education identifier
+dbt,dbt:orders_fill_nulls_with_zero,Orders (Fill nulls with 0),template_example,"dbt template example, not a business KPI"
+dbt,dbt:twice_orders_fill_nulls_with_0,Twice Orders,template_example,"dbt template example, not a business KPI"

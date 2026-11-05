@@ -1,0 +1,6 @@
+role_id,code,name,description
+ROL-01,observer,Observer,Reads published definitions and adds community tags.
+ROL-02,contributor,Contributor,Proposes definitions in their division and submits them for review.
+ROL-03,curator,Curator,"Proposes, edits and deprecates definitions and manages tags in their division."
+ROL-04,reviewer,Reviewer,"Approves, rejects or requests changes to submitted definitions in their division."
+ROL-05,admin,Admin,Group-wide governance: every permission in every division.
