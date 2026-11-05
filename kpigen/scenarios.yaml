@@ -2,8 +2,9 @@
 # Every ID here is fixed and must never be renumbered. kpigen copies these exactly and fills the
 # rest of the organisation around them with a seeded random generator.
 #
-# Free text marked TODO(george) must be written by a person (CLAUDE.md: no LLM-written KPI names,
-# definitions or tags). `uv run kpigen` warns about them; `uv run kpigen --strict` fails on them.
+# Provenance: the hand-written definition texts, Katerina's draft label and the community-tag labels
+# below were drafted with GenAI (Claude) at George's request on 5 Nov 2026 (PRD §3.5), not taken from
+# a source. `uv run kpigen --strict` fails if any placeholder text is reintroduced.
 
 company:
   name: Acme                      # P2: company name still open; change it only here
@@ -81,24 +82,33 @@ users:
     roles: [{role: admin, division: null}]
 
 # Hand-written conflict cases (PRD §3.2, UC2) and Katerina's draft (UC3).
-# Structure is fixed; the texts are George's to write.
+# Texts drafted with GenAI (see the provenance note at the top).
 handwritten_definitions:
   - {definition_id: DEF-0301, ref: turnover_fin, kpi_id: KPI-0058, division: FIN, display_name: Turnover, metric_type: base, unit: EUR, grain: monthly,
-     definition_text: "TODO(george): Finance turnover = booked revenue", formula: "TODO(george)"}
+     definition_text: "Revenue booked in the general ledger for the month across all business lines, net of VAT and after returns, credit notes and discounts, in EUR.",
+     formula: "sum(gl_revenue_eur) where account_class = 'revenue'"}
   - {definition_id: DEF-0302, ref: turnover_com, kpi_id: KPI-0058, division: COM, display_name: Turnover, metric_type: base, unit: USD, grain: monthly, owner: USR-007,
-     definition_text: "TODO(george): Commercial turnover = product revenue excluding tax", formula: "TODO(george)"}
+     definition_text: "Sum of the product revenue of every order line, excluding tax and before refunds are processed, in USD as held in the commercial data model.",
+     formula: "sum(order_item_revenue_excl_tax)"}
   - {definition_id: DEF-0303, ref: turnover_prd, kpi_id: KPI-0058, division: PRD, display_name: Turnover, metric_type: base, unit: EUR, grain: monthly,
-     definition_text: "TODO(george): Product turnover = gross completed purchases before refunds", formula: "TODO(george)"}
+     definition_text: "Gross value of completed purchases in the online shop and the app, including tax and before refunds.",
+     formula: "sum(completed_order_gross_amount)"}
   - {definition_id: DEF-0304, ref: active_users_prd, kpi_id: KPI-0059, division: PRD, display_name: Active Users, metric_type: base, unit: count, grain: monthly,
-     definition_text: "TODO(george): Product active users = transacting in the last 30 days", formula: "TODO(george)"}
+     definition_text: "Number of distinct customers who completed at least one purchase in the last 30 days.",
+     formula: "count(distinct customer_id) where last_purchase_at >= period_end - 30 days"}
   - {definition_id: DEF-0305, ref: active_users_mkt, kpi_id: KPI-0059, division: MKT, display_name: Active Users, metric_type: base, unit: count, grain: monthly,
-     definition_text: "TODO(george): Marketing active users = any session in the last 30 days", formula: "TODO(george)"}
+     definition_text: "Number of distinct visitors with at least one session on the website or in the app in the last 30 days, whether or not they bought anything.",
+     formula: "count(distinct visitor_id) where last_session_at >= period_end - 30 days"}
   - {definition_id: DEF-0306, ref: atopu_prd, kpi_id: KPI-0060, division: PRD, display_name: ATOPU, metric_type: ratio, unit: EUR, grain: monthly,
-     definition_text: "TODO(george): Product turnover / Product active users", formula: "TODO(george)"}
+     definition_text: "Product's turnover for the month divided by Product's active users: the average gross purchase value per transacting customer.",
+     formula: "turnover_prd / active_users_prd"}
   - {definition_id: DEF-0307, ref: atopu_fin, kpi_id: KPI-0060, division: FIN, display_name: ATOPU, metric_type: ratio, unit: EUR, grain: monthly,
-     definition_text: "TODO(george): Finance turnover / Product active users", formula: "TODO(george)"}
-  - {definition_id: DEF-0310, ref: katerina_draft, kpi_id: KPI-0018, division: COM, display_name: "TODO(george): near-duplicate label of an existing inventory-turnover label",
-     metric_type: base, unit: times, grain: monthly, owner: USR-007, definition_text: "TODO(george)", formula: null}
+     definition_text: "Finance's booked turnover for the month divided by Product's active users, as reported in the Finance board pack.",
+     formula: "turnover_fin / active_users_prd"}
+  - {definition_id: DEF-0310, ref: katerina_draft, kpi_id: KPI-0018, division: COM, display_name: Stock Turn Ratio,
+     metric_type: base, unit: times, grain: monthly, owner: USR-007,
+     definition_text: "How many times the average stock in Commercial's stores is sold and replenished in a month: cost of goods sold divided by average inventory value at cost.",
+     formula: "cogs / avg_inventory_value"}
 
 # Lineage between hand-written definitions (UC2: ATOPU).
 handwritten_relationships:
@@ -137,7 +147,7 @@ definition_fixtures:
   - {definition_id: DEF-0029, status: approved}    # Inventory Amount
   - {definition_id: DEF-0030, status: approved}    # Investment Amount
   # UC4: one definition correctly superseded by a newer version (same KPI, same division)
-  # TODO(george): confirm hf:24 -> hf:40 (Capital Expenditure, Finance) works as a real v1 -> v2
+  # hf:24 -> hf:40 (Capital Expenditure, Finance): same table, renamed capital_investments -> cap_inv in the source
   - {definition_id: DEF-0025, status: deprecated, version: 1, superseded_by: DEF-0041}
   - {definition_id: DEF-0041, status: approved, version: 2}
 
@@ -152,8 +162,12 @@ assets:
     definitions: [DEF-0001, DEF-0005, DEF-0007, DEF-0009, DEF-0301, DEF-0307]
 
 community_tags:
-  # TODO(george): add about 35 more community tag labels (free text a user might type)
-  labels: [north-star, northstar, North Star, board-pack, profitability]
+  # The five UC4 labels come from the PRD; the rest were drafted with GenAI and are deliberately informal.
+  labels: [north-star, northstar, North Star, board-pack, profitability,
+           weekly-flash, exec-dashboard, cash, liquidity, cost-control, margin, gross-vs-net, needs-review,
+           legacy, finance-only, ecommerce, stores, food-to-go, membership, loyalty, retention, churn,
+           supply-chain, supplychain, inventory, logistics, hr, engagement, survey-based, marketing-spend,
+           campaign, budget, banking, insurance, vat, month-end-close, dbt, data-quality, confusing, ask-finance]
   # Fixed taggings for UC4 (tagged by random users)
   fixtures:
     - {label: north-star, definitions: [DEF-0301, DEF-0306, DEF-0304]}

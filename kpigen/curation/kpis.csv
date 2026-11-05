@@ -1,61 +1,61 @@
 kpi_id,slug,name,description
-KPI-0001,total-liabilities,Total Liabilities,TODO(george)
-KPI-0002,total-equity,Total Equity,TODO(george)
-KPI-0003,portfolio-equity,Portfolio Equity,TODO(george)
-KPI-0004,total-revenue,Total Revenue,TODO(george)
-KPI-0005,product-revenue,Product Revenue,TODO(george)
-KPI-0006,operating-expenses,Operating Expenses,TODO(george)
-KPI-0007,facility-operating-costs,Facility Operating Costs,TODO(george)
-KPI-0008,net-income,Net Income,TODO(george)
-KPI-0009,project-net-income,Project Net Income,TODO(george)
-KPI-0010,quick-ratio,Quick Ratio,TODO(george)
-KPI-0011,investment-amount,Investment Amount,TODO(george)
-KPI-0012,invoice-amount,Invoice Amount,TODO(george)
-KPI-0013,inventory-amount,Inventory Amount,TODO(george)
-KPI-0014,accounts-payable-due,Accounts Payable Due,TODO(george)
-KPI-0015,accounts-receivable-outstanding,Accounts Receivable Outstanding,TODO(george)
-KPI-0016,tax-liability,Tax Liability,TODO(george)
-KPI-0017,interest-income,Interest Income,TODO(george)
-KPI-0018,inventory-turnover,Inventory Turnover,TODO(george)
-KPI-0019,capital-expenditure,Capital Expenditure,TODO(george)
-KPI-0020,sales-revenue,Sales Revenue,TODO(george)
-KPI-0021,website-traffic,Website Traffic,TODO(george)
-KPI-0022,claims-settled,Claims Settled,TODO(george)
-KPI-0023,customer-churn-rate,Customer Churn Rate,TODO(george)
-KPI-0024,loan-default-rate,Loan Default Rate,TODO(george)
-KPI-0025,total-marketing-expenditure,Total Marketing Expenditure,TODO(george)
-KPI-0026,digital-marketing-budget,Digital Marketing Budget,TODO(george)
-KPI-0027,advertising-spend,Advertising Spend,TODO(george)
-KPI-0028,total-product-sales,Total Product Sales,TODO(george)
-KPI-0029,net-product-revenue,Net Product Revenue,TODO(george)
-KPI-0030,gross-product-revenue,Gross Revenue from Product Sales,TODO(george)
-KPI-0031,employee-satisfaction-index,Employee Satisfaction Index,TODO(george)
-KPI-0032,employee-engagement-score,Employee Engagement Score,TODO(george)
-KPI-0033,staff-wellbeing-index,Staff Wellbeing Index,TODO(george)
-KPI-0034,customer-satisfaction-score,Customer Satisfaction Score,TODO(george)
-KPI-0035,net-promoter-score,Net Promoter Score,TODO(george)
-KPI-0036,customer-experience-rating,Customer Experience Rating,TODO(george)
-KPI-0037,operational-efficiency-ratio,Operational Efficiency Ratio,TODO(george)
-KPI-0038,resource-utilization-rate,Resource Utilization Rate,TODO(george)
-KPI-0039,productivity-rate,Productivity Rate,TODO(george)
-KPI-0040,shipping-expenses,Total Shipping Expenses,TODO(george)
-KPI-0041,freight-costs,Freight Costs,TODO(george)
-KPI-0042,delivery-charges,Delivery Charges,TODO(george)
-KPI-0043,order-total,Order Total,TODO(george)
-KPI-0044,large-orders,Large Orders,TODO(george)
-KPI-0045,orders,Orders,TODO(george)
-KPI-0046,food-orders,Food Orders,TODO(george)
-KPI-0047,orders-last-7-days,Orders Last 7 Days,TODO(george)
-KPI-0048,revenue,Revenue,TODO(george)
-KPI-0049,order-cost,Order Cost,TODO(george)
-KPI-0050,median-revenue,Median Revenue,TODO(george)
-KPI-0051,food-revenue,Food Revenue,TODO(george)
-KPI-0052,food-revenue-pct,Food Revenue %,TODO(george)
-KPI-0053,revenue-growth-mom,Revenue Growth % M/M,TODO(george)
-KPI-0054,order-gross-profit,Order Gross Profit,TODO(george)
-KPI-0055,cumulative-revenue,Cumulative Revenue,TODO(george)
-KPI-0056,customers-with-orders,Customers with Orders,TODO(george)
-KPI-0057,new-customers,New Customers,TODO(george)
-KPI-0058,turnover,Turnover,TODO(george)
-KPI-0059,active-users,Active Users,TODO(george)
-KPI-0060,atopu,Average Turnover per Active User,TODO(george)
+KPI-0001,total-liabilities,Total Liabilities,Total financial obligations owed to external creditors or allocated to an internal unit at the end of the period.
+KPI-0002,total-equity,Total Equity,Residual value of the organisation's assets after deducting all liabilities.
+KPI-0003,portfolio-equity,Portfolio Equity,Ownership value held in a specific investment portfolio or fund.
+KPI-0004,total-revenue,Total Revenue,Total income earned from all operating activities in the period.
+KPI-0005,product-revenue,Product Revenue,Income earned from selling a specific product line or service.
+KPI-0006,operating-expenses,Operating Expenses,"Costs of running the core business, such as rent, salaries and administration, excluding cost of goods sold."
+KPI-0007,facility-operating-costs,Facility Operating Costs,"Running costs of buildings and sites, such as utilities, maintenance, insurance and property taxes."
+KPI-0008,net-income,Net Income,"Earnings left after deducting all expenses, interest and taxes from revenue."
+KPI-0009,project-net-income,Project Net Income,Profit of a single project or contract after its direct and allocated indirect costs.
+KPI-0010,quick-ratio,Quick Ratio,"Liquid assets (cash, receivables, marketable securities) divided by current liabilities; excludes inventory."
+KPI-0011,investment-amount,Investment Amount,Total money placed in financial assets or investment projects.
+KPI-0012,invoice-amount,Invoice Amount,"Total amount due on issued invoices, including charges and taxes."
+KPI-0013,inventory-amount,Inventory Amount,Value of goods and materials held in stock at a point in time.
+KPI-0014,accounts-payable-due,Accounts Payable Due,Unpaid amounts owed to suppliers or to internal cost centres that are due for payment.
+KPI-0015,accounts-receivable-outstanding,Accounts Receivable Outstanding,Amounts owed to the organisation by customers or tenants that have not yet been paid.
+KPI-0016,tax-liability,Tax Liability,"Taxes owed to tax authorities, such as income, payroll and sales taxes, for the period."
+KPI-0017,interest-income,Interest Income,"Interest earned on loans, deposits, bonds or leases."
+KPI-0018,inventory-turnover,Inventory Turnover,"Number of times stock is sold and replaced in a period, usually cost of goods sold divided by average inventory."
+KPI-0019,capital-expenditure,Capital Expenditure,"Spending to acquire, upgrade or maintain long-term physical assets such as property, equipment and infrastructure."
+KPI-0020,sales-revenue,Sales Revenue,"Revenue from selling goods, by channel or combined across channels."
+KPI-0021,website-traffic,Website Traffic,Number of visits or visitors to websites and landing pages in a period.
+KPI-0022,claims-settled,Claims Settled,Number of insurance claims settled and paid out in a period.
+KPI-0023,customer-churn-rate,Customer Churn Rate,Share of customers or subscribers who stop buying or cancel in a period.
+KPI-0024,loan-default-rate,Loan Default Rate,Share of loans in a portfolio that have defaulted.
+KPI-0025,total-marketing-expenditure,Total Marketing Expenditure,Total budget or spend on marketing activities in a fiscal period.
+KPI-0026,digital-marketing-budget,Digital Marketing Budget,"Budget for online marketing such as search, social media and content."
+KPI-0027,advertising-spend,Advertising Spend,Amount spent on advertising across all channels in a period.
+KPI-0028,total-product-sales,Total Product Sales,"Overall revenue from selling products over a period."
+KPI-0029,net-product-revenue,Net Product Revenue,"Product sales revenue after returns, allowances and discounts."
+KPI-0030,gross-product-revenue,Gross Revenue from Product Sales,"Product sales revenue before returns, allowances and discounts."
+KPI-0031,employee-satisfaction-index,Employee Satisfaction Index,Survey-based index of how satisfied employees are with their work and employer.
+KPI-0032,employee-engagement-score,Employee Engagement Score,Survey-based score of how engaged employees are with their work and company culture.
+KPI-0033,staff-wellbeing-index,Staff Wellbeing Index,"Index of employee health and wellbeing, based on wellness surveys and programmes."
+KPI-0034,customer-satisfaction-score,Customer Satisfaction Score,Survey-based score of how satisfied customers are with a product or service.
+KPI-0035,net-promoter-score,Net Promoter Score,Percentage of promoters minus percentage of detractors among customers asked how likely they are to recommend us.
+KPI-0036,customer-experience-rating,Customer Experience Rating,Overall rating of customers' experience across their interactions with the organisation.
+KPI-0037,operational-efficiency-ratio,Operational Efficiency Ratio,"How effectively resources are turned into output, usually operating costs relative to output or revenue."
+KPI-0038,resource-utilization-rate,Resource Utilization Rate,"Share of available resources, such as labour, machines or materials, that is used productively."
+KPI-0039,productivity-rate,Productivity Rate,"Output produced per unit of input, such as per hour worked."
+KPI-0040,shipping-expenses,Total Shipping Expenses,Costs incurred to ship products to customers.
+KPI-0041,freight-costs,Freight Costs,"Costs of transporting goods between locations, such as from suppliers to warehouses and stores."
+KPI-0042,delivery-charges,Delivery Charges,Fees charged to customers for delivering their orders.
+KPI-0043,order-total,Order Total,Total value of orders including tax.
+KPI-0044,large-orders,Large Orders,Number of orders whose total is above a set threshold.
+KPI-0045,orders,Orders,Number of orders placed.
+KPI-0046,food-orders,Food Orders,Number of orders that contain at least one food item.
+KPI-0047,orders-last-7-days,Orders Last 7 Days,Rolling number of orders placed over the last seven days.
+KPI-0048,revenue,Revenue,"Product revenue from order lines, excluding tax."
+KPI-0049,order-cost,Order Cost,Cost of the items sold in orders.
+KPI-0050,median-revenue,Median Revenue,"Median product revenue per order line, excluding tax."
+KPI-0051,food-revenue,Food Revenue,Revenue from food items in orders.
+KPI-0052,food-revenue-pct,Food Revenue %,Share of order revenue that comes from food items.
+KPI-0053,revenue-growth-mom,Revenue Growth % M/M,Percentage change in revenue compared with the previous month.
+KPI-0054,order-gross-profit,Order Gross Profit,Order revenue minus the cost of the items sold.
+KPI-0055,cumulative-revenue,Cumulative Revenue,Running total of revenue since the start of records.
+KPI-0056,customers-with-orders,Customers with Orders,Number of distinct customers who placed at least one order.
+KPI-0057,new-customers,New Customers,Number of distinct customers placing their first order.
+KPI-0058,turnover,Turnover,"Money taken from sales in a period; divisions differ on tax, refunds and when a sale counts."
+KPI-0059,active-users,Active Users,Number of customers or users counted as active over a recent window; divisions differ on what counts as activity.
+KPI-0060,atopu,Average Turnover per Active User,Turnover divided by active users for the same period: average turnover per active user.

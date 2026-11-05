@@ -18,7 +18,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
 | Ioanna | UI wireframes, personas, user journeys | U | W (personas, journeys) |
 | Everyone | Decisions, presentation, final checks | P | — |
 
-**Critical path to the mid-term:** M1 (ML stack installs on 3.14) and D3 (`schema.sql`, written, awaiting Liam's review) unblock the rest → D4–D5 (review the drafts and write the `TODO(george)` texts) → M2 (first tagging run). Liam can build W1–W3 on the generated seed in `data/seed/` now; only the placeholder texts will change.
+**Critical path to the mid-term:** M1 (ML stack installs on 3.14) and D3 (`schema.sql`, written, awaiting Liam's review) unblock the rest → D4–D5 (a second member reviews the drafts and the GenAI-drafted texts) → M2 (first tagging run). Liam can build W1–W3 on the generated seed in `data/seed/` now.
 
 ---
 
@@ -40,9 +40,9 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - Done when: every table, foreign key, `CHECK` and `UNIQUE` from §4 is in it, it runs in `sqlite3` without errors, and Liam has reviewed it (W2 builds on it).
 - [ ] **P3 · Decide the *quality* theme** · by 10 Nov · §14 Q2
   - Add one hand-written quality KPI, or leave the theme empty. Done when: the decision is in the PRD and D4 follows it.
-- [ ] **D4 · Write the curation files** *(in progress: decisions drafted; George writes the 60 KPI descriptions, then a second member reviews)* · by 12 Nov · §3.3–3.4 · needs D2, P3
+- [ ] **D4 · Write the curation files** *(in progress: decisions and the 60 KPI descriptions drafted with GenAI; a second member reviews)* · by 12 Nov · §3.3–3.4 · needs D2, P3
   - `domain_to_division.csv`, `kpis.csv`, `row_to_kpi.csv`, `exclusions.csv`, `relationships.csv`. Done when: every HF row and dbt metric appears exactly once in `row_to_kpi.csv` or `exclusions.csv`, the exclusion counts match §3.3 (or §3.3 is updated), and a second team member has reviewed the files.
-- [ ] **D5 · Write `scenarios.yaml`** *(in progress: fixtures with fixed IDs drafted; George writes the conflict-case texts, Katerina's draft label and ~35 community tags, and confirms the supersession pair)* · by 13 Nov · §3.4 · needs D4, P2, U2
+- [ ] **D5 · Write `scenarios.yaml`** *(in progress: fixtures, conflict-case texts, Katerina's draft and 40 community tags drafted with GenAI; check against U2 and confirm the hf:24 → hf:40 supersession pair)* · by 13 Nov · §3.4 · needs D4, P2, U2
   - Done when: every fixture listed in §3.4 is present with a fixed ID, and every step of the user journeys (U2) has the seed data it needs.
 - [ ] **V1 · Vocabulary v0** · by 14 Nov · §5
   - Hand-authored `vocab/kpi-vocabulary.ttl` with the Category (Balanced Scorecard + themes), Business line, Measure Type and Metric Type schemes. Every concept has a `skos:definition`, because the ML encodes it. Done when: rdflib parses the file without errors.

@@ -1,61 +1,61 @@
 kpi_id,slug,name,description,created_at
-KPI-0001,total-liabilities,Total Liabilities,TODO(george),2025-12-25T08:15:00Z
-KPI-0002,total-equity,Total Equity,TODO(george),2025-01-11T12:30:00Z
-KPI-0003,portfolio-equity,Portfolio Equity,TODO(george),2025-04-19T14:45:00Z
-KPI-0004,total-revenue,Total Revenue,TODO(george),2025-11-24T16:00:00Z
-KPI-0005,product-revenue,Product Revenue,TODO(george),2026-05-07T17:30:00Z
-KPI-0006,operating-expenses,Operating Expenses,TODO(george),2026-07-29T15:15:00Z
-KPI-0007,facility-operating-costs,Facility Operating Costs,TODO(george),2025-05-04T12:15:00Z
-KPI-0008,net-income,Net Income,TODO(george),2026-07-20T17:00:00Z
-KPI-0009,project-net-income,Project Net Income,TODO(george),2025-10-04T15:45:00Z
-KPI-0010,quick-ratio,Quick Ratio,TODO(george),2025-09-15T11:00:00Z
-KPI-0011,investment-amount,Investment Amount,TODO(george),2025-05-17T12:45:00Z
-KPI-0012,invoice-amount,Invoice Amount,TODO(george),2025-09-13T13:00:00Z
-KPI-0013,inventory-amount,Inventory Amount,TODO(george),2025-07-18T16:15:00Z
-KPI-0014,accounts-payable-due,Accounts Payable Due,TODO(george),2024-11-25T17:45:00Z
-KPI-0015,accounts-receivable-outstanding,Accounts Receivable Outstanding,TODO(george),2025-11-26T15:00:00Z
-KPI-0016,tax-liability,Tax Liability,TODO(george),2024-09-05T09:15:00Z
-KPI-0017,interest-income,Interest Income,TODO(george),2026-01-21T15:00:00Z
-KPI-0018,inventory-turnover,Inventory Turnover,TODO(george),2025-01-19T10:00:00Z
-KPI-0019,capital-expenditure,Capital Expenditure,TODO(george),2024-09-07T12:45:00Z
-KPI-0020,sales-revenue,Sales Revenue,TODO(george),2024-09-20T08:00:00Z
-KPI-0021,website-traffic,Website Traffic,TODO(george),2026-05-26T09:15:00Z
-KPI-0022,claims-settled,Claims Settled,TODO(george),2025-12-10T15:00:00Z
-KPI-0023,customer-churn-rate,Customer Churn Rate,TODO(george),2025-11-07T16:15:00Z
-KPI-0024,loan-default-rate,Loan Default Rate,TODO(george),2024-02-25T12:30:00Z
-KPI-0025,total-marketing-expenditure,Total Marketing Expenditure,TODO(george),2025-10-30T14:15:00Z
-KPI-0026,digital-marketing-budget,Digital Marketing Budget,TODO(george),2025-01-15T15:00:00Z
-KPI-0027,advertising-spend,Advertising Spend,TODO(george),2025-07-09T09:45:00Z
-KPI-0028,total-product-sales,Total Product Sales,TODO(george),2025-02-18T09:30:00Z
-KPI-0029,net-product-revenue,Net Product Revenue,TODO(george),2026-01-12T15:00:00Z
-KPI-0030,gross-product-revenue,Gross Revenue from Product Sales,TODO(george),2025-12-08T12:15:00Z
-KPI-0031,employee-satisfaction-index,Employee Satisfaction Index,TODO(george),2026-06-05T08:00:00Z
-KPI-0032,employee-engagement-score,Employee Engagement Score,TODO(george),2025-10-18T16:45:00Z
-KPI-0033,staff-wellbeing-index,Staff Wellbeing Index,TODO(george),2026-06-26T17:15:00Z
-KPI-0034,customer-satisfaction-score,Customer Satisfaction Score,TODO(george),2026-07-24T11:45:00Z
-KPI-0035,net-promoter-score,Net Promoter Score,TODO(george),2026-08-23T12:30:00Z
-KPI-0036,customer-experience-rating,Customer Experience Rating,TODO(george),2026-02-15T08:45:00Z
-KPI-0037,operational-efficiency-ratio,Operational Efficiency Ratio,TODO(george),2025-09-01T17:30:00Z
-KPI-0038,resource-utilization-rate,Resource Utilization Rate,TODO(george),2026-08-14T15:00:00Z
-KPI-0039,productivity-rate,Productivity Rate,TODO(george),2026-07-29T11:15:00Z
-KPI-0040,shipping-expenses,Total Shipping Expenses,TODO(george),2025-11-27T10:30:00Z
-KPI-0041,freight-costs,Freight Costs,TODO(george),2026-08-16T09:15:00Z
-KPI-0042,delivery-charges,Delivery Charges,TODO(george),2026-09-02T14:30:00Z
-KPI-0043,order-total,Order Total,TODO(george),2026-02-01T12:45:00Z
-KPI-0044,large-orders,Large Orders,TODO(george),2026-05-15T17:15:00Z
-KPI-0045,orders,Orders,TODO(george),2025-11-17T08:30:00Z
-KPI-0046,food-orders,Food Orders,TODO(george),2025-11-24T13:45:00Z
-KPI-0047,orders-last-7-days,Orders Last 7 Days,TODO(george),2026-08-26T14:30:00Z
-KPI-0048,revenue,Revenue,TODO(george),2026-07-24T13:30:00Z
-KPI-0049,order-cost,Order Cost,TODO(george),2026-01-01T17:00:00Z
-KPI-0050,median-revenue,Median Revenue,TODO(george),2026-09-09T16:15:00Z
-KPI-0051,food-revenue,Food Revenue,TODO(george),2026-06-04T13:15:00Z
-KPI-0052,food-revenue-pct,Food Revenue %,TODO(george),2024-05-20T16:30:00Z
-KPI-0053,revenue-growth-mom,Revenue Growth % M/M,TODO(george),2026-05-21T11:30:00Z
-KPI-0054,order-gross-profit,Order Gross Profit,TODO(george),2025-04-11T13:00:00Z
-KPI-0055,cumulative-revenue,Cumulative Revenue,TODO(george),2026-06-13T16:30:00Z
-KPI-0056,customers-with-orders,Customers with Orders,TODO(george),2025-12-19T15:45:00Z
-KPI-0057,new-customers,New Customers,TODO(george),2026-03-01T13:45:00Z
-KPI-0058,turnover,Turnover,TODO(george),2025-11-03T14:00:00Z
-KPI-0059,active-users,Active Users,TODO(george),2024-12-12T09:00:00Z
-KPI-0060,atopu,Average Turnover per Active User,TODO(george),2025-09-15T16:00:00Z
+KPI-0001,total-liabilities,Total Liabilities,Total financial obligations owed to external creditors or allocated to an internal unit at the end of the period.,2025-12-25T08:15:00Z
+KPI-0002,total-equity,Total Equity,Residual value of the organisation's assets after deducting all liabilities.,2025-01-11T12:30:00Z
+KPI-0003,portfolio-equity,Portfolio Equity,Ownership value held in a specific investment portfolio or fund.,2025-04-19T14:45:00Z
+KPI-0004,total-revenue,Total Revenue,Total income earned from all operating activities in the period.,2025-11-24T16:00:00Z
+KPI-0005,product-revenue,Product Revenue,Income earned from selling a specific product line or service.,2026-05-07T17:30:00Z
+KPI-0006,operating-expenses,Operating Expenses,"Costs of running the core business, such as rent, salaries and administration, excluding cost of goods sold.",2026-07-29T15:15:00Z
+KPI-0007,facility-operating-costs,Facility Operating Costs,"Running costs of buildings and sites, such as utilities, maintenance, insurance and property taxes.",2025-05-04T12:15:00Z
+KPI-0008,net-income,Net Income,"Earnings left after deducting all expenses, interest and taxes from revenue.",2026-07-20T17:00:00Z
+KPI-0009,project-net-income,Project Net Income,Profit of a single project or contract after its direct and allocated indirect costs.,2025-10-04T15:45:00Z
+KPI-0010,quick-ratio,Quick Ratio,"Liquid assets (cash, receivables, marketable securities) divided by current liabilities; excludes inventory.",2025-09-15T11:00:00Z
+KPI-0011,investment-amount,Investment Amount,Total money placed in financial assets or investment projects.,2025-05-17T12:45:00Z
+KPI-0012,invoice-amount,Invoice Amount,"Total amount due on issued invoices, including charges and taxes.",2025-09-13T13:00:00Z
+KPI-0013,inventory-amount,Inventory Amount,Value of goods and materials held in stock at a point in time.,2025-07-18T16:15:00Z
+KPI-0014,accounts-payable-due,Accounts Payable Due,Unpaid amounts owed to suppliers or to internal cost centres that are due for payment.,2024-11-25T17:45:00Z
+KPI-0015,accounts-receivable-outstanding,Accounts Receivable Outstanding,Amounts owed to the organisation by customers or tenants that have not yet been paid.,2025-11-26T15:00:00Z
+KPI-0016,tax-liability,Tax Liability,"Taxes owed to tax authorities, such as income, payroll and sales taxes, for the period.",2024-09-05T09:15:00Z
+KPI-0017,interest-income,Interest Income,"Interest earned on loans, deposits, bonds or leases.",2026-01-21T15:00:00Z
+KPI-0018,inventory-turnover,Inventory Turnover,"Number of times stock is sold and replaced in a period, usually cost of goods sold divided by average inventory.",2025-01-19T10:00:00Z
+KPI-0019,capital-expenditure,Capital Expenditure,"Spending to acquire, upgrade or maintain long-term physical assets such as property, equipment and infrastructure.",2024-09-07T12:45:00Z
+KPI-0020,sales-revenue,Sales Revenue,"Revenue from selling goods, by channel or combined across channels.",2024-09-20T08:00:00Z
+KPI-0021,website-traffic,Website Traffic,Number of visits or visitors to websites and landing pages in a period.,2026-05-26T09:15:00Z
+KPI-0022,claims-settled,Claims Settled,Number of insurance claims settled and paid out in a period.,2025-12-10T15:00:00Z
+KPI-0023,customer-churn-rate,Customer Churn Rate,Share of customers or subscribers who stop buying or cancel in a period.,2025-11-07T16:15:00Z
+KPI-0024,loan-default-rate,Loan Default Rate,Share of loans in a portfolio that have defaulted.,2024-02-25T12:30:00Z
+KPI-0025,total-marketing-expenditure,Total Marketing Expenditure,Total budget or spend on marketing activities in a fiscal period.,2025-10-30T14:15:00Z
+KPI-0026,digital-marketing-budget,Digital Marketing Budget,"Budget for online marketing such as search, social media and content.",2025-01-15T15:00:00Z
+KPI-0027,advertising-spend,Advertising Spend,Amount spent on advertising across all channels in a period.,2025-07-09T09:45:00Z
+KPI-0028,total-product-sales,Total Product Sales,Overall revenue from selling products over a period.,2025-02-18T09:30:00Z
+KPI-0029,net-product-revenue,Net Product Revenue,"Product sales revenue after returns, allowances and discounts.",2026-01-12T15:00:00Z
+KPI-0030,gross-product-revenue,Gross Revenue from Product Sales,"Product sales revenue before returns, allowances and discounts.",2025-12-08T12:15:00Z
+KPI-0031,employee-satisfaction-index,Employee Satisfaction Index,Survey-based index of how satisfied employees are with their work and employer.,2026-06-05T08:00:00Z
+KPI-0032,employee-engagement-score,Employee Engagement Score,Survey-based score of how engaged employees are with their work and company culture.,2025-10-18T16:45:00Z
+KPI-0033,staff-wellbeing-index,Staff Wellbeing Index,"Index of employee health and wellbeing, based on wellness surveys and programmes.",2026-06-26T17:15:00Z
+KPI-0034,customer-satisfaction-score,Customer Satisfaction Score,Survey-based score of how satisfied customers are with a product or service.,2026-07-24T11:45:00Z
+KPI-0035,net-promoter-score,Net Promoter Score,Percentage of promoters minus percentage of detractors among customers asked how likely they are to recommend us.,2026-08-23T12:30:00Z
+KPI-0036,customer-experience-rating,Customer Experience Rating,Overall rating of customers' experience across their interactions with the organisation.,2026-02-15T08:45:00Z
+KPI-0037,operational-efficiency-ratio,Operational Efficiency Ratio,"How effectively resources are turned into output, usually operating costs relative to output or revenue.",2025-09-01T17:30:00Z
+KPI-0038,resource-utilization-rate,Resource Utilization Rate,"Share of available resources, such as labour, machines or materials, that is used productively.",2026-08-14T15:00:00Z
+KPI-0039,productivity-rate,Productivity Rate,"Output produced per unit of input, such as per hour worked.",2026-07-29T11:15:00Z
+KPI-0040,shipping-expenses,Total Shipping Expenses,Costs incurred to ship products to customers.,2025-11-27T10:30:00Z
+KPI-0041,freight-costs,Freight Costs,"Costs of transporting goods between locations, such as from suppliers to warehouses and stores.",2026-08-16T09:15:00Z
+KPI-0042,delivery-charges,Delivery Charges,Fees charged to customers for delivering their orders.,2026-09-02T14:30:00Z
+KPI-0043,order-total,Order Total,Total value of orders including tax.,2026-02-01T12:45:00Z
+KPI-0044,large-orders,Large Orders,Number of orders whose total is above a set threshold.,2026-05-15T17:15:00Z
+KPI-0045,orders,Orders,Number of orders placed.,2025-11-17T08:30:00Z
+KPI-0046,food-orders,Food Orders,Number of orders that contain at least one food item.,2025-11-24T13:45:00Z
+KPI-0047,orders-last-7-days,Orders Last 7 Days,Rolling number of orders placed over the last seven days.,2026-08-26T14:30:00Z
+KPI-0048,revenue,Revenue,"Product revenue from order lines, excluding tax.",2026-07-24T13:30:00Z
+KPI-0049,order-cost,Order Cost,Cost of the items sold in orders.,2026-01-01T17:00:00Z
+KPI-0050,median-revenue,Median Revenue,"Median product revenue per order line, excluding tax.",2026-09-09T16:15:00Z
+KPI-0051,food-revenue,Food Revenue,Revenue from food items in orders.,2026-06-04T13:15:00Z
+KPI-0052,food-revenue-pct,Food Revenue %,Share of order revenue that comes from food items.,2024-05-20T16:30:00Z
+KPI-0053,revenue-growth-mom,Revenue Growth % M/M,Percentage change in revenue compared with the previous month.,2026-05-21T11:30:00Z
+KPI-0054,order-gross-profit,Order Gross Profit,Order revenue minus the cost of the items sold.,2025-04-11T13:00:00Z
+KPI-0055,cumulative-revenue,Cumulative Revenue,Running total of revenue since the start of records.,2026-06-13T16:30:00Z
+KPI-0056,customers-with-orders,Customers with Orders,Number of distinct customers who placed at least one order.,2025-12-19T15:45:00Z
+KPI-0057,new-customers,New Customers,Number of distinct customers placing their first order.,2026-03-01T13:45:00Z
+KPI-0058,turnover,Turnover,"Money taken from sales in a period; divisions differ on tax, refunds and when a sale counts.",2025-11-03T14:00:00Z
+KPI-0059,active-users,Active Users,Number of customers or users counted as active over a recent window; divisions differ on what counts as activity.,2024-12-12T09:00:00Z
+KPI-0060,atopu,Average Turnover per Active User,Turnover divided by active users for the same period: average turnover per active user.,2025-09-15T16:00:00Z

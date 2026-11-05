@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Course** | Information Organization, group project |
-| **Status** | Draft v4, 5 Nov 2026. `kpigen` and `schema.sql` written; the seed validates; curation drafts and hand-written texts pending review. History in [§15](#15-change-log) |
+| **Status** | Draft v5, 5 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode; curation drafts and the GenAI-drafted texts pending team review. History in [§15](#15-change-log) |
 | **Deadlines** | Mid-term description **19 Nov 2026** · Final delivery **21 Dec 2026** |
 | **Team** | **A** = George (dataset, vocabulary, ML) · **B** = Liam (web app) · **W** = Liam (report) and Ioanna (personas, user journeys, UI wireframes). Slides owner still open ([§14](#14-open-questions)) |
 | **Tasks and progress** | [`docs/TASKS.md`](TASKS.md) |
@@ -15,7 +15,7 @@ Guiding rule: **build the smallest thing that satisfies every course requirement
 
 ## At a glance (5-minute read)
 
-**Status (5 Nov 2026):** planning is done (this PRD). The seed generator `kpigen` (written from scratch; there was no earlier generator to rework) and `schema.sql` exist, and the generated seed passes validation. The curation files are drafts awaiting review, and the hand-written texts are placeholders ([§3](#3-collection-and-generation-plan)). The website, vocabulary and ML are not started.
+**Status (5 Nov 2026):** planning is done (this PRD). The seed generator `kpigen` (written from scratch; there was no earlier generator to rework) and `schema.sql` exist, and the generated seed passes validation. The curation files and the GenAI-drafted texts (see [§3.5](#35-real-vs-synthetic-state-this-in-the-report)) are awaiting team review ([§3](#3-collection-and-generation-plan)). The website, vocabulary and ML are not started.
 
 **The problem.** In a company with many departments, the same KPI name means different things: *Turnover* is counted one way in Finance, another in Commercial and a third in Product. Different names also mean the same thing (*Inventory Turnover* = *Stock Turnover Rate*). New employees can't tell which KPIs matter to them or what they mean, and departments argue about numbers that were never comparable.
 
@@ -38,7 +38,7 @@ Guiding rule: **build the smallest thing that satisfies every course requirement
 - **Noah** (Data Governance Lead, Admin) checks ML tags, resolves conflicts and tidies the community tags.
 
 **Key choices and why**
-- **Real definitions, synthetic organization.** Public KPI datasets have no departments, owners or approval history, so we generate those, never the KPI text. LLM-written text would leave nothing to reflect on in the data-quality section and would make the ML evaluation circular.
+- **Real definitions, synthetic organization.** Public KPI datasets have no departments, owners or approval history, so we generate those. The source KPI text is never generated; LLM-written source text would leave nothing to reflect on in the data-quality section and would make the ML evaluation circular. **Exception (5 Nov):** the few texts we had to write ourselves (KPI descriptions, conflict cases, community tags) were drafted with GenAI and are labelled as such ([§3.5](#35-real-vs-synthetic-state-this-in-the-report)).
 - **One coherent company.** Source rows that don't fit a retail group (hospitals, municipalities, households) are excluded, with a recorded reason.
 - **SKOS rather than OWL.** It is simpler and made for controlled vocabularies. What SKOS can't express (who owns a definition, what it is built from) lives in the database; OWL is a stretch goal ([§5](#what-skos-cant-express-report-material--stretch-goal)).
 - **Pretrained embeddings rather than training a classifier.** With about 105 short definitions there is too little data to train on.
@@ -78,7 +78,7 @@ Guiding rule: **build the smallest thing that satisfies every course requirement
 | Approaches feed each other: ML tags point to SKOS concepts, curators validate ML tags, community tags get promoted into SKOS, search expands queries through altLabels, measure type comes from units via the vocabulary | Integration |
 
 ### Non-goals (explicitly out of scope)
-- **LLM-written KPI content.** GenAI may help write code, never definitions or tags in the seed.
+- **LLM-written KPI content** from the sources. GenAI may help write code; the only GenAI-drafted seed text is the small set listed in [§3.5](#35-real-vs-synthetic-state-this-in-the-report).
 - Real authentication. A **"log in as" switcher over the seed users** replaces it, and permissions are still checked for real.
 - Admin management UI (users, roles, divisions). The Admin role exists and has full visibility; the management pages are only described in the report.
 - *Editing* KPI relationships and dashboard links. Both are **shown read-only** from the seed data.
@@ -139,7 +139,7 @@ data/raw/ (downloaded, pinned)     kpigen/curation/*.csv    kpigen/scenarios.yam
 | `exclusions.csv` | Excluded source row | Reason (from [§3.3](#33-what-gets-excluded-expected)); copied to `data/seed/excluded.csv` |
 | `relationships.csv` | Hand-curated link between two definitions | `related_to` / `subset_of` links for findings S3 (shared column names) and gross vs net product revenue. dbt lineage is derived from the YAML (ratio → numerator/denominator, derived → inputs, cumulative → `cumulative_of`, filtered simple metric → `subset_of`); ATOPU lineage is in `scenarios.yaml` |
 
-**Who writes what.** GenAI may draft the *decisions* in these files (grouping, division, unit, grain, exclusions) for two team members to review, but never free text: division-neutral KPI descriptions, the hand-written conflict-case definitions and the community-tag labels are written by a person. Until then they hold a `TODO(george)` placeholder; `uv run kpigen` warns about them and `uv run kpigen --strict` fails.
+**Who writes what.** GenAI drafted the *decisions* in these files (grouping, division, unit, grain, exclusions) for two team members to review. At George's request (5 Nov) it also drafted the free text we had to supply ourselves: the 60 division-neutral KPI descriptions, the conflict-case definitions and formulas, Katerina's draft, and 35 of the 40 community-tag labels. Text still to be written can be marked `TODO(george)`: `uv run kpigen` warns about it and `uv run kpigen --strict` fails.
 
 **`kpigen/scenarios.yaml`** (fixtures copied exactly, with fixed IDs):
 - **People:**
@@ -174,9 +174,11 @@ data/raw/ (downloaded, pinned)     kpigen/curation/*.csv    kpigen/scenarios.yam
 **The seed contains no theme or business-line tags.** Those come only from the ML run ([§6](#6-ml-approach)).
 
 ### 3.5 Real vs synthetic (state this in the report)
-| Real | Hand-written by us | Synthetic (generated) |
-|---|---|---|
-| HF and dbt KPI names, texts, formulas, dbt lineage | Conflict-case definitions and their lineage; curation decisions (grouping, units, divisions, exclusions); gold labels | Users, roles, owners, statuses, versions, reviews, dashboards, community tags |
+| Real | Ours (designed by us) | Drafted with GenAI, reviewed by us | Synthetic (generated) |
+|---|---|---|---|
+| HF and dbt KPI names, texts, formulas, dbt lineage | Conflict-case design and lineage (which divisions disagree, and how); gold labels | Curation decisions (grouping, units, divisions, exclusions); KPI descriptions (`kpis.csv`); conflict-case and Katerina's draft texts and formulas; community-tag labels except the five from §3.4 | Users, roles, owners, statuses, versions, reviews, dashboards, community taggings |
+
+**For the ML evaluation:** the T1 and T2 gold labels stay hand-made, and the 8 GenAI-drafted definitions are reported separately (or left out) so the embedding model isn't scored on text written by another language model.
 
 ### 3.6 Validation (runs after every generation)
 - **`schema.sql`**: foreign keys, `CHECK` constraints on every enum, `UNIQUE` constraints.
@@ -550,7 +552,7 @@ docs/PRD.md
 
 | Dates | Milestone | A (data/ML) | B (web) | W (writer) |
 |---|---|---|---|---|
-| **4–19 Nov** | **Mid-term** | Write kpigen, `schema.sql`, curation files and `scenarios.yaml` until validation passes; quality log; vocab v0; first tagging run | Flask skeleton, DB loader, log-in-as, base layout, site map (can start on the generated seed; texts are placeholders until D4/D5 are reviewed) | Mid-term description ([checklist](#mid-term-checklist-19-nov)), persona drafts, case-study draft |
+| **4–19 Nov** | **Mid-term** | Write kpigen, `schema.sql`, curation files and `scenarios.yaml` until validation passes; quality log; vocab v0; first tagging run | Flask skeleton, DB loader, log-in-as, base layout, site map (can start on the generated seed; texts may still change in the D4/D5 review) | Mid-term description ([checklist](#mid-term-checklist-19-nov)), persona drafts, case-study draft |
 | 20 Nov–3 Dec | Core catalog | SKOS v1, gold set + evaluation, unit check | Browse, facets, search, KPI page (tags, divergence, lineage, used-in, versions), vocabulary pages | Report skeleton in the ACM Overleaf template; collection + data-quality sections |
 | 4–12 Dec | Workflows | Suggestions API, similarity flags, TTL export | Editor + submit, review queue, tag validation, community tags + promotion, governance flags | Use-case write-ups, ML section; **12 Dec: OWL go/no-go** |
 | 13–17 Dec | Polish | Final metrics, annotated export | UX polish, scripted demo path per persona | Screenshots, site-map figure, reflection section |
@@ -625,3 +627,4 @@ Every change to a feature or decision gets a row here, with the PRD sections it 
 | 5 Nov 2026 | v3 | Rule added: every feature change is recorded in PRD, CLAUDE.md and README.md where it belongs; this change log added | §15 |
 | 5 Nov 2026 | v3 | Team split recorded (George = A; Liam = B + report; Ioanna = personas, user journeys, UI wireframes); task tracker `docs/TASKS.md` added | header, §14 |
 | 5 Nov 2026 | v4 | No earlier `kpigen` existed: written from scratch (`src/kpigen/`, `kpigen download` with pinned hashes); `schema.sql` written; new curation file `relationships.csv`; GenAI drafts curation decisions but free text stays `TODO(george)`; several definitions per KPI × division allowed; 2 municipality rows (not 1) excluded → 82 HF, 105 definitions of 60 KPIs | header, top, §3.3, §3.4, §4.2, §11, §12 |
+| 5 Nov 2026 | v5 | At George's request the "no LLM-written seed text" rule was waived for the text we had to supply ourselves: KPI descriptions, conflict-case texts and formulas, Katerina's draft, 35 community-tag labels were drafted with GenAI and labelled as such; source KPI text stays real; GenAI-drafted definitions reported separately in the ML evaluation | header, top, §2, §3.4, §3.5 |

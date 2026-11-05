@@ -13,7 +13,7 @@ University group project for *Information Organization*: a website that organize
 ## Key decisions (details in the PRD)
 | Topic | Decision |
 |---|---|
-| Dataset | Not fixed yet; the earlier sample catalog was inspiration only. A deterministic `kpigen`, written from scratch (fixed seed, no LLM or network calls at generation time), generates `data/seed/*.csv` (105 definitions); free text still to be hand-written is marked `TODO(george)`. KPI text is **real** (HF `kavish218/multi_domain_dataset` @ `c148c8c`, dbt `jaffle-sl-template` @ `c54c8fb`, downloaded into git-ignored `data/raw/`) plus a few hand-written conflict cases; the organization around it is synthetic. Rows that don't fit the retail-group profile are excluded with a reason. See PRD §3. |
+| Dataset | Not fixed yet; the earlier sample catalog was inspiration only. A deterministic `kpigen`, written from scratch (fixed seed, no LLM or network calls at generation time), generates `data/seed/*.csv` (105 definitions). KPI text is **real** (HF `kavish218/multi_domain_dataset` @ `c148c8c`, dbt `jaffle-sl-template` @ `c54c8fb`, downloaded into git-ignored `data/raw/`) plus a few conflict cases we designed; the organization around it is synthetic. Our own seed text (KPI descriptions, conflict-case texts, community tags) was drafted with GenAI and is labelled so (PRD §3.5). Rows that don't fit the retail-group profile are excluded with a reason. See PRD §3. |
 | Schema | `schema.sql` is the single source of truth (PRD §4): the seed is validated against it and the app is built from it. IDs are fixed in the curation files and never renumbered. |
 | Stack | Flask + Jinja + SQLite (FTS5), Python 3.14 via uv. Local demo only, no hosting. |
 | Roles | 5 division-scoped roles (Observer, Contributor, Curator, Reviewer, Admin). "Log in as" any seed user (no real auth); permissions are checked for real. No admin management UI. |
@@ -27,7 +27,7 @@ University group project for *Information Organization*: a website that organize
 - `uv sync`: install dependencies
 - `uv add <pkg>`: add a dependency (use uv, never pip)
 - `uv run kpigen download`: fetch the pinned sources into `data/raw/` (the only network step)
-- `uv run kpigen`: generate `data/seed/` and validate it (`schema.sql` + `tests/test_seed_rules.py`); `--strict` also fails on `TODO(george)` placeholders
+- `uv run kpigen`: generate `data/seed/` and validate it (`schema.sql` + `tests/test_seed_rules.py`); `--strict` also fails on any `TODO(george)` placeholder
 - `uv run pytest`: generator and seed tests
 - Planned: `uv run kpi-catalog build` (load → tag → flag), `uv run flask --app kpi_catalog.web run --debug`
 
@@ -43,7 +43,7 @@ University group project for *Information Organization*: a website that organize
 - `exploration.ipynb`: scratch notebook.
 
 ## Conventions
-- Never use an LLM to write KPI names, definitions or tags for the seed; GenAI only helps write code.
+- Never use an LLM to write or alter source KPI text (HF/dbt names, definitions). Seed text we supply ourselves may be GenAI-drafted (waived by George, 5 Nov) but must be listed as such in PRD §3.5 and kept out of the ML evaluation's scored text.
 - The SKOS vocabulary is the single source of concept URIs: tags, facets and search expansion all reference it, so never hard-code category lists.
 - Keep ML offline/batch for seed data; only new submissions are encoded at runtime.
 - Persona prose in docs uses they/them pronouns.
