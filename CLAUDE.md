@@ -1,0 +1,54 @@
+# KPI Catalog
+
+University group project for *Information Organization*: a website that organizes KPI definitions of a fictional retail group ("Acme", working name) with 8 divisions. It combines SKOS controlled vocabularies, faceted browsing, a folksonomy, ML auto-tagging, and a contributor → reviewer workflow with division-scoped roles.
+
+- Requirements: [docs/PRD.md](docs/PRD.md) (read it before planning any feature)
+- Assignment text: [group_project_description.md](group_project_description.md)
+
+## Deadlines and capacity
+- Mid-term description: **19 Nov 2026**. Final delivery (website, annotated dataset, vocabulary, presentation, ACM report): **21 Dec 2026**.
+- 1–2 part-time coders + 1 report writer. **Prefer the smallest change that satisfies a course requirement.** Don't add features outside PRD §9 without asking; use the cut order in PRD §12 when scope must shrink.
+
+## Key decisions (details in the PRD)
+| Topic | Decision |
+|---|---|
+| Dataset | Not fixed yet; the earlier sample catalog was inspiration only. A reworked, deterministic `kpigen` (fixed seed, no LLM calls at run time) generates `data/seed/*.csv` (~105 definitions). KPI text is **real** (HF `kavish218/multi_domain_dataset` @ `c148c8c`, dbt `jaffle-sl-template` @ `c54c8fb`, downloaded into git-ignored `data/raw/`) plus a few hand-written conflict cases; the organization around it is synthetic. Rows that don't fit the retail-group profile are excluded with a reason. See PRD §3. |
+| Schema | `schema.sql` is the single source of truth (PRD §4): the seed is validated against it and the app is built from it. IDs are fixed in the curation files and never renumbered. |
+| Stack | Flask + Jinja + SQLite (FTS5), Python 3.14 via uv. Local demo only, no hosting. |
+| Roles | 5 division-scoped roles (Observer, Contributor, Curator, Reviewer, Admin). "Log in as" any seed user (no real auth); permissions are checked for real. No admin management UI. |
+| Visibility | Approved and deprecated definitions are readable by everyone; drafts, in-review and rejected definitions only within the division (plus owner and Admin). |
+| Vocabulary | SKOS in Turtle (`vocab/kpi-vocabulary.ttl`), namespace `https://example.org/kpi-catalog/vocab/`. Schemes: Category (Balanced Scorecard + themes), Business line (NAICS), Division, Measure Type (from `unit`), Metric Type (dbt Semantic Layer), KPI Glossary. OWL is stretch only. |
+| ML | Embedding similarity with `sentence-transformers/all-MiniLM-L6-v2`: tags Theme + Business line (the seed has none), checks units, flags synonyms and diverging definitions, suggests tags on submit. ML tags show as official with an "auto" marker until a curator accepts or rejects them. Evaluated against gold labels in `data/gold/` and baselines. |
+| Tags | Official tags (`tags.kind = official`, SKOS concepts) and community tags (`kind = community`, folksonomy) attach to definitions and are always displayed as separate groups. Facets use official tags only; community tags get their own filter. Curators and Admin can promote community tags into SKOS. |
+| Personas | Seed users: Emma Papadopoulos (USR-005, Observer), Katerina Okafor (USR-007, Curator), Noah Garcia (USR-053, Admin). |
+
+## Commands
+- `uv sync`: install dependencies
+- `uv add <pkg>`: add a dependency (use uv, never pip)
+- Planned: `uv run kpigen` (generate + validate seed), `uv run kpi-catalog build` (load → tag → flag), `uv run flask --app kpi_catalog.web run --debug`
+
+## Layout (planned, see PRD §11)
+- `schema.sql`: the one schema definition.
+- `kpigen/`: seed generator; `kpigen/curation/*.csv` and `kpigen/scenarios.yaml` hold every hand-made data decision. `data/seed/` is its output and is never edited by hand; change the curation files or the generator instead.
+- `data/raw/`: pinned source downloads (git-ignored; never commit them).
+- `data/gold|annotated/`: gold labels and the exported annotated dataset. Every data-quality decision is logged in `data/quality_log.md` (it feeds the report).
+- `vocab/`: hand-authored SKOS seed + generated exports.
+- `src/kpi_catalog/{data,vocab,ml,web}/` + `db.py`.
+- `exploration.ipynb`: scratch notebook.
+
+## Conventions
+- Never use an LLM to write KPI names, definitions or tags for the seed; GenAI only helps write code.
+- The SKOS vocabulary is the single source of concept URIs: tags, facets and search expansion all reference it, so never hard-code category lists.
+- Keep ML offline/batch for seed data; only new submissions are encoded at runtime.
+- Persona prose in docs uses they/them pronouns.
+
+## Keeping the docs in sync (mandatory)
+Every new, changed or removed feature or decision must be recorded **in the same piece of work**, in each file where that information belongs. Update the existing text; don't append a contradicting note.
+
+| File | Record here | Don't put here |
+|---|---|---|
+| `docs/PRD.md` | The decision and its reason: scope, features (§9), schema (§4), vocabulary (§5), ML (§6), personas and use cases (§7–8), site map and permissions (§10), milestones (§12), open questions (§14). Update "At a glance" if the big picture changes, the Status line in the header, and add a row to the **Change log (§15)**. | Setup steps |
+| `CLAUDE.md` | Anything a future session needs to work correctly: key decisions table, commands, layout, conventions. One line per decision, pointing to the PRD section. | Feature details already in the PRD |
+| `README.md` | What a newcomer needs: what the site does, current status, setup and run commands, data sources. | Design rationale |
+
+Before finishing a task, check all three files against the change: renamed concepts, commands, paths, counts.

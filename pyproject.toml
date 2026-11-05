@@ -1,0 +1,23 @@
+[project]
+name = "kpi-catalog"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "George Mimoglou", email = "mimoglou22@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "fsspec>=2026.9.0",
+    "huggingface-hub>=2.3.0",
+    "ipykernel>=7.4.0",
+    "jupyter>=1.1.1",
+    "pandas>=3.1.0",
+]
+
+[project.scripts]
+kpi-catalog = "kpi_catalog:main"
+
+[build-system]
+requires = ["uv_build>=0.12.7,<0.13.0"]
+build-backend = "uv_build"
