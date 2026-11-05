@@ -18,7 +18,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
 | Ioanna | UI wireframes, personas, user journeys | U | W (personas, journeys) |
 | Everyone | Decisions, presentation, final checks | P | — |
 
-**Critical path to the mid-term:** M1 (ML stack installs on 3.14) and D3 (`schema.sql`, written, awaiting Liam's review) unblock the rest → D4–D5 (a second member reviews the drafts and the GenAI-drafted texts) → M2 (first tagging run). Liam can build W1–W3 on the generated seed in `data/seed/` now.
+**Critical path to the mid-term:** M1 (ML stack installs on 3.14) and D3 (`schema.sql`, done) unblock the rest → D4–D5 (a second member reviews the drafts and the GenAI-drafted texts) → M2 (first tagging run). Liam can build W1–W3 on the generated seed in `data/seed/` now.
 
 ---
 
@@ -36,7 +36,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - Done when: it is in `kpigen/` on main, so the rework has a baseline to diff against.
 - [x] **D2 · Download the pinned sources** · by 8 Nov · §3.2
   - Done when: one command fills `data/raw/` with HF `testcontext_file1.csv` @ `c148c8c` and the three dbt YAMLs @ `c54c8fb`, git tracks nothing in `data/raw/`, and the retrieval date is noted for the report.
-- [ ] **D3 · Write `schema.sql`** *(in progress: written and used by validation; awaiting Liam's review)* · by 9 Nov · F0, §4
+- [x] **D3 · Write `schema.sql`** · by 9 Nov · F0, §4
   - Done when: every table, foreign key, `CHECK` and `UNIQUE` from §4 is in it, it runs in `sqlite3` without errors, and Liam has reviewed it (W2 builds on it).
 - [ ] **P3 · Decide the *quality* theme** · by 10 Nov · §14 Q2
   - Add one hand-written quality KPI, or leave the theme empty. Done when: the decision is in the PRD and D4 follows it.

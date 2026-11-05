@@ -15,7 +15,7 @@ Guiding rule: **build the smallest thing that satisfies every course requirement
 
 ## At a glance (5-minute read)
 
-**Status (5 Nov 2026):** planning is done (this PRD). The seed generator `kpigen` (written from scratch; there was no earlier generator to rework) and `schema.sql` exist, and the generated seed passes validation. The curation files and the GenAI-drafted texts (see [§3.5](#35-real-vs-synthetic-state-this-in-the-report)) are awaiting team review ([§3](#3-collection-and-generation-plan)). The website, vocabulary and ML are not started.
+**Status (5 Nov 2026):** planning is done (this PRD). The seed generator `kpigen` (written from scratch; there was no earlier generator to rework) and `schema.sql` (reviewed by Liam, 5 Nov) exist, and the generated seed passes validation. The curation files and the GenAI-drafted texts (see [§3.5](#35-real-vs-synthetic-state-this-in-the-report)) are awaiting team review ([§3](#3-collection-and-generation-plan)). The website, vocabulary and ML are not started.
 
 **The problem.** In a company with many departments, the same KPI name means different things: *Turnover* is counted one way in Finance, another in Commercial and a third in Product. Different names also mean the same thing (*Inventory Turnover* = *Stock Turnover Rate*). New employees can't tell which KPIs matter to them or what they mean, and departments argue about numbers that were never comparable.
 

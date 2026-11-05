@@ -19,7 +19,7 @@ Group project for the course *Information Organization*.
 The full scope, personas, use cases and plan are in **[docs/PRD.md](docs/PRD.md)**.
 
 ## Status
-The seed generator `kpigen` and `schema.sql` are written and the seed validates (105 definitions). The curation files and our own texts (drafted with GenAI) are awaiting team review. Next: vocabulary v0, first tagging run, the Flask app (mid-term: 19 Nov 2026; final: 21 Dec 2026). Tasks and progress are tracked in [docs/TASKS.md](docs/TASKS.md).
+The seed generator `kpigen` and `schema.sql` (reviewed) are written and the seed validates (105 definitions). The curation files and our own texts (drafted with GenAI) are awaiting team review. Next: vocabulary v0, first tagging run, the Flask app (mid-term: 19 Nov 2026; final: 21 Dec 2026). Tasks and progress are tracked in [docs/TASKS.md](docs/TASKS.md).
 
 ## Setup
 Requires [uv](https://docs.astral.sh/uv/) and Python 3.14.
