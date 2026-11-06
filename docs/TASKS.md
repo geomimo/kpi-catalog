@@ -18,7 +18,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
 | Ioanna | UI wireframes, personas, user journeys | U | W (personas, journeys) |
 | Everyone | Decisions, presentation, final checks | P | — |
 
-**Critical path to the mid-term:** M1 (ML stack installs on 3.14) and D3 (`schema.sql`, done) unblock the rest → D4–D5 (a second member reviews the drafts and the GenAI-drafted texts) → M2 (first tagging run). Liam can build W1–W3 on the generated seed in `data/seed/` now.
+**Critical path to the mid-term:** M1 (ML stack on 3.14, done) and D3 (`schema.sql`, done) unblock the rest → D4–D5 (a second member reviews the drafts and the GenAI-drafted texts) → M2 (first tagging run). Liam can build W1–W3 on the generated seed in `data/seed/` now.
 
 ---
 
@@ -30,7 +30,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - Done when: the name replaces "Acme" in the PRD, CLAUDE.md and README, and D5 uses it.
 
 ### George
-- [ ] **M1 · Check the ML stack on Python 3.14** · by 7 Nov · §6 Risk
+- [x] **M1 · Check the ML stack on Python 3.14** · by 7 Nov · §6 Risk · *done 6 Nov: sentence-transformers 6.2.0 + torch 2.15.0 on 3.14.7; no pin needed*
   - Done when: `sentence-transformers` installs with `uv add` and `all-MiniLM-L6-v2` encodes a sentence. If it doesn't, the project is pinned to 3.13 and the docs say so.
 - [x] **D1 · Commit the existing `kpigen` unchanged** · by 6 Nov · §3.4 · *dropped 5 Nov: there was no existing generator; D6 wrote it from scratch*
   - Done when: it is in `kpigen/` on main, so the rework has a baseline to diff against.

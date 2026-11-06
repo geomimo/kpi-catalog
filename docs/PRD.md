@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Course** | Information Organization, group project |
-| **Status** | Draft v5, 5 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode; curation drafts and the GenAI-drafted texts pending team review. History in [§15](#15-change-log) |
+| **Status** | Draft v5, 6 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode; the ML stack runs on Python 3.14; curation drafts and the GenAI-drafted texts pending team review. History in [§15](#15-change-log) |
 | **Deadlines** | Mid-term description **19 Nov 2026** · Final delivery **21 Dec 2026** |
 | **Team** | **A** = George (dataset, vocabulary, ML) · **B** = Liam (web app) · **W** = Liam (report) and Ioanna (personas, user journeys, UI wireframes). Slides owner still open ([§14](#14-open-questions)) |
 | **Tasks and progress** | [`docs/TASKS.md`](TASKS.md) |
@@ -410,7 +410,7 @@ Embeddings for the seed data are **computed offline once**; the web app only enc
 - It catches data-quality errors (wrong units).
 - It surfaces synonyms and conflicts that string matching misses, while avoiding string matching's false matches (*Inventory Amount* vs *Investment Amount*).
 
-**Risk:** check early that `torch` / `sentence-transformers` install on Python 3.14. If they don't, pin the project to 3.13.
+**Risk (resolved 6 Nov):** `torch` 2.15.0 and `sentence-transformers` 6.2.0 install on Python 3.14 with `uv add`, and `all-MiniLM-L6-v2` encodes on CPU (384-dimensional embeddings), so the project stays on 3.14.
 
 ## 7. Personas
 
@@ -628,3 +628,4 @@ Every change to a feature or decision gets a row here, with the PRD sections it 
 | 5 Nov 2026 | v3 | Team split recorded (George = A; Liam = B + report; Ioanna = personas, user journeys, UI wireframes); task tracker `docs/TASKS.md` added | header, §14 |
 | 5 Nov 2026 | v4 | No earlier `kpigen` existed: written from scratch (`src/kpigen/`, `kpigen download` with pinned hashes); `schema.sql` written; new curation file `relationships.csv`; GenAI drafts curation decisions but free text stays `TODO(george)`; several definitions per KPI × division allowed; 2 municipality rows (not 1) excluded → 82 HF, 105 definitions of 60 KPIs | header, top, §3.3, §3.4, §4.2, §11, §12 |
 | 5 Nov 2026 | v5 | At George's request the "no LLM-written seed text" rule was waived for the text we had to supply ourselves: KPI descriptions, conflict-case texts and formulas, Katerina's draft, 35 community-tag labels were drafted with GenAI and labelled as such; source KPI text stays real; GenAI-drafted definitions reported separately in the ML evaluation | header, top, §2, §3.4, §3.5 |
+| 6 Nov 2026 | v5 | ML stack checked on Python 3.14: `sentence-transformers` 6.2.0 (torch 2.15.0) installs and `all-MiniLM-L6-v2` encodes, so no pin to 3.13 is needed | header, §6 |
