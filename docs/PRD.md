@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Course** | Information Organization, group project |
-| **Status** | Draft v5, 6 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode; the ML stack runs on Python 3.14; curation drafts and the GenAI-drafted texts pending team review. History in [§15](#15-change-log) |
+| **Status** | Draft v5, 6 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode (106 definitions); the ML stack runs on Python 3.14; curation drafts and the GenAI-drafted texts pending team review. History in [§15](#15-change-log) |
 | **Deadlines** | Mid-term description **19 Nov 2026** · Final delivery **21 Dec 2026** |
 | **Team** | **A** = George (dataset, vocabulary, ML) · **B** = Liam (web app) · **W** = Liam (report) and Ioanna (personas, user journeys, UI wireframes). Slides owner still open ([§14](#14-open-questions)) |
 | **Tasks and progress** | [`docs/TASKS.md`](TASKS.md) |
@@ -25,7 +25,7 @@ Guiding rule: **build the smallest thing that satisfies every course requirement
 
 | Part | What it does | Why (course requirement) |
 |---|---|---|
-| **Seed data** (`kpigen`) | A deterministic script builds 105 **real** KPI definitions (from Hugging Face, dbt and a few hand-written conflict cases), plus a **synthetic** organization around them (users, roles, reviews, dashboards) | The collection we organize: real content, with a realistic organization around it ([§3](#3-collection-and-generation-plan)) |
+| **Seed data** (`kpigen`) | A deterministic script builds 106 **real** KPI definitions (from Hugging Face, dbt and a few hand-written conflict cases), plus a **synthetic** organization around them (users, roles, reviews, dashboards) | The collection we organize: real content, with a realistic organization around it ([§3](#3-collection-and-generation-plan)) |
 | **SKOS vocabulary** | Controlled lists: Category (Balanced Scorecard), Business line (NAICS), Division, Measure Type, Metric Type, and a KPI Glossary with synonyms | Formal organization in a standard format ([§5](#5-controlled-vocabulary-skos)) |
 | **Community tags** | Anyone can add free tags. They are shown apart from official tags, and curators promote good ones into the vocabulary | Informal organization, connected to the formal one |
 | **ML** (sentence embeddings) | Tags every definition with a theme and a business line, flags wrong units, finds synonyms and diverging definitions, and suggests tags while someone writes a definition | "Simple ML to auto-tag", and it keeps the catalog organized as it grows ([§6](#6-ml-approach)) |
@@ -88,7 +88,7 @@ Guiding rule: **build the smallest thing that satisfies every course requirement
 ## 3. Collection and generation plan
 
 ### 3.1 Principles
-1. **Real content, synthetic organization.** Every KPI name, definition text and formula comes from a real public source, or from a **small hand-written set of conflict cases** that we design and label as ours. Divisions, users, roles, owners, statuses, versions, reviews and dashboards are synthetic.
+1. **Real content, synthetic organization.** Every KPI name, definition text and formula comes from a real public source, or from a **small hand-written set of conflict cases** (plus one quality KPI, [§14](#14-open-questions) Q2) that we design and label as ours. Divisions, users, roles, owners, statuses, versions, reviews and dashboards are synthetic.
 2. **One coherent company.** A source row is kept only if it plausibly belongs to Acme's profile ([§1](#1-overview-and-problem)). Every excluded row is recorded with a reason.
 3. **Reproducible.** The generator is deterministic: fixed random seed, fixed reference date, **no LLM or API calls when it runs**. Running it twice gives byte-identical CSVs.
 4. **Every curation decision is visible.** Groupings, units, divisions and exclusions live in hand-edited files that two team members review. These files are the evidence for the report's data-quality section.
@@ -113,7 +113,7 @@ Because neither external source declares a licence, the generator **downloads th
 | Doesn't fit the company profile: car, electronics and pharmaceutical defect rates | 3 |
 | dbt template examples, not business KPIs (*Twice Orders*, *Orders (Fill nulls with 0)*) | 2 |
 
-**Result:** 82 HF + 15 dbt + 8 hand-written (7 conflict cases + Katerina's UC3 draft) = **105 definitions** of 60 KPIs. (The earlier estimate counted 1 municipality row; the pinned file has 2, rows 25 and 41.) Removing the defect rates leaves the Category theme *quality* with no example ([§14](#14-open-questions)).
+**Result:** 82 HF + 15 dbt + 9 hand-written (7 conflict cases + Katerina's UC3 draft + 1 quality KPI) = **106 definitions** of 61 KPIs. (The earlier estimate counted 1 municipality row; the pinned file has 2, rows 25 and 41.) Removing the defect rates left the Category theme *quality* with no example, so we added one hand-written quality KPI, *Food Safety Incident Rate* (Operations), to fill it ([§14](#14-open-questions) Q2).
 
 ### 3.4 The generator: `kpigen`
 There was no earlier generator to rework, so `kpigen` was written from scratch with GenAI help (code in `src/kpigen/`). `uv run kpigen download` fetches the pinned sources and checks their SHA-256; `uv run kpigen` generates and validates without any network or LLM call.
@@ -163,6 +163,7 @@ data/raw/ (downloaded, pinned)     kpigen/curation/*.csv    kpigen/scenarios.yam
   - One false friend (*Inventory Amount* vs *Investment Amount*).
   - Community-tag variants: `north-star`, `northstar`, `North Star`, `board-pack`, `profitability` (fixture labels keep exactly their fixture uses, so the UC4 story stays stable).
   - One definition correctly superseded by a newer version (draft: Finance *Capital Expenditure*, `hf:24` → `hf:40`; to be confirmed).
+- **Category theme *quality*:** one approved hand-written definition, *Food Safety Incident Rate* (Operations, `%`, DEF-0308), so the theme has a member.
 
 **Random fill (seeded)** around the fixtures:
 - About 50 users with 1–2 division-scoped roles each.
@@ -176,9 +177,9 @@ data/raw/ (downloaded, pinned)     kpigen/curation/*.csv    kpigen/scenarios.yam
 ### 3.5 Real vs synthetic (state this in the report)
 | Real | Ours (designed by us) | Drafted with GenAI, reviewed by us | Synthetic (generated) |
 |---|---|---|---|
-| HF and dbt KPI names, texts, formulas, dbt lineage | Conflict-case design and lineage (which divisions disagree, and how); gold labels | Curation decisions (grouping, units, divisions, exclusions); KPI descriptions (`kpis.csv`); conflict-case and Katerina's draft texts and formulas; community-tag labels except the five from §3.4 | Users, roles, owners, statuses, versions, reviews, dashboards, community taggings |
+| HF and dbt KPI names, texts, formulas, dbt lineage | Conflict-case design and lineage (which divisions disagree, and how); gold labels | Curation decisions (grouping, units, divisions, exclusions); KPI descriptions (`kpis.csv`); conflict-case, Katerina's draft and the quality KPI's texts and formulas; community-tag labels except the five from §3.4 | Users, roles, owners, statuses, versions, reviews, dashboards, community taggings |
 
-**For the ML evaluation:** the T1 and T2 gold labels stay hand-made, and the 8 GenAI-drafted definitions are reported separately (or left out) so the embedding model isn't scored on text written by another language model.
+**For the ML evaluation:** the T1 and T2 gold labels stay hand-made, and the 9 GenAI-drafted definitions are reported separately (or left out) so the embedding model isn't scored on text written by another language model.
 
 ### 3.6 Validation (runs after every generation)
 - **`schema.sql`**: foreign keys, `CHECK` constraints on every enum, `UNIQUE` constraints.
@@ -589,7 +590,7 @@ docs/PRD.md
 
 ### 6-question case study (sketch for the report)
 *Check the exact question wording against the course template.*
-- **What is being organized?** About 105 definitions of roughly 50 KPIs owned by 8 divisions of a retail group, plus their lineage, the dashboards that use them and their review history. These are descriptions of data, not the data itself.
+- **What is being organized?** About 106 definitions of 61 KPIs owned by 8 divisions of a retail group, plus their lineage, the dashboards that use them and their review history. These are descriptions of data, not the data itself.
 - **Why is it being organized?** To reduce onboarding effort, prevent cross-division misinterpretation, and give governance one reviewed source of truth. Supported interactions: find, compare, contribute, review, curate.
 - **How much is it being organized?** Per definition: label, text, formula, unit, grain, source, owner, status, version, Category, Business line, Measure Type, Metric Type, official and community tags. Per KPI: preferred/alternative labels and lineage. Six concept schemes, two of them hierarchical.
 - **When is it being organized?** Up front, when the seed is curated (mapping files) and tagged (batch ML). At writing time (ML suggestions) and at review time (reviewer). Continuously through community tags, with the vocabulary evolving through promotion.
@@ -608,7 +609,7 @@ docs/PRD.md
 
 ## 14. Open questions
 1. **Company name:** keep "Acme" or choose another?
-2. **Theme *quality*:** with the defect rates excluded, add one hand-written quality KPI (e.g. a food-safety incident rate), or leave the theme empty?
+2. **Theme *quality*:** resolved 6 Nov: one hand-written quality KPI, *Food Safety Incident Rate* (Operations), was added so the theme isn't empty. An empty concept would still be a T1 candidate that no gold label can match, and would show as an empty facet value.
 3. **Thresholds:** `τ_min`, `τ_high`, `τ_low`, tuned on the gold set.
 4. **NAICS codes:** check every Business line code against NAICS 2022.
 5. **OWL (S1):** go/no-go on 12 Dec.
@@ -629,3 +630,4 @@ Every change to a feature or decision gets a row here, with the PRD sections it 
 | 5 Nov 2026 | v4 | No earlier `kpigen` existed: written from scratch (`src/kpigen/`, `kpigen download` with pinned hashes); `schema.sql` written; new curation file `relationships.csv`; GenAI drafts curation decisions but free text stays `TODO(george)`; several definitions per KPI × division allowed; 2 municipality rows (not 1) excluded → 82 HF, 105 definitions of 60 KPIs | header, top, §3.3, §3.4, §4.2, §11, §12 |
 | 5 Nov 2026 | v5 | At George's request the "no LLM-written seed text" rule was waived for the text we had to supply ourselves: KPI descriptions, conflict-case texts and formulas, Katerina's draft, 35 community-tag labels were drafted with GenAI and labelled as such; source KPI text stays real; GenAI-drafted definitions reported separately in the ML evaluation | header, top, §2, §3.4, §3.5 |
 | 6 Nov 2026 | v5 | ML stack checked on Python 3.14: `sentence-transformers` 6.2.0 (torch 2.15.0) installs and `all-MiniLM-L6-v2` encodes, so no pin to 3.13 is needed | header, §6 |
+| 6 Nov 2026 | v5 | P3: theme *quality* filled with one hand-written, GenAI-drafted KPI, *Food Safety Incident Rate* (Operations, DEF-0308, approved) → 106 definitions of 61 KPIs | header, top, §3.1, §3.3, §3.4, §3.5, §13, §14 Q2 |

@@ -38,7 +38,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - Done when: one command fills `data/raw/` with HF `testcontext_file1.csv` @ `c148c8c` and the three dbt YAMLs @ `c54c8fb`, git tracks nothing in `data/raw/`, and the retrieval date is noted for the report.
 - [x] **D3 · Write `schema.sql`** · by 9 Nov · F0, §4
   - Done when: every table, foreign key, `CHECK` and `UNIQUE` from §4 is in it, it runs in `sqlite3` without errors, and Liam has reviewed it (W2 builds on it).
-- [ ] **P3 · Decide the *quality* theme** · by 10 Nov · §14 Q2
+- [x] **P3 · Decide the *quality* theme** · by 10 Nov · §14 Q2 · *done 6 Nov: added Food Safety Incident Rate (KPI-0061, DEF-0308)*
   - Add one hand-written quality KPI, or leave the theme empty. Done when: the decision is in the PRD and D4 follows it.
 - [ ] **D4 · Write the curation files** *(in progress: decisions and the 60 KPI descriptions drafted with GenAI; a second member reviews)* · by 12 Nov · §3.3–3.4 · needs D2, P3
   - `domain_to_division.csv`, `kpis.csv`, `row_to_kpi.csv`, `exclusions.csv`, `relationships.csv`. Done when: every HF row and dbt metric appears exactly once in `row_to_kpi.csv` or `exclusions.csv`, the exclusion counts match §3.3 (or §3.3 is updated), and a second team member has reviewed the files.

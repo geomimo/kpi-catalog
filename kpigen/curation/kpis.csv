@@ -59,3 +59,4 @@ KPI-0057,new-customers,New Customers,Number of distinct customers placing their 
 KPI-0058,turnover,Turnover,"Money taken from sales in a period; divisions differ on tax, refunds and when a sale counts."
 KPI-0059,active-users,Active Users,Number of customers or users counted as active over a recent window; divisions differ on what counts as activity.
 KPI-0060,atopu,Average Turnover per Active User,Turnover divided by active users for the same period: average turnover per active user.
+KPI-0061,food-safety-incident-rate,Food Safety Incident Rate,Share of food sites that recorded at least one food-safety incident in a period.

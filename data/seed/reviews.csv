@@ -58,7 +58,7 @@ REV-0056,DEF-0067,USR-027,rejected,Rejected: not used in any of the division's r
 REV-0057,DEF-0002,USR-043,approved,Approved; consistent with the division's reporting standards.,2025-12-27T08:15:00Z
 REV-0058,DEF-0209,USR-008,changes_requested,Please explain how this differs from the other definitions of this KPI.,2026-01-07T17:00:00Z
 REV-0059,DEF-0054,USR-019,rejected,Rejected: duplicates an existing definition in this division.,2026-01-09T11:30:00Z
-REV-0060,DEF-0041,USR-043,approved,Approved; consistent with the division's reporting standards.,2026-01-16T17:15:00Z
+REV-0060,DEF-0308,USR-019,approved,Approved.,2026-01-14T13:00:00Z
 REV-0061,DEF-0209,USR-008,approved,Approved.,2026-01-17T17:00:00Z
 REV-0062,DEF-0081,USR-008,approved,Approved.,2026-01-22T15:00:00Z
 REV-0063,DEF-0040,USR-048,approved,Approved.,2026-01-22T17:30:00Z
@@ -91,22 +91,23 @@ REV-0089,DEF-0211,USR-008,approved,Approved; consistent with the division's repo
 REV-0090,DEF-0215,USR-008,approved,Approved; consistent with the division's reporting standards.,2026-06-14T16:30:00Z
 REV-0091,DEF-0021,USR-037,approved,Approved.,2026-06-22T14:30:00Z
 REV-0092,DEF-0302,USR-048,approved,Approved.,2026-07-01T16:15:00Z
-REV-0093,DEF-0085,USR-023,approved,Approved.,2026-07-06T17:15:00Z
-REV-0094,DEF-0001,USR-043,approved,Approved.,2026-07-09T17:00:00Z
-REV-0095,DEF-0030,USR-037,approved,Approved.,2026-07-17T13:45:00Z
-REV-0096,DEF-0029,USR-019,approved,Approved; consistent with the division's reporting standards.,2026-07-19T09:30:00Z
-REV-0097,DEF-0068,USR-048,approved,"Looks good, approved.",2026-07-27T09:45:00Z
-REV-0098,DEF-0009,USR-037,approved,"Looks good, approved.",2026-07-28T17:00:00Z
-REV-0099,DEF-0208,USR-008,changes_requested,Please state the grain and the source table explicitly.,2026-07-29T13:30:00Z
-REV-0100,DEF-0033,USR-043,changes_requested,Please add the formula or the calculation steps.,2026-07-31T12:45:00Z
-REV-0101,DEF-0007,USR-037,approved,"Looks good, approved.",2026-07-31T15:15:00Z
-REV-0102,DEF-0027,USR-043,approved,"Looks good, approved.",2026-08-13T11:00:00Z
-REV-0103,DEF-0093,USR-019,approved,Approved; consistent with the division's reporting standards.,2026-08-17T15:00:00Z
-REV-0104,DEF-0012,USR-048,approved,Approved.,2026-08-19T15:45:00Z
-REV-0105,DEF-0062,USR-044,changes_requested,Please add the formula or the calculation steps.,2026-08-21T15:30:00Z
-REV-0106,DEF-0062,USR-044,approved,Approved; consistent with the division's reporting standards.,2026-08-23T15:30:00Z
-REV-0107,DEF-0090,USR-052,changes_requested,Please add the formula or the calculation steps.,2026-08-24T12:30:00Z
-REV-0108,DEF-0064,USR-044,changes_requested,Please state the grain and the source table explicitly.,2026-08-27T08:45:00Z
-REV-0109,DEF-0207,USR-031,changes_requested,Please add the formula or the calculation steps.,2026-09-01T14:30:00Z
-REV-0110,DEF-0073,USR-002,changes_requested,Please check the unit before resubmitting.,2026-09-07T11:45:00Z
-REV-0111,DEF-0097,USR-015,changes_requested,Please check the unit before resubmitting.,2026-09-09T14:30:00Z
+REV-0093,DEF-0041,USR-037,approved,"Looks good, approved.",2026-07-05T16:30:00Z
+REV-0094,DEF-0085,USR-023,approved,Approved.,2026-07-06T17:15:00Z
+REV-0095,DEF-0001,USR-043,approved,Approved.,2026-07-09T17:00:00Z
+REV-0096,DEF-0030,USR-037,approved,Approved.,2026-07-17T13:45:00Z
+REV-0097,DEF-0029,USR-019,approved,Approved; consistent with the division's reporting standards.,2026-07-19T09:30:00Z
+REV-0098,DEF-0068,USR-048,approved,"Looks good, approved.",2026-07-27T09:45:00Z
+REV-0099,DEF-0009,USR-037,approved,"Looks good, approved.",2026-07-28T17:00:00Z
+REV-0100,DEF-0208,USR-008,changes_requested,Please state the grain and the source table explicitly.,2026-07-29T13:30:00Z
+REV-0101,DEF-0033,USR-043,changes_requested,Please add the formula or the calculation steps.,2026-07-31T12:45:00Z
+REV-0102,DEF-0007,USR-037,approved,"Looks good, approved.",2026-07-31T15:15:00Z
+REV-0103,DEF-0027,USR-043,approved,"Looks good, approved.",2026-08-13T11:00:00Z
+REV-0104,DEF-0093,USR-019,approved,Approved; consistent with the division's reporting standards.,2026-08-17T15:00:00Z
+REV-0105,DEF-0012,USR-048,approved,Approved.,2026-08-19T15:45:00Z
+REV-0106,DEF-0062,USR-044,changes_requested,Please add the formula or the calculation steps.,2026-08-21T15:30:00Z
+REV-0107,DEF-0062,USR-044,approved,Approved; consistent with the division's reporting standards.,2026-08-23T15:30:00Z
+REV-0108,DEF-0090,USR-052,changes_requested,Please add the formula or the calculation steps.,2026-08-24T12:30:00Z
+REV-0109,DEF-0064,USR-044,changes_requested,Please state the grain and the source table explicitly.,2026-08-27T08:45:00Z
+REV-0110,DEF-0207,USR-031,changes_requested,Please add the formula or the calculation steps.,2026-09-01T14:30:00Z
+REV-0111,DEF-0073,USR-002,changes_requested,Please check the unit before resubmitting.,2026-09-07T11:45:00Z
+REV-0112,DEF-0097,USR-015,changes_requested,Please check the unit before resubmitting.,2026-09-09T14:30:00Z

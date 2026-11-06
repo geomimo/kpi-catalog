@@ -81,7 +81,7 @@ users:
     created_at: "2024-01-08T09:00:00Z"
     roles: [{role: admin, division: null}]
 
-# Hand-written conflict cases (PRD §3.2, UC2) and Katerina's draft (UC3).
+# Hand-written conflict cases (PRD §3.2, UC2), Katerina's draft (UC3) and the one quality KPI (PRD §14 Q2).
 # Texts drafted with GenAI (see the provenance note at the top).
 handwritten_definitions:
   - {definition_id: DEF-0301, ref: turnover_fin, kpi_id: KPI-0058, division: FIN, display_name: Turnover, metric_type: base, unit: EUR, grain: monthly,
@@ -109,6 +109,10 @@ handwritten_definitions:
      metric_type: base, unit: times, grain: monthly, owner: USR-007,
      definition_text: "How many times the average stock in Commercial's stores is sold and replenished in a month: cost of goods sold divided by average inventory value at cost.",
      formula: "cogs / avg_inventory_value"}
+  - {definition_id: DEF-0308, ref: food_safety_ops, kpi_id: KPI-0061, division: OPS, display_name: Food Safety Incident Rate,
+     metric_type: ratio, unit: "%", grain: monthly,
+     definition_text: "Percentage of food-to-go counters and own-brand production sites that recorded at least one food-safety incident in the month: a contamination, temperature breach, allergen labelling error or product recall.",
+     formula: "count(distinct site_id where food_safety_incidents > 0) / count(distinct site_id) * 100"}
 
 # Lineage between hand-written definitions (UC2: ATOPU).
 handwritten_relationships:
@@ -146,6 +150,8 @@ definition_fixtures:
   - {definition_id: DEF-0080, status: approved}    # Total Product Sales
   - {definition_id: DEF-0029, status: approved}    # Inventory Amount
   - {definition_id: DEF-0030, status: approved}    # Investment Amount
+  # P3: the only quality KPI is published, so the Category theme "quality" has a visible member
+  - {definition_id: DEF-0308, status: approved}
   # UC4: one definition correctly superseded by a newer version (same KPI, same division)
   # hf:24 -> hf:40 (Capital Expenditure, Finance): same table, renamed capital_investments -> cap_inv in the source
   - {definition_id: DEF-0025, status: deprecated, version: 1, superseded_by: DEF-0041}
