@@ -54,10 +54,10 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - Load into SQLite with `schema.sql`, plus the seven business rules in `tests/test_seed_rules.py`. Done when: `uv run kpigen` fails on a deliberately broken seed and passes on the real one.
 - [ ] **D8 · Start `data/quality_log.md`** · by 17 Nov · §3.7 · needs D4
   - Done when: findings S1–S6, every exclusion reason, the seeded *Operating Expenses* error and the lessons from the sample catalog are logged. Feeds R1 and R3.
-- [ ] **M10 · Decide whether ML tags superseded definitions** · by 17 Nov · §4.5, §6, §14 Q8
+- [x] **M10 · Decide whether ML tags superseded definitions** · by 17 Nov · §4.5, §6, §14 Q8 · *done 11 Nov: the ML batch skips deprecated definitions*
   - The seed moves dashboards, lineage and community tags off a superseded definition (DEF-0025); M2 would still tag it. Done when: the decision is in PRD §6 and §14 Q8, and M2 follows it.
 - [ ] **M2 · First tagging run (T1 theme, T2 business line)** · by 18 Nov · F9, §6 · needs M1, V1, D7, W2, M10
-  - `ml/tagger.py`; embeddings saved as `.npy`. Done when: every definition has theme and business-line rows in `definition_tags` (`source = ml`, `status = auto`), and a short spot check is written up for the mid-term status.
+  - `ml/tagger.py`; embeddings saved as `.npy`. Done when: every definition except the deprecated ones (M10) has theme and business-line rows in `definition_tags` (`source = ml`, `status = auto`), and a short spot check is written up for the mid-term status.
 
 ### Liam
 - [ ] **W1 · Flask skeleton** · by 12 Nov · §10–11

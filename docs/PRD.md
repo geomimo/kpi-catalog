@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Course** | Information Organization, group project |
-| **Status** | Draft v5, 6 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode (106 definitions); the ML stack runs on Python 3.14; curation drafts and the GenAI-drafted texts pending team review. History in [§15](#15-change-log) |
+| **Status** | Draft v5, 11 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode (106 definitions); the ML stack runs on Python 3.14; curation files and the GenAI-drafted texts reviewed; company named Konfusio; the ML batch skips deprecated definitions (§14 Q8). History in [§15](#15-change-log) |
 | **Deadlines** | Mid-term description **19 Nov 2026** · Final delivery **21 Dec 2026** |
 | **Team** | **A** = George (dataset, vocabulary, ML) · **B** = Liam (web app) · **W** = Liam (report) and Ioanna (personas, user journeys, UI wireframes). Slides owner still open ([§14](#14-open-questions)) |
 | **Tasks and progress** | [`docs/TASKS.md`](TASKS.md) |
@@ -287,10 +287,10 @@ draft ──submit──► in_review ──approve──► approved ──supe
   └─changes_requested┘
 ```
 - **Who does what:** Contributors and Curators create and submit drafts; Reviewers decide; Curators edit approved definitions and deprecate them. A Reviewer cannot edit (separation of duties).
-- **When a definition is superseded:** every link to it moves to the new version: dashboard links (`asset_definitions`), lineage (`kpi_relationships`, both ends) and community tags. The old version keeps its review history and `superseded_by_id`, so the version chain still shows it. Reason: a deprecated definition must not keep feeding dashboards or other definitions. In the seed, `kpigen` moves generated links automatically, and hand-made links in the curation files and `scenarios.yaml` must already name the newest version (the input check rejects them otherwise).
+- **When a definition is superseded:** every link to it moves to the new version: dashboard links (`asset_definitions`), lineage (`kpi_relationships`, both ends) and community tags. The old version keeps its review history and `superseded_by_id`, so the version chain still shows it, and the ML batch doesn't tag or flag it ([§6](#6-ml-approach)). Reason: a deprecated definition must not keep feeding dashboards or other definitions. In the seed, `kpigen` moves generated links automatically, and hand-made links in the curation files and `scenarios.yaml` must already name the newest version (the input check rejects them otherwise).
 - **Who sees what:** `approved` and `deprecated` definitions are readable by **everyone**. `draft`, `in_review` and `rejected` ones are readable by their owner, by users with `definition.view_unpublished` in that division, and by Admins.
 
-**Annotated dataset deliverable:** `data/annotated/` has the same CSV layout as `data/seed/`, after ML tagging and curation (official tags with source, confidence and status; similarity flags). It also contains a flat `definitions_annotated.csv` (one row per definition with KPI, division, measure type, theme and business line, each with label, URI, confidence and source).
+**Annotated dataset deliverable:** `data/annotated/` has the same CSV layout as `data/seed/`, after ML tagging and curation (official tags with source, confidence and status; similarity flags). It also contains a flat `definitions_annotated.csv` (one row per definition with KPI, division, measure type, theme and business line, each with label, URI, confidence and source). Deprecated definitions have empty theme and business-line fields, because ML skips them ([§6](#6-ml-approach)).
 
 ## 5. Controlled vocabulary (SKOS)
 
@@ -384,7 +384,7 @@ The seed has **no** theme or business-line tags, so ML is their only automatic s
 | Task | Predicts | Input | Gold labels for evaluation (`data/gold/`) |
 |---|---|---|---|
 | **T1 Theme** | 1–2 Category themes (perspective derived via `skos:broader`) | `display_name + definition_text` (+ formula, when present) | 40 definitions labelled by hand by two team members |
-| **T2 Business line** | 1 Business line concept | same | The original HF `domain`, mapped through `domain_to_division.csv` (all HF definitions; not evaluated on dbt and hand-written ones) |
+| **T2 Business line** | 1 Business line concept | same | The original HF `domain`, mapped through `domain_to_division.csv` (all non-deprecated HF definitions; not evaluated on dbt and hand-written ones) |
 | **T3 Unit check** | Measure Type, predicted from the text alone | same | Compared with the measure type derived from `unit`; a disagreement creates a `unit_mismatch` flag (the seeded *Operating Expenses* error must be caught) |
 
 **Method (embedding similarity, no training):**
@@ -394,6 +394,8 @@ The seed has **no** theme or business-line tags, so ML is their only automatic s
 4. Write `definition_tags` rows with `source = ml`, the `confidence`, and `status = auto`. They show up straight away as official tags with an **"auto"** marker. The curator's validation queue lists them lowest confidence first.
 
 Embeddings for the seed data are **computed offline once**; the web app only encodes new submissions.
+
+**Scope (decided 11 Nov, [§14 Q8](#14-open-questions)):** the batch tasks (T1, T2, T3 and the similarity flags) skip definitions with `status = deprecated`; in the seed that is only DEF-0025, *Capital Expenditure* v1, superseded by DEF-0041. Drafts, in-review and rejected definitions are tagged like approved ones. Deprecated definitions are also left out of the gold set and the evaluation. Reasons: [§4.5](#45-definition-lifecycle-and-visibility) already moves every other live link off a superseded definition; its auto tags and flags would sit in the curator queues for a definition nobody should fix; and its text is nearly the same as its successor's, so it would count twice in the evaluation. Cost: it drops out of the Category and Business line facets and is reached through its successor's version chain. If superseding in the app is built (Q7, task W20), the same rule applies to the old version.
 
 **Evaluation (for the report):**
 - **Metrics:** accuracy and macro-F1 per task. T1 at both theme and perspective level.
@@ -617,7 +619,7 @@ docs/PRD.md
 5. **OWL (S1):** go/no-go on 12 Dec.
 6. **Team split:** resolved 5 Nov (see the header; George owns `kpigen`). Still open: who makes the slides and leads the demo (task P4).
 7. **Supersede in the app:** does the website let a Curator create a new version that supersedes an approved definition, or is versioning seed-only (the version chain is displayed but never changed)? Task W20.
-8. **ML tags on superseded definitions:** should the tagger skip superseded definitions (as their dashboard links, lineage and community tags are moved off them, [§4.5](#45-definition-lifecycle-and-visibility)), or tag them like any other? Task M10, before M2.
+8. **ML tags on superseded definitions:** resolved 11 Nov: the ML batch (T1–T3, similarity flags) skips deprecated definitions and leaves them out of the gold set and the evaluation, consistent with [§4.5](#45-definition-lifecycle-and-visibility). Details in [§6](#6-ml-approach). Task M10.
 
 ## 15. Change log
 
@@ -639,3 +641,4 @@ Every change to a feature or decision gets a row here, with the PRD sections it 
 | 11 Nov 2026 | v5 | P2: company named **Konfusio** (was the working name "Acme") | top, §1, §3.1, §3.2, §5, §14 Q1 |
 | 11 Nov 2026 | v5 | Superseding a definition moves its dashboard links, lineage and community tags to the new version; the old one keeps its review history. New business rule and input check; the 5 dashboards that used the deprecated *Capital Expenditure* v1 now use v2 | §3.4, §3.6, §4.5 |
 | 11 Nov 2026 | v5 | Open questions added: supersede in the app (Q7, task W20) and ML tags on superseded definitions (Q8, task M10) | §14 |
+| 11 Nov 2026 | v5 | M10: the ML batch (T1–T3, similarity flags) skips deprecated definitions and leaves them out of the gold set and evaluation; deprecated rows have no theme or business line in the annotated dataset | header, §4.5, §6, §14 Q8 |
