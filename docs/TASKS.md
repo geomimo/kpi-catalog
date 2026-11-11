@@ -18,7 +18,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
 | Ioanna | UI wireframes, personas, user journeys | U | W (personas, journeys) |
 | Everyone | Decisions, presentation, final checks | P | — |
 
-**Critical path to the mid-term:** M1 (ML stack on 3.14, done) and D3 (`schema.sql`, done) unblock the rest → D4–D5 (reviewed, done) → V1 (vocabulary v0) → M2 (first tagging run). Liam can build W1–W3 on the generated seed in `data/seed/` now.
+**Critical path to the mid-term:** M1 (ML stack on 3.14, done) and D3 (`schema.sql`, done) unblock the rest → D4–D5 (reviewed, done) → V1 (vocabulary v0, done) → M2 (first tagging run, waits on W2). Liam can build W1–W3 on the generated seed in `data/seed/` now.
 
 ---
 
@@ -46,7 +46,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - Done when: every fixture listed in §3.4 is present with a fixed ID, and every step of the user journeys (U2) has the seed data it needs. *Done 11 Nov: reviewed by George, hf:24 → hf:40 supersession confirmed; Konfusio set by P2; further cases for the journeys go in D10.*
 - [ ] **D10 · Add seed cases for the user journeys** · by 17 Nov · §3.4, §8 · needs U2
   - Done when: every step in `docs/user-journeys.md` has the seed data it needs (new fixtures in `scenarios.yaml` with fixed IDs), and `uv run kpigen` still passes.
-- [ ] **V1 · Vocabulary v0** *(in progress: drafted 11 Nov, awaiting George's review)* · by 14 Nov · §5
+- [x] **V1 · Vocabulary v0** · by 14 Nov · §5 · *done 11 Nov: reviewed by George; `tests/test_vocabulary.py` checks it; NAICS codes stay drafts for V2*
   - Hand-authored `vocab/kpi-vocabulary.ttl` with the Category (Balanced Scorecard + themes), Business line, Measure Type and Metric Type schemes. Every concept has a `skos:definition`, because the ML encodes it. Done when: rdflib parses the file without errors.
 - [x] **D6 · Write `kpigen`** · by 15 Nov · F0, §3.4 · needs D3, D4, D5
   - Seed 42, reference date 2026-10-01, no network or LLM calls. Random fill: ~50 users, owners, statuses, review history, ~35 dashboards, ~40 community tags. `uv run kpigen` entry point. Done when: it writes `data/seed/*.csv` and `excluded.csv` with ~105 definitions, and two runs give byte-identical files.

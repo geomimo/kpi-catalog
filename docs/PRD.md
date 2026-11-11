@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Course** | Information Organization, group project |
-| **Status** | Draft v5, 11 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode (106 definitions); the ML stack runs on Python 3.14; curation files and the GenAI-drafted texts reviewed; company named Konfusio; the ML batch skips deprecated definitions (§14 Q8); vocabulary v0 drafted (four hand-written SKOS schemes, pending review). History in [§15](#15-change-log) |
+| **Status** | Draft v5, 11 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode (106 definitions); the ML stack runs on Python 3.14; curation files and the GenAI-drafted texts reviewed; company named Konfusio; the ML batch skips deprecated definitions (§14 Q8); vocabulary v0 written and reviewed (four hand-written SKOS schemes). History in [§15](#15-change-log) |
 | **Deadlines** | Mid-term description **19 Nov 2026** · Final delivery **21 Dec 2026** |
 | **Team** | **A** = George (dataset, vocabulary, ML) · **B** = Liam (web app) · **W** = Liam (report) and Ioanna (personas, user journeys, UI wireframes). Slides owner still open ([§14](#14-open-questions)) |
 | **Tasks and progress** | [`docs/TASKS.md`](TASKS.md) |
@@ -15,7 +15,7 @@ Guiding rule: **build the smallest thing that satisfies every course requirement
 
 ## At a glance (5-minute read)
 
-**Status (11 Nov 2026):** planning is done (this PRD). The seed generator `kpigen` (written from scratch; there was no earlier generator to rework) and `schema.sql` (reviewed by Liam, 5 Nov) exist, and the generated seed passes validation. The curation files and the GenAI-drafted texts (see [§3.5](#35-real-vs-synthetic-state-this-in-the-report)) have been reviewed (George, 11 Nov); more demo cases may be added once the user journeys are written ([§3](#3-collection-and-generation-plan)). Vocabulary v0 (the four hand-written SKOS schemes, `vocab/kpi-vocabulary.ttl`) is drafted and awaiting review; the website and ML are not started.
+**Status (11 Nov 2026):** planning is done (this PRD). The seed generator `kpigen` (written from scratch; there was no earlier generator to rework) and `schema.sql` (reviewed by Liam, 5 Nov) exist, and the generated seed passes validation. The curation files and the GenAI-drafted texts (see [§3.5](#35-real-vs-synthetic-state-this-in-the-report)) have been reviewed (George, 11 Nov); more demo cases may be added once the user journeys are written ([§3](#3-collection-and-generation-plan)). Vocabulary v0 (the four hand-written SKOS schemes, `vocab/kpi-vocabulary.ttl`) is written and reviewed (George, 11 Nov); the website and ML are not started.
 
 **The problem.** In a company with many departments, the same KPI name means different things: *Turnover* is counted one way in Finance, another in Commercial and a third in Product. Different names also mean the same thing (*Inventory Turnover* = *Stock Turnover Rate*). New employees can't tell which KPIs matter to them or what they mean, and departments argue about numbers that were never comparable.
 
@@ -641,5 +641,5 @@ Every change to a feature or decision gets a row here, with the PRD sections it 
 | 11 Nov 2026 | v5 | P2: company named **Konfusio** (was the working name "Acme") | top, §1, §3.1, §3.2, §5, §14 Q1 |
 | 11 Nov 2026 | v5 | Superseding a definition moves its dashboard links, lineage and community tags to the new version; the old one keeps its review history. New business rule and input check; the 5 dashboards that used the deprecated *Capital Expenditure* v1 now use v2 | §3.4, §3.6, §4.5 |
 | 11 Nov 2026 | v5 | Open questions added: supersede in the app (Q7, task W20) and ML tags on superseded definitions (Q8, task M10) | §14 |
-| 11 Nov 2026 | v5 | V1: vocabulary v0 drafted in `vocab/kpi-vocabulary.ttl` (Category, Business line, Measure Type, Metric Type) with `tests/test_vocabulary.py`; perspectives renamed `kv:…Perspective`, theme *customer* labelled *Customer Relationship*, profit filed under Revenue; typed notations for units, metric types and NAICS codes; draft NAICS codes; concept texts GenAI-drafted | header, top, §3.5, §5, §14 Q4 |
+| 11 Nov 2026 | v5 | V1: vocabulary v0 drafted in `vocab/kpi-vocabulary.ttl` (Category, Business line, Measure Type, Metric Type) with `tests/test_vocabulary.py`; perspectives renamed `kv:…Perspective`, theme *customer* labelled *Customer Relationship*, profit filed under Revenue; typed notations for units, metric types and NAICS codes; draft NAICS codes; concept texts GenAI-drafted, reviewed by George | header, top, §3.5, §5, §14 Q4 |
 | 11 Nov 2026 | v5 | M10: the ML batch (T1–T3, similarity flags) skips deprecated definitions and leaves them out of the gold set and evaluation; deprecated rows have no theme or business line in the annotated dataset | header, §4.5, §6, §14 Q8 |
