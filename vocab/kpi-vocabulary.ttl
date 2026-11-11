@@ -1,0 +1,387 @@
+# KPI Catalog vocabulary, v0 (task V1, PRD §5)
+#
+# Hand-authored part of the Konfusio KPI vocabulary: four SKOS concept schemes.
+#   - Category       Balanced Scorecard perspectives (top) -> themes (narrower). ML target T1; facet.
+#   - Business line  Konfusio's lines of business, linked to NAICS 2022. ML target T2; facet.
+#   - Measure Type   What kind of number a definition gives; maps from `definitions.unit`. Facet; ML unit check T3.
+#   - Metric Type    dbt Semantic Layer metric types; maps from `definitions.metric_type`. Facet.
+# The Division and KPI Glossary schemes are generated from the database later (task V4).
+#
+# Conventions (checked by tests/test_vocabulary.py):
+#   - Local names are stable identifiers, like the seed IDs: never rename them once something uses them.
+#   - Every concept has one prefLabel@en, one skos:definition@en and exactly one skos:inScheme.
+#   - Hierarchies are written in both directions (broader AND narrower, topConceptOf AND hasTopConcept),
+#     because rdflib does not infer inverses.
+#   - Each theme has exactly one broader perspective (no polyhierarchy), so the perspective of a theme is
+#     unambiguous when T1 derives it via skos:broader.
+#   - No label (pref or alt) appears twice within one scheme.
+#   - skos:notation uses a typed literal whose datatype names the code system (kv:UnitCode, kv:NAICS2022, ...),
+#     as the SKOS Reference recommends; the loader maps database values to concepts through these codes.
+#
+# Provenance: the structure follows PRD §5. Labels, altLabels, definitions and scope notes were drafted with
+# GenAI and reviewed by the team (PRD §3.5). The definitions are ML input (M2 encodes
+# prefLabel + altLabels + definition), so they use the words that appear in KPI texts.
+
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix kv:   <https://example.org/kpi-catalog/vocab/> .
+
+# ---------------------------------------------------------------------------------------------------------
+# Notation datatypes (code systems)
+# ---------------------------------------------------------------------------------------------------------
+
+kv:UnitCode a rdfs:Datatype ;
+    rdfs:label "Unit code"@en ;
+    rdfs:comment "Values of definitions.unit in schema.sql."@en .
+
+kv:MetricTypeCode a rdfs:Datatype ;
+    rdfs:label "Metric type code"@en ;
+    rdfs:comment "Values of definitions.metric_type in schema.sql (dbt Semantic Layer types plus base)."@en .
+
+kv:NAICS2022 a rdfs:Datatype ;
+    rdfs:label "NAICS 2022 code"@en ;
+    rdfs:comment "Code from the North American Industry Classification System, 2022 edition (US Census Bureau)."@en .
+
+# =========================================================================================================
+# 1. Category: Balanced Scorecard perspectives -> themes
+# =========================================================================================================
+# Perspectives carry a "Perspective" suffix in their local name because one theme is also about customers
+# (kv:CustomerRelationship) and local names must stay unambiguous.
+
+kv:CategoryScheme a skos:ConceptScheme ;
+    dct:title "KPI Category"@en ;
+    dct:description "What a KPI is about: the four Balanced Scorecard perspectives, each divided into themes. Every definition gets one or two themes; its perspective follows from skos:broader."@en ;
+    dct:source "Kaplan, R. S. and Norton, D. P. (1992). The Balanced Scorecard: Measures That Drive Performance. Harvard Business Review 70(1), 71-79." ;
+    dct:created "2026-11-11"^^xsd:date ;
+    skos:hasTopConcept kv:FinancialPerspective, kv:CustomerPerspective,
+                       kv:InternalProcessPerspective, kv:LearningGrowthPerspective .
+
+# --- Perspectives (top concepts) --------------------------------------------------------------------------
+
+kv:FinancialPerspective a skos:Concept ;
+    skos:inScheme kv:CategoryScheme ; skos:topConceptOf kv:CategoryScheme ;
+    skos:prefLabel "Financial"@en ;
+    skos:definition "Measures of the group's financial results and position: income, costs, assets and liabilities, tax and financial risk."@en ;
+    dct:source "Kaplan & Norton (1992), The Balanced Scorecard" ;
+    skos:narrower kv:Revenue, kv:Cost, kv:BalanceSheet, kv:Tax, kv:Risk .
+
+kv:CustomerPerspective a skos:Concept ;
+    skos:inScheme kv:CategoryScheme ; skos:topConceptOf kv:CategoryScheme ;
+    skos:prefLabel "Customer"@en ;
+    skos:definition "Measures of how customers and users see, choose and stay with the group."@en ;
+    dct:source "Kaplan & Norton (1992), The Balanced Scorecard" ;
+    skos:narrower kv:CustomerRelationship, kv:Engagement .
+
+kv:InternalProcessPerspective a skos:Concept ;
+    skos:inScheme kv:CategoryScheme ; skos:topConceptOf kv:CategoryScheme ;
+    skos:prefLabel "Internal Process"@en ;
+    skos:altLabel "Internal Business Process"@en ;
+    skos:definition "Measures of how well the group's operations run: moving and stocking goods, keeping products safe, and using resources efficiently."@en ;
+    dct:source "Kaplan & Norton (1992), The Balanced Scorecard" ;
+    skos:narrower kv:SupplyChain, kv:Quality, kv:Efficiency .
+
+kv:LearningGrowthPerspective a skos:Concept ;
+    skos:inScheme kv:CategoryScheme ; skos:topConceptOf kv:CategoryScheme ;
+    skos:prefLabel "Learning & Growth"@en ;
+    skos:altLabel "Innovation and Learning"@en ;
+    skos:definition "Measures of the people and capabilities the group needs to improve: employee satisfaction, engagement and wellbeing."@en ;
+    dct:source "Kaplan & Norton (1992), The Balanced Scorecard" ;
+    skos:narrower kv:Workforce .
+
+# --- Financial themes -------------------------------------------------------------------------------------
+
+kv:Revenue a skos:Concept ;
+    skos:inScheme kv:CategoryScheme ;
+    skos:prefLabel "Revenue"@en ;
+    skos:altLabel "Sales"@en, "Turnover"@en, "Income"@en ;
+    skos:definition "Measures of money earned from selling goods and services and of the sales behind it: revenue, sales, turnover, orders and order value, interest income, and the profit or net income left after costs."@en ;
+    # Profit sits here until the community tag `profitability` is promoted (UC4); see the review notes.
+    skos:scopeNote "Includes profit and net income, and order counts as a measure of sales volume. Spend and expense amounts belong to Cost."@en ;
+    skos:broader kv:FinancialPerspective .
+
+kv:Cost a skos:Concept ;
+    skos:inScheme kv:CategoryScheme ;
+    skos:prefLabel "Cost"@en ;
+    skos:altLabel "Expenses"@en, "Spend"@en, "Expenditure"@en ;
+    skos:definition "Measures of money spent: operating expenses, facility running costs, marketing and advertising spend and budgets, shipping and freight costs, cost of goods sold and capital expenditure."@en ;
+    skos:scopeNote "Amounts of money spent or budgeted. Ratios of output to input belong to Efficiency; amounts owed belong to Balance Sheet."@en ;
+    skos:broader kv:FinancialPerspective .
+
+kv:BalanceSheet a skos:Concept ;
+    skos:inScheme kv:CategoryScheme ;
+    skos:prefLabel "Balance Sheet"@en ;
+    skos:altLabel "Financial Position"@en, "Liquidity"@en ;
+    skos:definition "Measures of what the group owns and owes at a point in time: assets, liabilities, equity, investments, inventory value, accounts payable and receivable, invoices due, and liquidity ratios."@en ;
+    skos:scopeNote "Stocks of value at a point in time, not flows over a period. Taxes owed belong to Tax."@en ;
+    skos:broader kv:FinancialPerspective .
+
+kv:Tax a skos:Concept ;
+    skos:inScheme kv:CategoryScheme ;
+    skos:prefLabel "Tax"@en ;
+    skos:altLabel "Taxation"@en, "VAT"@en ;
+    skos:definition "Measures of taxes owed or paid to tax authorities, such as income, payroll and sales taxes."@en ;
+    skos:broader kv:FinancialPerspective .
+
+kv:Risk a skos:Concept ;
+    skos:inScheme kv:CategoryScheme ;
+    skos:prefLabel "Risk"@en ;
+    skos:altLabel "Credit Risk"@en, "Insurance Risk"@en ;
+    skos:definition "Measures of financial risk and losses in the banking and insurance arms: loan defaults, credit losses and insurance claims settled."@en ;
+    skos:scopeNote "Financial risk only. Food-safety incidents belong to Quality."@en ;
+    skos:broader kv:FinancialPerspective .
+
+# --- Customer themes --------------------------------------------------------------------------------------
+
+kv:CustomerRelationship a skos:Concept ;
+    skos:inScheme kv:CategoryScheme ;
+    skos:prefLabel "Customer Relationship"@en ;
+    skos:altLabel "Customer Satisfaction"@en, "Customer Retention"@en, "Customer Base"@en ;
+    skos:definition "Measures of the customer base and how customers feel about the group: new customers, customers with orders, churn and retention, satisfaction scores, Net Promoter Score and experience ratings."@en ;
+    skos:scopeNote "Who the customers are and how satisfied they are. How actively they use the website and app belongs to Engagement."@en ;
+    skos:broader kv:CustomerPerspective .
+
+kv:Engagement a skos:Concept ;
+    skos:inScheme kv:CategoryScheme ;
+    skos:prefLabel "Engagement"@en ;
+    skos:altLabel "Customer Engagement"@en, "User Activity"@en, "Traffic"@en ;
+    skos:definition "Measures of how actively customers and users interact with the online shop, the app and campaigns: website traffic, visits, sessions and active users."@en ;
+    skos:scopeNote "Customer and user activity. Employee engagement belongs to Workforce."@en ;
+    skos:broader kv:CustomerPerspective .
+
+# --- Internal Process themes ------------------------------------------------------------------------------
+
+kv:SupplyChain a skos:Concept ;
+    skos:inScheme kv:CategoryScheme ;
+    skos:prefLabel "Supply Chain"@en ;
+    skos:altLabel "Logistics"@en, "Inventory Management"@en ;
+    skos:definition "Measures of how goods are bought, stocked, moved and delivered: inventory turnover, stock levels, freight, shipping and delivery."@en ;
+    skos:scopeNote "Use together with Cost for freight and shipping costs."@en ;
+    skos:broader kv:InternalProcessPerspective .
+
+kv:Quality a skos:Concept ;
+    skos:inScheme kv:CategoryScheme ;
+    skos:prefLabel "Quality"@en ;
+    skos:altLabel "Food Safety"@en, "Product Quality"@en ;
+    skos:definition "Measures of product and process quality and safety: food-safety incidents, defects and compliance with quality standards."@en ;
+    # Placed under Internal Process, not Customer: the KPIs measure how operations perform (PRD §14 Q2).
+    skos:scopeNote "How well operations meet quality and safety standards. How customers rate their experience belongs to Customer Relationship."@en ;
+    skos:broader kv:InternalProcessPerspective .
+
+kv:Efficiency a skos:Concept ;
+    skos:inScheme kv:CategoryScheme ;
+    skos:prefLabel "Efficiency"@en ;
+    skos:altLabel "Productivity"@en, "Utilization"@en ;
+    skos:definition "Measures of how well resources are turned into output: operational efficiency ratios, resource utilization and productivity per hour or per unit of input."@en ;
+    skos:scopeNote "Ratios of output to input. Plain amounts of money spent belong to Cost."@en ;
+    skos:broader kv:InternalProcessPerspective .
+
+# --- Learning & Growth themes -----------------------------------------------------------------------------
+
+kv:Workforce a skos:Concept ;
+    skos:inScheme kv:CategoryScheme ;
+    skos:prefLabel "Workforce"@en ;
+    skos:altLabel "Employees"@en, "Employee Engagement"@en, "People"@en ;
+    skos:definition "Measures of the group's employees: employee satisfaction, engagement and wellbeing, usually from staff surveys."@en ;
+    skos:broader kv:LearningGrowthPerspective .
+
+# =========================================================================================================
+# 2. Business line: Konfusio's lines of business, linked to NAICS 2022
+# =========================================================================================================
+# Local names match the business_line column of kpigen/curation/domain_to_division.csv (also the T2 gold labels).
+#
+# NAICS links are DRAFTS, not yet checked against the official NAICS 2022 manual (task V2, PRD §14 Q4).
+#   - closeMatch, not exactMatch: a Konfusio business line is similar to a NAICS industry, not the same thing.
+#   - Online uses broadMatch: NAICS 2022 removed the separate nonstore / e-commerce industries (old 454110
+#     Electronic Shopping), so online grocery sales fall under the broader grocery-retail industry.
+#   - Membership has no NAICS match: a paid retail membership is not an industry. V2 confirms or finds one.
+#   - The closeMatch targets are the Census Bureau's NAICS pages; NAICS has no official linked-data URIs.
+
+kv:BusinessLineScheme a skos:ConceptScheme ;
+    dct:title "Business line"@en ;
+    dct:description "Konfusio's lines of business, the industries a KPI applies to. Group-wide covers KPIs not tied to one line."@en ;
+    dct:source "North American Industry Classification System (NAICS), 2022 edition, US Census Bureau." ;
+    dct:created "2026-11-11"^^xsd:date ;
+    skos:hasTopConcept kv:Stores, kv:Online, kv:FoodToGo, kv:Membership, kv:Banking,
+                       kv:Insurance, kv:Mobile, kv:Property, kv:OwnBrandProduction, kv:GroupWide .
+
+kv:Stores a skos:Concept ;
+    skos:inScheme kv:BusinessLineScheme ; skos:topConceptOf kv:BusinessLineScheme ;
+    skos:prefLabel "Stores"@en ;
+    skos:altLabel "Retail Stores"@en, "Supermarkets"@en ;
+    skos:definition "Konfusio's physical supermarkets and shops: in-store retail sales of groceries and general merchandise."@en ;
+    skos:notation "445110"^^kv:NAICS2022 ;
+    skos:closeMatch <https://www.census.gov/naics/?input=445110&year=2022&details=445110> .
+
+kv:Online a skos:Concept ;
+    skos:inScheme kv:BusinessLineScheme ; skos:topConceptOf kv:BusinessLineScheme ;
+    skos:prefLabel "Online"@en ;
+    skos:altLabel "E-commerce"@en, "Online Shop"@en, "Web Shop"@en ;
+    skos:definition "Konfusio's online shop and app: orders placed on the website or app and delivered or collected, with website traffic and conversion."@en ;
+    skos:broadMatch <https://www.census.gov/naics/?input=445110&year=2022&details=445110> .
+
+kv:FoodToGo a skos:Concept ;
+    skos:inScheme kv:BusinessLineScheme ; skos:topConceptOf kv:BusinessLineScheme ;
+    skos:prefLabel "Food-to-go"@en ;
+    skos:altLabel "Food to Go"@en, "Takeaway"@en, "Quick Service"@en ;
+    skos:definition "Konfusio's food-to-go counters and cafes: ready-to-eat food and drinks ordered and paid for before eating, including food orders and food revenue."@en ;
+    skos:notation "722513"^^kv:NAICS2022 ;
+    skos:closeMatch <https://www.census.gov/naics/?input=722513&year=2022&details=722513> .
+
+kv:Membership a skos:Concept ;
+    skos:inScheme kv:BusinessLineScheme ; skos:topConceptOf kv:BusinessLineScheme ;
+    skos:prefLabel "Membership"@en ;
+    skos:altLabel "Paid Membership"@en, "Subscription"@en ;
+    skos:definition "Konfusio's paid membership: a subscription that gives customers benefits such as free delivery and discounts, with subscribers, renewals and cancellations."@en ;
+    skos:scopeNote "No NAICS industry matches a paid retail membership; see task V2."@en .
+
+kv:Banking a skos:Concept ;
+    skos:inScheme kv:BusinessLineScheme ; skos:topConceptOf kv:BusinessLineScheme ;
+    skos:prefLabel "Banking"@en ;
+    skos:altLabel "Retail Banking"@en, "Bank"@en ;
+    skos:definition "Konfusio's banking arm: savings accounts, credit cards and personal loans, with deposits, loan portfolios, interest and defaults."@en ;
+    skos:notation "522110"^^kv:NAICS2022 ;
+    skos:closeMatch <https://www.census.gov/naics/?input=522110&year=2022&details=522110> .
+
+kv:Insurance a skos:Concept ;
+    skos:inScheme kv:BusinessLineScheme ; skos:topConceptOf kv:BusinessLineScheme ;
+    skos:prefLabel "Insurance"@en ;
+    skos:altLabel "Insurance Arm"@en ;
+    skos:definition "Konfusio's insurance arm: home, car and pet insurance policies, with premiums, claims filed and claims settled."@en ;
+    # Draft: a direct property and casualty carrier, because the seed's insurance KPIs settle claims themselves.
+    # If Konfusio only brokers policies, 524210 Insurance Agencies and Brokerages fits better (V2).
+    skos:notation "524126"^^kv:NAICS2022 ;
+    skos:closeMatch <https://www.census.gov/naics/?input=524126&year=2022&details=524126> .
+
+kv:Mobile a skos:Concept ;
+    skos:inScheme kv:BusinessLineScheme ; skos:topConceptOf kv:BusinessLineScheme ;
+    skos:prefLabel "Mobile"@en ;
+    skos:altLabel "Mobile Network"@en, "Telecommunications"@en ;
+    skos:definition "Konfusio's mobile phone service, resold on another operator's network: SIM plans, subscribers, data usage and airtime."@en ;
+    # Draft: a reseller (MVNO), as retailers' mobile brands usually are. A network operator would be 517112 (V2).
+    skos:notation "517121"^^kv:NAICS2022 ;
+    skos:closeMatch <https://www.census.gov/naics/?input=517121&year=2022&details=517121> .
+
+kv:Property a skos:Concept ;
+    skos:inScheme kv:BusinessLineScheme ; skos:topConceptOf kv:BusinessLineScheme ;
+    skos:prefLabel "Property"@en ;
+    skos:altLabel "Real Estate"@en, "Shopping Centres"@en ;
+    skos:definition "Konfusio's property business: shopping centres and retail units leased to tenants, with rent, occupancy and tenant receivables."@en ;
+    skos:notation "531120"^^kv:NAICS2022 ;
+    skos:closeMatch <https://www.census.gov/naics/?input=531120&year=2022&details=531120> .
+
+kv:OwnBrandProduction a skos:Concept ;
+    skos:inScheme kv:BusinessLineScheme ; skos:topConceptOf kv:BusinessLineScheme ;
+    skos:prefLabel "Own-brand Production"@en ;
+    skos:altLabel "Own Brand"@en, "Private Label"@en, "Manufacturing"@en ;
+    skos:definition "Konfusio's own factories and bakeries that make own-brand food products: production output, defects and plant efficiency."@en ;
+    # A three-digit NAICS subsector (Food Manufacturing): the plants make many kinds of food.
+    skos:notation "311"^^kv:NAICS2022 ;
+    skos:closeMatch <https://www.census.gov/naics/?input=311&year=2022&details=311> .
+
+kv:GroupWide a skos:Concept ;
+    skos:inScheme kv:BusinessLineScheme ; skos:topConceptOf kv:BusinessLineScheme ;
+    skos:prefLabel "Group-wide"@en ;
+    skos:altLabel "Group"@en, "Corporate"@en, "All Business Lines"@en ;
+    skos:definition "KPIs of the group as a whole rather than one line of business: group finance and accounting, corporate functions, marketing, human resources and the shared supply chain."@en ;
+    skos:scopeNote "Use when a KPI covers several business lines or none in particular."@en ;
+    skos:notation "551114"^^kv:NAICS2022 ;
+    skos:closeMatch <https://www.census.gov/naics/?input=551114&year=2022&details=551114> .
+
+# =========================================================================================================
+# 3. Measure Type: what kind of number a definition gives
+# =========================================================================================================
+# Derived from definitions.unit through the notations (every unit code in schema.sql maps to exactly one
+# concept). The ML unit check (T3) predicts the measure type from the text alone and flags a disagreement.
+
+kv:MeasureTypeScheme a skos:ConceptScheme ;
+    dct:title "Measure Type"@en ;
+    dct:description "The kind of number a KPI definition gives, derived from its unit."@en ;
+    dct:created "2026-11-11"^^xsd:date ;
+    skos:hasTopConcept kv:MonetaryAmount, kv:Percentage, kv:Ratio, kv:Count, kv:Score .
+
+kv:MonetaryAmount a skos:Concept ;
+    skos:inScheme kv:MeasureTypeScheme ; skos:topConceptOf kv:MeasureTypeScheme ;
+    skos:prefLabel "Monetary Amount"@en ;
+    skos:altLabel "Money"@en, "Currency Amount"@en ;
+    skos:definition "An amount of money in a currency, such as revenue, cost, spend, profit, a balance or a price."@en ;
+    skos:notation "EUR"^^kv:UnitCode, "USD"^^kv:UnitCode .
+
+kv:Percentage a skos:Concept ;
+    skos:inScheme kv:MeasureTypeScheme ; skos:topConceptOf kv:MeasureTypeScheme ;
+    skos:prefLabel "Percentage"@en ;
+    skos:altLabel "Rate"@en, "Share"@en, "Percent"@en ;
+    skos:definition "A share of a whole or a rate of change expressed in percent, such as a churn rate, a default rate, a growth rate or the share of revenue from one product."@en ;
+    skos:notation "%"^^kv:UnitCode .
+
+kv:Ratio a skos:Concept ;
+    skos:inScheme kv:MeasureTypeScheme ; skos:topConceptOf kv:MeasureTypeScheme ;
+    skos:prefLabel "Ratio"@en ;
+    skos:altLabel "Multiple"@en, "Times"@en ;
+    skos:definition "One quantity divided by another and not expressed in percent, such as a liquidity ratio, an efficiency ratio or how many times stock turns over."@en ;
+    skos:notation "ratio"^^kv:UnitCode, "times"^^kv:UnitCode .
+
+kv:Count a skos:Concept ;
+    skos:inScheme kv:MeasureTypeScheme ; skos:topConceptOf kv:MeasureTypeScheme ;
+    skos:prefLabel "Count"@en ;
+    skos:altLabel "Number"@en, "Volume"@en ;
+    skos:definition "A number of things counted, such as orders, customers, visits, active users or claims."@en ;
+    skos:notation "count"^^kv:UnitCode .
+
+kv:Score a skos:Concept ;
+    skos:inScheme kv:MeasureTypeScheme ; skos:topConceptOf kv:MeasureTypeScheme ;
+    skos:prefLabel "Score"@en ;
+    skos:altLabel "Index"@en, "Rating"@en ;
+    skos:definition "A value on a survey or rating scale, such as a satisfaction score, Net Promoter Score, an engagement score or a wellbeing index."@en ;
+    skos:notation "score"^^kv:UnitCode .
+
+# =========================================================================================================
+# 4. Metric Type: dbt Semantic Layer metric types, plus base
+# =========================================================================================================
+# Maps from definitions.metric_type through the notations. Prefixed labels ("Ratio metric") keep them apart
+# from the Measure Type "Ratio" in search.
+
+kv:MetricTypeScheme a skos:ConceptScheme ;
+    dct:title "Metric Type"@en ;
+    dct:description "How a KPI is computed, using the metric types of the dbt Semantic Layer plus base for definitions without a recorded formula."@en ;
+    dct:source "dbt Labs, dbt Semantic Layer documentation: metric types (simple, ratio, derived, cumulative)." ;
+    dct:created "2026-11-11"^^xsd:date ;
+    skos:hasTopConcept kv:BaseMetric, kv:SimpleMetric, kv:RatioMetric, kv:DerivedMetric, kv:CumulativeMetric .
+
+kv:BaseMetric a skos:Concept ;
+    skos:inScheme kv:MetricTypeScheme ; skos:topConceptOf kv:MetricTypeScheme ;
+    skos:prefLabel "Base measure"@en ;
+    skos:altLabel "No formula"@en ;
+    skos:definition "A definition with no recorded formula: the text describes the measure, but not how it is computed from other measures."@en ;
+    skos:scopeNote "Our addition, not a dbt type. Most definitions from the Hugging Face source are base measures."@en ;
+    skos:notation "base"^^kv:MetricTypeCode .
+
+kv:SimpleMetric a skos:Concept ;
+    skos:inScheme kv:MetricTypeScheme ; skos:topConceptOf kv:MetricTypeScheme ;
+    skos:prefLabel "Simple metric"@en ;
+    skos:definition "An aggregation of one measure, such as a sum or a count, optionally filtered."@en ;
+    dct:source "dbt Semantic Layer: simple metrics" ;
+    skos:notation "simple"^^kv:MetricTypeCode .
+
+kv:RatioMetric a skos:Concept ;
+    skos:inScheme kv:MetricTypeScheme ; skos:topConceptOf kv:MetricTypeScheme ;
+    skos:prefLabel "Ratio metric"@en ;
+    skos:definition "One metric divided by another: a numerator metric over a denominator metric."@en ;
+    dct:source "dbt Semantic Layer: ratio metrics" ;
+    skos:notation "ratio"^^kv:MetricTypeCode .
+
+kv:DerivedMetric a skos:Concept ;
+    skos:inScheme kv:MetricTypeScheme ; skos:topConceptOf kv:MetricTypeScheme ;
+    skos:prefLabel "Derived metric"@en ;
+    skos:definition "A metric computed by an expression over other metrics, such as revenue minus cost or growth compared with an earlier period."@en ;
+    dct:source "dbt Semantic Layer: derived metrics" ;
+    skos:notation "derived"^^kv:MetricTypeCode .
+
+kv:CumulativeMetric a skos:Concept ;
+    skos:inScheme kv:MetricTypeScheme ; skos:topConceptOf kv:MetricTypeScheme ;
+    skos:prefLabel "Cumulative metric"@en ;
+    skos:altLabel "Running total"@en, "Rolling metric"@en ;
+    skos:definition "A measure accumulated over a time window or since the start of records, such as a running total or a rolling seven-day count."@en ;
+    dct:source "dbt Semantic Layer: cumulative metrics" ;
+    skos:notation "cumulative"^^kv:MetricTypeCode .

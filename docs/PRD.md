@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Course** | Information Organization, group project |
-| **Status** | Draft v5, 11 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode (106 definitions); the ML stack runs on Python 3.14; curation files and the GenAI-drafted texts reviewed; company named Konfusio; the ML batch skips deprecated definitions (§14 Q8). History in [§15](#15-change-log) |
+| **Status** | Draft v5, 11 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode (106 definitions); the ML stack runs on Python 3.14; curation files and the GenAI-drafted texts reviewed; company named Konfusio; the ML batch skips deprecated definitions (§14 Q8); vocabulary v0 drafted (four hand-written SKOS schemes, pending review). History in [§15](#15-change-log) |
 | **Deadlines** | Mid-term description **19 Nov 2026** · Final delivery **21 Dec 2026** |
 | **Team** | **A** = George (dataset, vocabulary, ML) · **B** = Liam (web app) · **W** = Liam (report) and Ioanna (personas, user journeys, UI wireframes). Slides owner still open ([§14](#14-open-questions)) |
 | **Tasks and progress** | [`docs/TASKS.md`](TASKS.md) |
@@ -15,7 +15,7 @@ Guiding rule: **build the smallest thing that satisfies every course requirement
 
 ## At a glance (5-minute read)
 
-**Status (11 Nov 2026):** planning is done (this PRD). The seed generator `kpigen` (written from scratch; there was no earlier generator to rework) and `schema.sql` (reviewed by Liam, 5 Nov) exist, and the generated seed passes validation. The curation files and the GenAI-drafted texts (see [§3.5](#35-real-vs-synthetic-state-this-in-the-report)) have been reviewed (George, 11 Nov); more demo cases may be added once the user journeys are written ([§3](#3-collection-and-generation-plan)). The website, vocabulary and ML are not started.
+**Status (11 Nov 2026):** planning is done (this PRD). The seed generator `kpigen` (written from scratch; there was no earlier generator to rework) and `schema.sql` (reviewed by Liam, 5 Nov) exist, and the generated seed passes validation. The curation files and the GenAI-drafted texts (see [§3.5](#35-real-vs-synthetic-state-this-in-the-report)) have been reviewed (George, 11 Nov); more demo cases may be added once the user journeys are written ([§3](#3-collection-and-generation-plan)). Vocabulary v0 (the four hand-written SKOS schemes, `vocab/kpi-vocabulary.ttl`) is drafted and awaiting review; the website and ML are not started.
 
 **The problem.** In a company with many departments, the same KPI name means different things: *Turnover* is counted one way in Finance, another in Commercial and a third in Product. Different names also mean the same thing (*Inventory Turnover* = *Stock Turnover Rate*). New employees can't tell which KPIs matter to them or what they mean, and departments argue about numbers that were never comparable.
 
@@ -177,9 +177,9 @@ data/raw/ (downloaded, pinned)     kpigen/curation/*.csv    kpigen/scenarios.yam
 ### 3.5 Real vs synthetic (state this in the report)
 | Real | Ours (designed by us) | Drafted with GenAI, reviewed by us | Synthetic (generated) |
 |---|---|---|---|
-| HF and dbt KPI names, texts, formulas, dbt lineage | Conflict-case design and lineage (which divisions disagree, and how); gold labels | Curation decisions (grouping, units, divisions, exclusions); KPI descriptions (`kpis.csv`); conflict-case, Katerina's draft and the quality KPI's texts and formulas; community-tag labels except the five from §3.4 | Users, roles, owners, statuses, versions, reviews, dashboards, community taggings |
+| HF and dbt KPI names, texts, formulas, dbt lineage | Conflict-case design and lineage (which divisions disagree, and how); gold labels | Curation decisions (grouping, units, divisions, exclusions); KPI descriptions (`kpis.csv`); conflict-case, Katerina's draft and the quality KPI's texts and formulas; community-tag labels except the five from §3.4; SKOS labels, altLabels, definitions and scope notes in `vocab/kpi-vocabulary.ttl` (the scheme structure follows §5) | Users, roles, owners, statuses, versions, reviews, dashboards, community taggings |
 
-**For the ML evaluation:** the T1 and T2 gold labels stay hand-made, and the 9 GenAI-drafted definitions are reported separately (or left out) so the embedding model isn't scored on text written by another language model.
+**For the ML evaluation:** the T1 and T2 gold labels stay hand-made, and the 9 GenAI-drafted definitions are reported separately (or left out) so the embedding model isn't scored on text written by another language model. The GenAI-drafted concept definitions are on the other side of the comparison (what each definition is matched against), not scored text; the report states that the T1 and T2 results depend on them.
 
 ### 3.6 Validation (runs after every generation)
 - **`schema.sql`**: foreign keys, `CHECK` constraints on every enum, `UNIQUE` constraints.
@@ -307,11 +307,11 @@ Related work to cite: KPIOnto (Diamantini, Potena & Storti).
 
 | Scheme | Origin | Contents (draft v0) | Used for |
 |---|---|---|---|
-| **Category** | Hand-authored; top level = Balanced Scorecard, narrower concepts = themes | **Financial** → revenue · cost · balance-sheet · tax · risk<br>**Customer** → customer · engagement<br>**Internal Process** → supply-chain · quality · efficiency<br>**Learning & Growth** → workforce | ML target (T1); official tags; facet |
-| **Business line** | Hand-authored from Konfusio's profile | Stores · Online · Food-to-go · Membership · Banking · Insurance · Mobile · Property · Own-brand production · **Group-wide**. Each has `skos:closeMatch` + `skos:notation` to a NAICS 2022 code; **check every code against NAICS 2022 before publishing** | ML target (T2); official tags; facet |
+| **Category** | Hand-authored; top level = Balanced Scorecard, narrower concepts = themes; each theme has exactly one perspective | **Financial** → Revenue · Cost · Balance Sheet · Tax · Risk<br>**Customer** → Customer Relationship · Engagement<br>**Internal Process** → Supply Chain · Quality · Efficiency<br>**Learning & Growth** → Workforce<br>Profit and order counts are filed under Revenue until the community tag `profitability` is promoted (UC4). The theme *customer* is labelled *Customer Relationship* so it doesn't share a label with its perspective. | ML target (T1); official tags; facet |
+| **Business line** | Hand-authored from Konfusio's profile | Stores · Online · Food-to-go · Membership · Banking · Insurance · Mobile · Property · Own-brand production · **Group-wide**. Each links to NAICS 2022 with `skos:closeMatch` and a typed `skos:notation` (`kv:NAICS2022`). The v0 codes are drafts: Online only has a `skos:broadMatch` (NAICS 2022 dropped the separate e-commerce industry) and Membership has no match; **check every code against NAICS 2022 before publishing** (V2) | ML target (T2); official tags; facet |
 | **Division** | Generated from `divisions` | The 8 divisions, with `skos:notation` = division code | Facet |
-| **Measure Type** | Hand-authored | Monetary Amount (`EUR`, `USD`) · Percentage / Rate (`%`) · Ratio (`ratio`, `times`) · Count (`count`) · Score / Index (`score`); units listed with `skos:notation` | Derived facet; ML unit check (T3) |
-| **Metric Type** | Reused from the dbt Semantic Layer | simple · ratio · derived · cumulative, + *base* (no formula recorded) | Facet; explains formulas |
+| **Measure Type** | Hand-authored | Monetary Amount (`EUR`, `USD`) · Percentage / Rate (`%`) · Ratio (`ratio`, `times`) · Count (`count`) · Score / Index (`score`); units listed as typed `skos:notation`s (`kv:UnitCode`), one concept per unit | Derived facet; ML unit check (T3) |
+| **Metric Type** | Reused from the dbt Semantic Layer | simple · ratio · derived · cumulative, + *base* (no formula recorded); the `metric_type` values as typed `skos:notation`s (`kv:MetricTypeCode`) | Facet; explains formulas |
 | **KPI Glossary** | Generated from the curated data | One `skos:Concept` per KPI: `prefLabel` = KPI name, `altLabel` = every other `display_name` + promoted community tags, `dct:subject` → Category / Business line concepts. Lineage as `kv:composedOf`, `kv:subsetOf`, `kv:cumulativeOf`, each declared `rdfs:subPropertyOf skos:related`; `related_to` → `skos:related` | Search expansion, vocabulary browser, export |
 
 ```turtle
@@ -324,7 +324,7 @@ Related work to cite: KPIOnto (Diamantini, Potena & Storti).
 kv:composedOf rdfs:subPropertyOf skos:related ;
     rdfs:label "composed of"@en .
 
-kv:Financial a skos:Concept ;
+kv:FinancialPerspective a skos:Concept ;
     skos:inScheme kv:CategoryScheme ; skos:topConceptOf kv:CategoryScheme ;
     skos:prefLabel "Financial"@en ;
     dct:source "Kaplan & Norton (1992), The Balanced Scorecard" ;
@@ -335,7 +335,7 @@ kv:Revenue a skos:Concept ;
     skos:prefLabel "Revenue"@en ;
     skos:altLabel "Turnover"@en, "Sales"@en ;
     skos:definition "Measures of income earned from selling goods or services."@en ;
-    skos:broader kv:Financial .
+    skos:broader kv:FinancialPerspective .
 
 kpi:inventory_turnover a skos:Concept ;
     skos:inScheme kv:KpiGlossary ;
@@ -351,7 +351,7 @@ kpi:atopu a skos:Concept ;
     kv:composedOf kpi:turnover, kpi:active_users .
 ```
 
-**Lifecycle:** the hand-authored schemes are a seed TTL; the Division and KPI Glossary schemes are generated from the database. Official tags are created from the Category and Business line concepts when the database is loaded. Runtime changes (promotions, merges) are written to SQLite, and an **Export** action regenerates `vocab/kpi-vocabulary.export.ttl` with rdflib. Validation: rdflib parses the file without errors, plus a Skosify / SKOS Play check (their visualizations also give us report figures).
+**Lifecycle:** the hand-authored schemes are a seed TTL (`vocab/kpi-vocabulary.ttl`, checked by `tests/test_vocabulary.py`: every concept has one prefLabel, one definition and one scheme, hierarchies are written in both directions, no undeclared `kv:` terms, and every `unit`, `metric_type` and curated business line maps to a concept); the Division and KPI Glossary schemes are generated from the database. Official tags are created from the Category and Business line concepts when the database is loaded. Runtime changes (promotions, merges) are written to SQLite, and an **Export** action regenerates `vocab/kpi-vocabulary.export.ttl` with rdflib. Validation: rdflib parses the file without errors, plus a Skosify / SKOS Play check (their visualizations also give us report figures).
 
 ### What SKOS can't express (report material + stretch goal)
 
@@ -615,7 +615,7 @@ docs/PRD.md
 1. **Company name:** resolved 11 Nov: **Konfusio** (replaces the working name "Acme"; set in `scenarios.yaml`, which also gives the `konfusio.example` email and BI domains).
 2. **Theme *quality*:** resolved 6 Nov: one hand-written quality KPI, *Food Safety Incident Rate* (Operations), was added so the theme isn't empty. An empty concept would still be a T1 candidate that no gold label can match, and would show as an empty facet value.
 3. **Thresholds:** `τ_min`, `τ_high`, `τ_low`, tuned on the gold set.
-4. **NAICS codes:** check every Business line code against NAICS 2022.
+4. **NAICS codes:** check every Business line code against NAICS 2022. Draft codes are in vocabulary v0; open points: Online (no separate e-commerce industry in NAICS 2022), Membership (no match), Insurance (carrier 524126 or broker 524210), Mobile (reseller 517121 or operator 517112). Task V2.
 5. **OWL (S1):** go/no-go on 12 Dec.
 6. **Team split:** resolved 5 Nov (see the header; George owns `kpigen`). Still open: who makes the slides and leads the demo (task P4).
 7. **Supersede in the app:** does the website let a Curator create a new version that supersedes an approved definition, or is versioning seed-only (the version chain is displayed but never changed)? Task W20.
@@ -641,4 +641,5 @@ Every change to a feature or decision gets a row here, with the PRD sections it 
 | 11 Nov 2026 | v5 | P2: company named **Konfusio** (was the working name "Acme") | top, §1, §3.1, §3.2, §5, §14 Q1 |
 | 11 Nov 2026 | v5 | Superseding a definition moves its dashboard links, lineage and community tags to the new version; the old one keeps its review history. New business rule and input check; the 5 dashboards that used the deprecated *Capital Expenditure* v1 now use v2 | §3.4, §3.6, §4.5 |
 | 11 Nov 2026 | v5 | Open questions added: supersede in the app (Q7, task W20) and ML tags on superseded definitions (Q8, task M10) | §14 |
+| 11 Nov 2026 | v5 | V1: vocabulary v0 drafted in `vocab/kpi-vocabulary.ttl` (Category, Business line, Measure Type, Metric Type) with `tests/test_vocabulary.py`; perspectives renamed `kv:…Perspective`, theme *customer* labelled *Customer Relationship*, profit filed under Revenue; typed notations for units, metric types and NAICS codes; draft NAICS codes; concept texts GenAI-drafted | header, top, §3.5, §5, §14 Q4 |
 | 11 Nov 2026 | v5 | M10: the ML batch (T1–T3, similarity flags) skips deprecated definitions and leaves them out of the gold set and evaluation; deprecated rows have no theme or business line in the annotated dataset | header, §4.5, §6, §14 Q8 |

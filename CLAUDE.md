@@ -19,7 +19,7 @@ University group project for *Information Organization*: a website that organize
 | Roles | 5 division-scoped roles (Observer, Contributor, Curator, Reviewer, Admin). "Log in as" any seed user (no real auth); permissions are checked for real. No admin management UI. |
 | Visibility | Approved and deprecated definitions are readable by everyone; drafts, in-review and rejected definitions only within the division (plus owner and Admin). |
 | Versions | When a definition is superseded, its dashboard links, lineage and community tags move to the successor; the old version keeps only its review history and version chain (PRD §4.5). |
-| Vocabulary | SKOS in Turtle (`vocab/kpi-vocabulary.ttl`), namespace `https://example.org/kpi-catalog/vocab/`. Schemes: Category (Balanced Scorecard + themes), Business line (NAICS), Division, Measure Type (from `unit`), Metric Type (dbt Semantic Layer), KPI Glossary. OWL is stretch only. |
+| Vocabulary | SKOS in Turtle (`vocab/kpi-vocabulary.ttl`), namespace `https://example.org/kpi-catalog/vocab/`. Schemes: Category (Balanced Scorecard + themes), Business line (NAICS), Division, Measure Type (from `unit`), Metric Type (dbt Semantic Layer), KPI Glossary. Concept local names are stable IDs; units, metric types and NAICS codes are typed `skos:notation`s (PRD §5). OWL is stretch only. |
 | ML | Embedding similarity with `sentence-transformers/all-MiniLM-L6-v2`: tags Theme + Business line (the seed has none), checks units, flags synonyms and diverging definitions, suggests tags on submit. ML tags show as official with an "auto" marker until a curator accepts or rejects them. The batch skips deprecated definitions (PRD §6, §14 Q8). Evaluated against gold labels in `data/gold/` and baselines. |
 | Tags | Official tags (`tags.kind = official`, SKOS concepts) and community tags (`kind = community`, folksonomy) attach to definitions and are always displayed as separate groups. Facets use official tags only; community tags get their own filter. Curators and Admin can promote community tags into SKOS. |
 | Personas | Seed users: Emma Papadopoulos (USR-005, Observer), Katerina Okafor (USR-007, Curator), Noah Garcia (USR-053, Admin). |
@@ -29,7 +29,7 @@ University group project for *Information Organization*: a website that organize
 - `uv add <pkg>`: add a dependency (use uv, never pip)
 - `uv run kpigen download`: fetch the pinned sources into `data/raw/` (the only network step)
 - `uv run kpigen`: generate `data/seed/` and validate it (`schema.sql` + `tests/test_seed_rules.py`); `--strict` also fails on any `TODO(george)` placeholder
-- `uv run pytest`: generator and seed tests
+- `uv run pytest`: generator, seed and vocabulary tests
 - Planned: `uv run kpi-catalog build` (load → tag → flag), `uv run flask --app kpi_catalog.web run --debug`
 
 ## Layout (planned, see PRD §11)
@@ -38,7 +38,7 @@ University group project for *Information Organization*: a website that organize
 - `tests/test_seed_rules.py`: the PRD §3.6 business rules every seed must pass; `tests/test_kpigen.py`: generator tests.
 - `data/raw/`: pinned source downloads (git-ignored; never commit them).
 - `data/gold|annotated/`: gold labels and the exported annotated dataset. Every data-quality decision is logged in `data/quality_log.md` (it feeds the report).
-- `vocab/`: hand-authored SKOS seed + generated exports.
+- `vocab/`: hand-authored SKOS seed `kpi-vocabulary.ttl` (checked by `tests/test_vocabulary.py`) + generated exports.
 - `src/kpi_catalog/{data,vocab,ml,web}/` + `db.py`.
 - `docs/TASKS.md`: task tracker. `docs/user-journeys.md`, `docs/wireframes/`, `docs/demo-script.md`: Ioanna's UX inputs for the web pages and the demo.
 - `exploration.ipynb`: scratch notebook.
