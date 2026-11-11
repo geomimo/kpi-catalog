@@ -36,6 +36,8 @@ class Generator:
         self.earliest = parse_ts(gen["earliest_date"])
         self.div_id = {d["code"]: d["division_id"] for d in self.sc["divisions"]}
         self.role_id = {r["code"]: r["role_id"] for r in self.sc["roles"]}
+        self.successor = {f["definition_id"]: f["superseded_by"]
+                          for f in self.sc["definition_fixtures"] if f.get("superseded_by")}
         self.t: dict[str, Table] = {}
 
     # ------------------------------------------------------------------ helpers
@@ -46,6 +48,12 @@ class Generator:
         day = lo.date() + dt.timedelta(days=self.rng.randint(0, max(days, 0)))
         t = dt.datetime.combine(day, dt.time(self.rng.randint(8, 17), self.rng.choice([0, 15, 30, 45])))
         return min(max(t, lo), hi)
+
+    def current(self, did: str) -> str:
+        """The latest version of a definition. Links to a superseded one move to its successor (PRD §4.5)."""
+        while did in self.successor:
+            did = self.successor[did]
+        return did
 
     # ------------------------------------------------------------------ build
     def build(self) -> dict[str, Table]:
@@ -186,8 +194,14 @@ class Generator:
     # ------------------------------------------------------------------ lineage
     def relationships(self) -> None:
         rels: list[dict] = []
+        seen: set[tuple] = set()
 
         def add(a, b, typ, origin, role=None, alias=None, offset=None):
+            a, b = self.current(a), self.current(b)
+            key = (a, b, typ, role, alias, offset)
+            if a == b or key in seen:  # moving links to a successor can create a loop or a duplicate
+                return
+            seen.add(key)
             rels.append({"from_definition_id": a, "to_definition_id": b, "relationship_type": typ, "role": role,
                          "alias": alias, "offset_window": offset, "origin": origin})
 
@@ -345,7 +359,8 @@ class Generator:
             n += 1
             aid = f"AST-{n:03d}"
             kind = "report" if noun.endswith(("Report", "Pack")) else "dashboard"
-            chosen = sorted(rng.sample(published[code], min(len(published[code]), rng.randint(2, 6))))
+            picked = rng.sample(published[code], min(len(published[code]), rng.randint(2, 6)))
+            chosen = sorted({self.current(x) for x in picked})  # a dashboard uses the latest version
             created = max(parse_ts(self.defs[x]["updated_at"]) for x in chosen) + rng.randint(1, 30) * DAY
             owner = rng.choice(sorted(u for u, h in self.home.items() if h == self.div_id[code]))
             rows.append({"asset_id": aid, "asset_type": kind, "name": name,
@@ -368,6 +383,7 @@ class Generator:
         uses: dict[tuple[str, str], dict] = {}
 
         def tag(label: str, did: str) -> None:
+            did = self.current(did)
             key = (did, tag_id[label])
             if key in uses:
                 return

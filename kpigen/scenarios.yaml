@@ -7,9 +7,9 @@
 # a source. `uv run kpigen --strict` fails if any placeholder text is reintroduced.
 
 company:
-  name: Acme                      # P2: company name still open; change it only here
-  email_domain: acme.example
-  bi_url: https://bi.acme.example
+  name: Konfusio                  # P2: chosen 11 Nov; change it only here
+  email_domain: konfusio.example
+  bi_url: https://bi.konfusio.example
 
 generation:
   random_seed: 42

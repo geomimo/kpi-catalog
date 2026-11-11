@@ -12,7 +12,7 @@ import pytest
 from kpigen.download import SOURCES
 from kpigen.generate import Generator
 from kpigen.inputs import InputError, load_inputs
-from kpigen.paths import CURATION, RAW, ROOT
+from kpigen.paths import CURATION, RAW, ROOT, SCENARIOS
 from kpigen.validate import SeedError, load_seed
 from kpigen.write import write_seed
 
@@ -69,6 +69,17 @@ def test_a_row_that_is_mapped_twice_is_rejected(tmp_path):
     _rewrite(cur / "row_to_kpi.csv", lambda rows: rows + [{**rows[0], "definition_id": "DEF-0999"}])
     with pytest.raises(InputError, match="duplicate source row"):
         load_inputs(curation=cur)
+
+
+def test_a_hand_made_link_to_a_superseded_definition_is_rejected(tmp_path):
+    import yaml
+    sc = yaml.safe_load(SCENARIOS.read_text(encoding="utf-8"))
+    old = next(f["definition_id"] for f in sc["definition_fixtures"] if f.get("superseded_by"))
+    sc["assets"][0]["definitions"].append(old)
+    path = tmp_path / "scenarios.yaml"
+    path.write_text(yaml.safe_dump(sc), encoding="utf-8")
+    with pytest.raises(InputError, match="links superseded definition"):
+        load_inputs(scenarios=path)
 
 
 def _break(seed: Path, table: str, edit) -> None:

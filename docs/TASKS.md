@@ -18,7 +18,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
 | Ioanna | UI wireframes, personas, user journeys | U | W (personas, journeys) |
 | Everyone | Decisions, presentation, final checks | P | — |
 
-**Critical path to the mid-term:** M1 (ML stack on 3.14, done) and D3 (`schema.sql`, done) unblock the rest → D4–D5 (a second member reviews the drafts and the GenAI-drafted texts) → M2 (first tagging run). Liam can build W1–W3 on the generated seed in `data/seed/` now.
+**Critical path to the mid-term:** M1 (ML stack on 3.14, done) and D3 (`schema.sql`, done) unblock the rest → D4–D5 (reviewed, done) → V1 (vocabulary v0) → M2 (first tagging run). Liam can build W1–W3 on the generated seed in `data/seed/` now.
 
 ---
 
@@ -26,7 +26,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
 
 ### Everyone
 - [x] **P1 · Record the team split** · George · 5 Nov · PRD header, §14 Q6
-- [ ] **P2 · Choose the company name** · all · by 12 Nov · §14 Q1
+- [x] **P2 · Choose the company name** · all · by 12 Nov · §14 Q1 · *done 11 Nov: Konfusio*
   - Done when: the name replaces "Acme" in the PRD, CLAUDE.md and README, and D5 uses it.
 
 ### George
@@ -40,10 +40,12 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - Done when: every table, foreign key, `CHECK` and `UNIQUE` from §4 is in it, it runs in `sqlite3` without errors, and Liam has reviewed it (W2 builds on it).
 - [x] **P3 · Decide the *quality* theme** · by 10 Nov · §14 Q2 · *done 6 Nov: added Food Safety Incident Rate (KPI-0061, DEF-0308)*
   - Add one hand-written quality KPI, or leave the theme empty. Done when: the decision is in the PRD and D4 follows it.
-- [ ] **D4 · Write the curation files** *(in progress: decisions and the 60 KPI descriptions drafted with GenAI; a second member reviews)* · by 12 Nov · §3.3–3.4 · needs D2, P3
-  - `domain_to_division.csv`, `kpis.csv`, `row_to_kpi.csv`, `exclusions.csv`, `relationships.csv`. Done when: every HF row and dbt metric appears exactly once in `row_to_kpi.csv` or `exclusions.csv`, the exclusion counts match §3.3 (or §3.3 is updated), and a second team member has reviewed the files.
-- [ ] **D5 · Write `scenarios.yaml`** *(in progress: fixtures, conflict-case texts, Katerina's draft and 40 community tags drafted with GenAI; check against U2 and confirm the hf:24 → hf:40 supersession pair)* · by 13 Nov · §3.4 · needs D4, P2, U2
-  - Done when: every fixture listed in §3.4 is present with a fixed ID, and every step of the user journeys (U2) has the seed data it needs.
+- [x] **D4 · Write the curation files** · by 12 Nov · §3.3–3.4 · needs D2, P3
+  - `domain_to_division.csv`, `kpis.csv`, `row_to_kpi.csv`, `exclusions.csv`, `relationships.csv`. Done when: every HF row and dbt metric appears exactly once in `row_to_kpi.csv` or `exclusions.csv`, the exclusion counts match §3.3 (or §3.3 is updated), and a second team member has reviewed the files. *Done 11 Nov: reviewed by George.*
+- [x] **D5 · Write `scenarios.yaml`** · by 13 Nov · §3.4 · needs D4, P2, U2
+  - Done when: every fixture listed in §3.4 is present with a fixed ID, and every step of the user journeys (U2) has the seed data it needs. *Done 11 Nov: reviewed by George, hf:24 → hf:40 supersession confirmed; Konfusio set by P2; further cases for the journeys go in D10.*
+- [ ] **D10 · Add seed cases for the user journeys** · by 17 Nov · §3.4, §8 · needs U2
+  - Done when: every step in `docs/user-journeys.md` has the seed data it needs (new fixtures in `scenarios.yaml` with fixed IDs), and `uv run kpigen` still passes.
 - [ ] **V1 · Vocabulary v0** · by 14 Nov · §5
   - Hand-authored `vocab/kpi-vocabulary.ttl` with the Category (Balanced Scorecard + themes), Business line, Measure Type and Metric Type schemes. Every concept has a `skos:definition`, because the ML encodes it. Done when: rdflib parses the file without errors.
 - [x] **D6 · Write `kpigen`** · by 15 Nov · F0, §3.4 · needs D3, D4, D5
@@ -52,7 +54,9 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - Load into SQLite with `schema.sql`, plus the seven business rules in `tests/test_seed_rules.py`. Done when: `uv run kpigen` fails on a deliberately broken seed and passes on the real one.
 - [ ] **D8 · Start `data/quality_log.md`** · by 17 Nov · §3.7 · needs D4
   - Done when: findings S1–S6, every exclusion reason, the seeded *Operating Expenses* error and the lessons from the sample catalog are logged. Feeds R1 and R3.
-- [ ] **M2 · First tagging run (T1 theme, T2 business line)** · by 18 Nov · F9, §6 · needs M1, V1, D7, W2
+- [ ] **M10 · Decide whether ML tags superseded definitions** · by 17 Nov · §4.5, §6, §14 Q8
+  - The seed moves dashboards, lineage and community tags off a superseded definition (DEF-0025); M2 would still tag it. Done when: the decision is in PRD §6 and §14 Q8, and M2 follows it.
+- [ ] **M2 · First tagging run (T1 theme, T2 business line)** · by 18 Nov · F9, §6 · needs M1, V1, D7, W2, M10
   - `ml/tagger.py`; embeddings saved as `.npy`. Done when: every definition has theme and business-line rows in `definition_tags` (`source = ml`, `status = auto`), and a short spot check is written up for the mid-term status.
 
 ### Liam
@@ -69,7 +73,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
 - [ ] **U1 · Personas** · by 10 Nov · §7
   - Emma, Katerina and Noah in report-ready form (they/them). Done when: §7 reflects any changes and R1 can use them.
 - [ ] **U2 · User journeys UC1–UC4** · by 12 Nov · §8
-  - In `docs/user-journeys.md`. Done when: each step names the page, the action, what the user sees and the seed data it needs (George checks that data in D5).
+  - In `docs/user-journeys.md`. Done when: each step names the page, the action, what the user sees and the seed data it needs (George adds any missing data in D10).
 - [ ] **U3 · Site-map figure** · by 15 Nov · §10
   - Done when: an image of the §10 site map (pages and who can open them) is ready for R1 and the report.
 - [ ] **U4 · Wireframes: reading pages** · by 19 Nov · F1–F8, §10
@@ -156,6 +160,8 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - Done when: Noah can merge `northstar` and `North Star` into `north-star` and promote it (UC4), and the export contains the new label.
 - [ ] **W17 · Governance flags page** · by 12 Dec · F16 · needs M7 · cut #2
   - Done when: Noah can merge, relate, dismiss or mark each flag fixed, including fixing the *Operating Expenses* unit (UC4).
+- [ ] **W20 · Supersede a definition in the app** · Liam · by 12 Dec · F7, §4.5, §14 Q7 · needs W11, W13 · cut #5
+  - The PRD shows `approved → deprecated (superseded_by_id)`, but no task builds it. First settle §14 Q7. Done when: either a Curator can submit a new version of an approved definition, and approving it deprecates the old one and moves its dashboard links, lineage and community tags to the new one (the same rule as `test_nothing_links_to_a_superseded_definition`); or Q7 decides versioning stays seed-only and this task is dropped.
 - [ ] **R6 · Vocabulary section** · Liam + George · by 12 Dec · §5 · needs V5
   - Includes "What SKOS can't express" with the ATOPU example, whatever P5 decides.
 - [ ] **R7 · ML section** · Liam + George · draft by 12 Dec, final numbers by 17 Dec · §6 · needs M5, M9

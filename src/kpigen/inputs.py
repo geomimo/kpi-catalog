@@ -150,6 +150,14 @@ def check(inp: Inputs) -> None:
         for x in (a, b):
             if x not in known:
                 errors.append(f"relationship refers to unknown definition {x}")
+    # Hand-made links point at the latest version (PRD §4.5): a superseded definition keeps only its history.
+    superseded = {f["definition_id"]: f["superseded_by"] for f in sc["definition_fixtures"] if f.get("superseded_by")}
+    linked = [(f"relationship {a} -> {b}", x) for a, b in refs for x in (a, b)]
+    linked += [(f"asset {a['asset_id']}", x) for a in sc["assets"] for x in a["definitions"]]
+    linked += [(f"community tag '{t['label']}'", x) for t in sc["community_tags"]["fixtures"] for x in t["definitions"]]
+    for where, x in linked:
+        if x in superseded:
+            errors.append(f"{where} links superseded definition {x}; link its successor {superseded[x]} instead")
     for f in sc["definition_fixtures"]:
         for x in filter(None, [f["definition_id"], f.get("superseded_by")]):
             if x not in known:

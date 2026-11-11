@@ -1,6 +1,6 @@
 # KPI Catalog
 
-University group project for *Information Organization*: a website that organizes KPI definitions of a fictional retail group ("Acme", working name) with 8 divisions. It combines SKOS controlled vocabularies, faceted browsing, a folksonomy, ML auto-tagging, and a contributor → reviewer workflow with division-scoped roles.
+University group project for *Information Organization*: a website that organizes KPI definitions of a fictional retail group (Konfusio) with 8 divisions. It combines SKOS controlled vocabularies, faceted browsing, a folksonomy, ML auto-tagging, and a contributor → reviewer workflow with division-scoped roles.
 
 - Requirements: [docs/PRD.md](docs/PRD.md) (read it before planning any feature)
 - Assignment text: [group_project_description.md](group_project_description.md)
@@ -18,6 +18,7 @@ University group project for *Information Organization*: a website that organize
 | Stack | Flask + Jinja + SQLite (FTS5), Python 3.14 via uv. Local demo only, no hosting. |
 | Roles | 5 division-scoped roles (Observer, Contributor, Curator, Reviewer, Admin). "Log in as" any seed user (no real auth); permissions are checked for real. No admin management UI. |
 | Visibility | Approved and deprecated definitions are readable by everyone; drafts, in-review and rejected definitions only within the division (plus owner and Admin). |
+| Versions | When a definition is superseded, its dashboard links, lineage and community tags move to the successor; the old version keeps only its review history and version chain (PRD §4.5). |
 | Vocabulary | SKOS in Turtle (`vocab/kpi-vocabulary.ttl`), namespace `https://example.org/kpi-catalog/vocab/`. Schemes: Category (Balanced Scorecard + themes), Business line (NAICS), Division, Measure Type (from `unit`), Metric Type (dbt Semantic Layer), KPI Glossary. OWL is stretch only. |
 | ML | Embedding similarity with `sentence-transformers/all-MiniLM-L6-v2`: tags Theme + Business line (the seed has none), checks units, flags synonyms and diverging definitions, suggests tags on submit. ML tags show as official with an "auto" marker until a curator accepts or rejects them. Evaluated against gold labels in `data/gold/` and baselines. |
 | Tags | Official tags (`tags.kind = official`, SKOS concepts) and community tags (`kind = community`, folksonomy) attach to definitions and are always displayed as separate groups. Facets use official tags only; community tags get their own filter. Curators and Admin can promote community tags into SKOS. |

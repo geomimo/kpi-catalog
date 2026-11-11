@@ -40,6 +40,17 @@ def test_supersession_stays_within_kpi_and_division(db):
     assert bad == [], "superseded across KPI/division, not deprecated, or version not increased"
 
 
+def test_nothing_links_to_a_superseded_definition(db):
+    """Once a definition is superseded, dashboards, lineage and tags point at its successor (PRD §4.5)."""
+    bad = rows(db, """
+        WITH old AS (SELECT definition_id FROM definitions WHERE superseded_by_id IS NOT NULL)
+        SELECT 'asset ' || asset_id, definition_id FROM asset_definitions WHERE definition_id IN old
+        UNION ALL SELECT 'relationship ' || relationship_id, from_definition_id FROM kpi_relationships
+                  WHERE from_definition_id IN old OR to_definition_id IN old
+        UNION ALL SELECT 'tag ' || tag_id, definition_id FROM definition_tags WHERE definition_id IN old""")
+    assert bad == []
+
+
 def test_every_owner_holds_a_role_in_the_definitions_division(db):
     bad = rows(db, """
         SELECT d.definition_id, d.owner_user_id FROM definitions d

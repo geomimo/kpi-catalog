@@ -18,7 +18,7 @@ TAG-016,community,ecommerce,,,USR-040,2026-04-02T17:30:00Z
 TAG-017,community,stores,,,USR-013,2026-02-12T11:45:00Z
 TAG-018,community,food-to-go,,,USR-034,2025-08-29T13:30:00Z
 TAG-019,community,membership,,,USR-023,2026-03-22T08:30:00Z
-TAG-020,community,loyalty,,,USR-044,2025-03-15T08:00:00Z
+TAG-020,community,loyalty,,,USR-048,2026-02-05T10:45:00Z
 TAG-021,community,retention,,,USR-053,2026-05-04T09:15:00Z
 TAG-022,community,churn,,,USR-042,2026-02-23T15:45:00Z
 TAG-023,community,supply-chain,,,USR-023,2026-01-23T16:15:00Z
@@ -28,13 +28,13 @@ TAG-026,community,logistics,,,USR-046,2025-05-23T13:30:00Z
 TAG-027,community,hr,,,USR-017,2026-01-01T16:30:00Z
 TAG-028,community,engagement,,,USR-019,2026-03-25T12:00:00Z
 TAG-029,community,survey-based,,,USR-042,2026-03-22T17:15:00Z
-TAG-030,community,marketing-spend,,,USR-025,2026-05-01T09:15:00Z
-TAG-031,community,campaign,,,USR-036,2026-04-14T12:45:00Z
+TAG-030,community,marketing-spend,,,USR-039,2026-03-19T09:15:00Z
+TAG-031,community,campaign,,,USR-003,2026-09-27T08:00:00Z
 TAG-032,community,budget,,,USR-010,2025-12-14T14:15:00Z
 TAG-033,community,banking,,,USR-041,2026-05-13T15:30:00Z
-TAG-034,community,insurance,,,USR-006,2026-08-13T11:00:00Z
+TAG-034,community,insurance,,,USR-020,2026-09-18T11:45:00Z
 TAG-035,community,vat,,,USR-030,2025-03-07T08:15:00Z
-TAG-036,community,month-end-close,,,USR-022,2025-07-20T08:15:00Z
+TAG-036,community,month-end-close,,,USR-025,2026-05-06T10:45:00Z
 TAG-037,community,dbt,,,USR-039,2026-06-21T13:30:00Z
 TAG-038,community,data-quality,,,USR-026,2026-04-20T13:00:00Z
 TAG-039,community,confusing,,,USR-035,2026-04-29T08:45:00Z
