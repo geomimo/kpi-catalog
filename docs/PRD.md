@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Course** | Information Organization, group project |
-| **Status** | Draft v5, 11 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode (106 definitions); the ML stack runs on Python 3.14; curation files and the GenAI-drafted texts reviewed; company named Konfusio; the ML batch skips deprecated definitions (§14 Q8); vocabulary v0 written and reviewed (four hand-written SKOS schemes). History in [§15](#15-change-log) |
+| **Status** | Draft v5, 11 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode (106 definitions); the ML stack runs on Python 3.14; curation files and the GenAI-drafted texts reviewed; company named Konfusio; the ML batch skips deprecated definitions (§14 Q8); vocabulary v0 written and reviewed (four hand-written SKOS schemes); data-quality log started (`data/quality_log.md`). History in [§15](#15-change-log) |
 | **Deadlines** | Mid-term description **19 Nov 2026** · Final delivery **21 Dec 2026** |
 | **Team** | **A** = George (dataset, vocabulary, ML) · **B** = Liam (web app) · **W** = Liam (report) and Ioanna (personas, user journeys, UI wireframes). Slides owner still open ([§14](#14-open-questions)) |
 | **Tasks and progress** | [`docs/TASKS.md`](TASKS.md) |
@@ -194,7 +194,7 @@ data/raw/ (downloaded, pinned)     kpigen/curation/*.csv    kpigen/scenarios.yam
   - No theme or business-line tags exist in the seed.
 
 ### 3.7 Data quality: findings and lessons (report material)
-**Findings in the real sources** (each handled by a curation file and logged in `data/quality_log.md`):
+**Findings in the real sources** (each handled by a curation file). The details, with row references, exclusions (E1–E7), seeded cases (Q1–Q5) and our own data decisions (C1–C8), are in [`data/quality_log.md`](../data/quality_log.md):
 
 | # | Finding | Handled by |
 |---|---|---|
@@ -641,5 +641,6 @@ Every change to a feature or decision gets a row here, with the PRD sections it 
 | 11 Nov 2026 | v5 | P2: company named **Konfusio** (was the working name "Acme") | top, §1, §3.1, §3.2, §5, §14 Q1 |
 | 11 Nov 2026 | v5 | Superseding a definition moves its dashboard links, lineage and community tags to the new version; the old one keeps its review history. New business rule and input check; the 5 dashboards that used the deprecated *Capital Expenditure* v1 now use v2 | §3.4, §3.6, §4.5 |
 | 11 Nov 2026 | v5 | Open questions added: supersede in the app (Q7, task W20) and ML tags on superseded definitions (Q8, task M10) | §14 |
+| 11 Nov 2026 | v5 | D8: `data/quality_log.md` started (sources, S1–S6 with row references, exclusions E1–E7, seeded cases Q1–Q5, data decisions C1–C8, lessons L1–L5); §3.7 points to it | §3.7 |
 | 11 Nov 2026 | v5 | V1: vocabulary v0 drafted in `vocab/kpi-vocabulary.ttl` (Category, Business line, Measure Type, Metric Type) with `tests/test_vocabulary.py`; perspectives renamed `kv:…Perspective`, theme *customer* labelled *Customer Relationship*, profit filed under Revenue; typed notations for units, metric types and NAICS codes; draft NAICS codes; concept texts GenAI-drafted, reviewed by George | header, top, §3.5, §5, §14 Q4 |
 | 11 Nov 2026 | v5 | M10: the ML batch (T1–T3, similarity flags) skips deprecated definitions and leaves them out of the gold set and evaluation; deprecated rows have no theme or business line in the annotated dataset | header, §4.5, §6, §14 Q8 |

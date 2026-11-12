@@ -37,7 +37,7 @@ University group project for *Information Organization*: a website that organize
 - `src/kpigen/`: seed generator code. `kpigen/curation/*.csv` (domain_to_division, kpis, row_to_kpi, exclusions, relationships) and `kpigen/scenarios.yaml` hold every hand-made data decision. `data/seed/` is its output and is never edited by hand; change the curation files or the generator instead.
 - `tests/test_seed_rules.py`: the PRD §3.6 business rules every seed must pass; `tests/test_kpigen.py`: generator tests.
 - `data/raw/`: pinned source downloads (git-ignored; never commit them).
-- `data/gold|annotated/`: gold labels and the exported annotated dataset. Every data-quality decision is logged in `data/quality_log.md` (it feeds the report).
+- `data/gold|annotated/`: gold labels and the exported annotated dataset. Every data-quality decision is logged in `data/quality_log.md` (it feeds the report), under a permanent ID (S, E, Q, C, L; never renumber).
 - `vocab/`: hand-authored SKOS seed `kpi-vocabulary.ttl` (checked by `tests/test_vocabulary.py`) + generated exports.
 - `src/kpi_catalog/{data,vocab,ml,web}/` + `db.py`.
 - `docs/TASKS.md`: task tracker. `docs/user-journeys.md`, `docs/wireframes/`, `docs/demo-script.md`: Ioanna's UX inputs for the web pages and the demo.

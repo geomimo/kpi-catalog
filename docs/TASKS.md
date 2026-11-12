@@ -52,7 +52,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - Seed 42, reference date 2026-10-01, no network or LLM calls. Random fill: ~50 users, owners, statuses, review history, ~35 dashboards, ~40 community tags. `uv run kpigen` entry point. Done when: it writes `data/seed/*.csv` and `excluded.csv` with ~105 definitions, and two runs give byte-identical files.
 - [x] **D7 · Validate the seed** · by 15 Nov · §3.6 · needs D6
   - Load into SQLite with `schema.sql`, plus the seven business rules in `tests/test_seed_rules.py`. Done when: `uv run kpigen` fails on a deliberately broken seed and passes on the real one.
-- [ ] **D8 · Start `data/quality_log.md`** · by 17 Nov · §3.7 · needs D4
+- [x] **D8 · Start `data/quality_log.md`** · by 17 Nov · §3.7 · needs D4 · *done 12 Nov: reviewed by George*
   - Done when: findings S1–S6, every exclusion reason, the seeded *Operating Expenses* error and the lessons from the sample catalog are logged. Feeds R1 and R3.
 - [x] **M10 · Decide whether ML tags superseded definitions** · by 17 Nov · §4.5, §6, §14 Q8 · *done 11 Nov: the ML batch skips deprecated definitions*
   - The seed moves dashboards, lineage and community tags off a superseded definition (DEF-0025); M2 would still tag it. Done when: the decision is in PRD §6 and §14 Q8, and M2 follows it.
