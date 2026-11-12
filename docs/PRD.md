@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Course** | Information Organization, group project |
-| **Status** | Draft v5, 11 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode (106 definitions); the ML stack runs on Python 3.14; curation files and the GenAI-drafted texts reviewed; company named Konfusio; the ML batch skips deprecated definitions (§14 Q8). History in [§15](#15-change-log) |
+| **Status** | Draft v5, 11 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode (106 definitions); the ML stack runs on Python 3.14; curation files and the GenAI-drafted texts reviewed; company named Konfusio; the ML batch skips deprecated definitions (§14 Q8); Flask skeleton with placeholder pages for the whole site map (§11). History in [§15](#15-change-log) |
 | **Deadlines** | Mid-term description **19 Nov 2026** · Final delivery **21 Dec 2026** |
 | **Team** | **A** = George (dataset, vocabulary, ML) · **B** = Liam (web app) · **W** = Liam (report) and Ioanna (personas, user journeys, UI wireframes). Slides owner still open ([§14](#14-open-questions)) |
 | **Tasks and progress** | [`docs/TASKS.md`](TASKS.md) |
@@ -517,7 +517,7 @@ Embeddings for the seed data are **computed offline once**; the web app only enc
 
 ## 11. Architecture and repo layout
 
-**Stack:** Python 3.14 (uv) · Flask + Jinja templates · SQLite (FTS5, verified available) · rdflib · sentence-transformers · scikit-learn (metrics only) · pandas · pytest. Minimal CSS (a classless or small framework; no JS build step).
+**Stack:** Python 3.14 (uv) · Flask + Jinja templates · SQLite (FTS5, verified available) · rdflib · sentence-transformers · scikit-learn (metrics only) · pandas · pytest. Minimal CSS: the classless [Simple.css](https://simplecss.org) v2.3.7 (MIT), vendored into `web/static/` (no CDN, no JS build step), easy to restyle once the wireframes are in.
 
 ```
 data/raw (pinned downloads) + kpigen/curation + scenarios.yaml ──► kpigen ──► data/seed/*.csv
@@ -642,3 +642,4 @@ Every change to a feature or decision gets a row here, with the PRD sections it 
 | 11 Nov 2026 | v5 | Superseding a definition moves its dashboard links, lineage and community tags to the new version; the old one keeps its review history. New business rule and input check; the 5 dashboards that used the deprecated *Capital Expenditure* v1 now use v2 | §3.4, §3.6, §4.5 |
 | 11 Nov 2026 | v5 | Open questions added: supersede in the app (Q7, task W20) and ML tags on superseded definitions (Q8, task M10) | §14 |
 | 11 Nov 2026 | v5 | M10: the ML batch (T1–T3, similarity flags) skips deprecated definitions and leaves them out of the gold set and evaluation; deprecated rows have no theme or business line in the annotated dataset | header, §4.5, §6, §14 Q8 |
+| 11 Nov 2026 | v5 | W1: Flask skeleton with a placeholder page for every site-map route; Simple.css vendored as the classless stylesheet | header, §11 |

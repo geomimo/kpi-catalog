@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ title }}{% for value in params.values() %} <code>{{ value }}</code>{% endfor %}</h1>
+<p>{{ summary }}</p>
+<p><mark>Placeholder</mark> This page is not built yet.</p>
+{% endblock %}

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ title }}{% endblock %} · KPI Catalog</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='simple.min.css') }}">
+</head>
+<body>
+  <header>
+    <nav>
+      {% for endpoint, label in nav %}
+      <a href="{{ url_for(endpoint) }}"{% if request.endpoint == endpoint %} aria-current="page"{% endif %}>{{ label }}</a>
+      {% endfor %}
+    </nav>
+    {# "Log in as" switcher goes here (task W3). #}
+    <div id="login-as">{% block login_as %}{% endblock %}</div>
+  </header>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+  <footer>
+    <p>KPI Catalog · Konfusio (fictional) · Information Organization group project</p>
+  </footer>
+</body>
+</html>

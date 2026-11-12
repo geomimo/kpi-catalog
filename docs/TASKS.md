@@ -60,7 +60,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - `ml/tagger.py`; embeddings saved as `.npy`. Done when: every definition except the deprecated ones (M10) has theme and business-line rows in `definition_tags` (`source = ml`, `status = auto`), and a short spot check is written up for the mid-term status.
 
 ### Liam
-- [ ] **W1 · Flask skeleton** · by 12 Nov · §10–11
+- [x] **W1 · Flask skeleton** · by 12 Nov · §10–11 · *done 11 Nov: placeholders for all 13 site-map routes, simple.css vendored, `tests/test_web.py`*
   - App factory in `src/kpi_catalog/web/`, base layout with navbar, small classless CSS, a placeholder for every page in the site map. Done when: `uv run flask --app kpi_catalog.web run --debug` serves every route.
 - [ ] **W2 · Database loader (`db.py`)** · by 15 Nov · §4, §11 · needs D3
   - Creates `instance/catalog.sqlite` from `schema.sql`, loads `data/seed/*.csv`, builds the FTS5 index. Use the generated seed in `data/seed/`. Done when: it loads the real seed with foreign keys enforced.
