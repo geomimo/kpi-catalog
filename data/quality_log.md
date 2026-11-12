@@ -16,7 +16,7 @@ Every data-quality finding and decision about the KPI Catalog dataset, with exam
 
 Neither source declares a licence, so both are downloaded into the git-ignored `data/raw/` and never committed (PRD §3.2). Full URLs and hashes: `data/raw/SOURCES.md` (written by `kpigen download`).
 
-**Result:** 107 HF rows + 17 dbt metrics → 25 HF rows and 2 dbt metrics excluded (§3) → 82 HF + 15 dbt + 9 hand-written = **106 definitions of 61 KPIs**.
+**Result:** 107 HF rows + 17 dbt metrics → 25 HF rows and 2 dbt metrics excluded (§3) → 82 HF + 15 dbt + 11 hand-written = **108 definitions of 62 KPIs**.
 
 ## 2. Findings in the real sources
 
@@ -87,7 +87,7 @@ These are in the seed deliberately, for the use cases and the ML evaluation. The
 | Q2 | Real synonym pair kept under two KPIs: *Product Revenue* and *Total Product Sales* | hf:5 (DEF-0006), hf:79 (DEF-0080) | ML raises `possible_synonym`; Noah resolves it in UC4 (merge, relate or dismiss) |
 | Q3 | Supersession: Finance *Capital Expenditure* v1 replaced by v2 (same text reworded, source table renamed) | hf:24 (DEF-0025) → hf:40 (DEF-0041), `scenarios.yaml` | Version chain shown on the KPI page; links moved to v2 (C5); ML skips v1 (C6) |
 | Q4 | False friend: *Inventory Amount* vs *Investment Amount* (both `inv_amt`, S4) | KPI-0013, KPI-0011 | ML does **not** flag them as synonyms |
-| Q5 | Conflict cases: Turnover, Active Users and ATOPU defined differently per division (hand-written), plus gross vs net product revenue (real rows, DEF-0081/DEF-0082, linked `related_to`) | `scenarios.yaml`, `relationships.csv` | ML raises `definitions_diverge` for the same-KPI conflicts; shown on the KPI page (UC2) |
+| Q5 | Conflict cases: Turnover, Active Users, ATOPU and Gross Margin % defined differently per division (hand-written; Gross Margin %: Finance full cost after rebates, DEF-0309, vs Commercial front margin, DEF-0311), plus gross vs net product revenue (real rows, DEF-0081/DEF-0082, linked `related_to`) | `scenarios.yaml`, `relationships.csv` | ML raises `definitions_diverge` for the same-KPI conflicts; shown on the KPI page (UC2) |
 
 ## 5. Our own data decisions
 
@@ -95,9 +95,9 @@ These are in the seed deliberately, for the use cases and the ML evaluation. The
 |---|---|---|---|
 | C1 | **Units and grain assigned by hand** for every row. Result: EUR 51, count 14, % 10, times 9, USD 8, ratio 7, score 7 | The HF source has none (S5); the dbt YAML has no units | `row_to_kpi.csv` (`unit`, `grain`) |
 | C2 | **Typos fixed only through the `fix` column**, as `field:old=>new`; all other source text is kept word for word, and no LLM writes or alters source KPI text | Keeps every change to real text visible and reversible | `row_to_kpi.csv` (`fix`); CLAUDE.md conventions |
-| C3 | **Text we supplied ourselves was drafted with GenAI and labelled so:** KPI descriptions, conflict-case texts and formulas, Katerina's draft, the quality KPI, 35 community-tag labels, and the SKOS concept labels, definitions and scope notes. The 9 GenAI-drafted definitions are reported separately in the ML evaluation | Waived by George, 5 Nov; the evaluation must not score the model on LLM-written text | PRD §3.5 |
+| C3 | **Text we supplied ourselves was drafted with GenAI and labelled so:** KPI descriptions, conflict-case texts and formulas, Katerina's draft, the quality KPI, 35 community-tag labels, and the SKOS concept labels, definitions and scope notes. The 11 GenAI-drafted definitions are reported separately in the ML evaluation | Waived by George, 5 Nov; the evaluation must not score the model on LLM-written text | PRD §3.5 |
 | C4 | **One hand-written quality KPI added:** *Food Safety Incident Rate* (Operations, `%`, DEF-0308, KPI-0061) | E6 left the theme *quality* empty; an empty concept would be a T1 candidate no gold label can match (P3) | `scenarios.yaml`; PRD §14 Q2 |
-| C5 | **Links move off a superseded definition:** dashboard links, lineage and community tags point at the successor; the old version keeps its review history | A deprecated definition must not keep feeding dashboards or other definitions; 5 dashboards that used DEF-0025 now use DEF-0041 | `kpigen` generator, `tests/test_seed_rules.py`; PRD §4.5 |
+| C5 | **Links move off a superseded definition:** dashboard links, lineage and community tags point at the successor; the old version keeps its review history | A deprecated definition must not keep feeding dashboards or other definitions; every dashboard that would use DEF-0025 uses DEF-0041 | `kpigen` generator, `tests/test_seed_rules.py`; PRD §4.5 |
 | C6 | **ML skips deprecated definitions** (T1–T3, similarity flags) and leaves them out of the gold set and evaluation (M10) | Same reason as C5; the near-identical text would count twice | PRD §6, §14 Q8 |
 | C7 | **Several definitions per KPI and division are allowed**, told apart by `source_table` | Divisions keep variants of the same KPI from different source tables (e.g. Commercial has 6 inventory-turnover definitions, S2) | `schema.sql`; PRD §4.2 |
 | C8 | **Business lines link to NAICS 2022 with `closeMatch`, not `exactMatch`;** Online gets only a `broadMatch` and Membership no match | NAICS 2022 removed the separate e-commerce industry (old 454110); a paid retail membership isn't an industry. Codes are drafts until checked (task V2) | `vocab/kpi-vocabulary.ttl`; PRD §5, §14 Q4 |
