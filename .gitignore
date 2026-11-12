@@ -14,3 +14,6 @@ wheels/
 
 # Pinned source downloads (no licence; never commit, see docs/PRD.md §3.2)
 data/raw/
+
+# Local app database (built by `flask init-db`, PRD §11)
+instance/

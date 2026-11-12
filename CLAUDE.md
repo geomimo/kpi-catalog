@@ -29,8 +29,9 @@ University group project for *Information Organization*: a website that organize
 - `uv add <pkg>`: add a dependency (use uv, never pip)
 - `uv run kpigen download`: fetch the pinned sources into `data/raw/` (the only network step)
 - `uv run kpigen`: generate `data/seed/` and validate it (`schema.sql` + `tests/test_seed_rules.py`); `--strict` also fails on any `TODO(george)` placeholder
-- `uv run pytest`: generator, seed and web tests
-- `uv run flask --app kpi_catalog.web run --debug`: run the web app (pages are placeholders until W2–W3)
+- `uv run pytest`: generator, seed, database and web tests
+- `uv run flask --app kpi_catalog.web init-db`: build `instance/catalog.sqlite` from `schema.sql` + `data/seed/` (deletes the old file; a failed build leaves none)
+- `uv run flask --app kpi_catalog.web run --debug`: run the web app (pages are placeholders until W3–W4)
 - Planned: `uv run kpi-catalog build` (load → tag → flag)
 
 ## Layout (planned, see PRD §11)
@@ -40,7 +41,8 @@ University group project for *Information Organization*: a website that organize
 - `data/raw/`: pinned source downloads (git-ignored; never commit them).
 - `data/gold|annotated/`: gold labels and the exported annotated dataset. Every data-quality decision is logged in `data/quality_log.md` (it feeds the report).
 - `vocab/`: hand-authored SKOS seed + generated exports.
-- `src/kpi_catalog/{data,vocab,ml,web}/` + `db.py`. `web/` exists: app factory and the site-map table `PAGES` in `__init__.py`, Jinja templates, vendored `static/simple.min.css` (no CDN, no JS build). `tests/test_web.py` requests every route.
+- `src/kpi_catalog/{data,vocab,ml,web}/` + `db.py`. `web/` exists: app factory and the site-map table `PAGES` in `__init__.py`, Jinja templates, vendored `static/simple.min.css` (no CDN, no JS build). `tests/test_web.py` requests every route. `db.py` exists: `build()` (plain function, reused by `kpi-catalog build`), `build_search_index()` (FTS5 table `definitions_fts`; re-run after tags change), `get_db()` per request. The CSV loading is shared with kpigen (`kpigen.validate.fill_from_seed`), never duplicated.
+- `instance/`: the built app database (git-ignored).
 - `docs/TASKS.md`: task tracker. `docs/user-journeys.md`, `docs/wireframes/`, `docs/demo-script.md`: Ioanna's UX inputs for the web pages and the demo.
 - `exploration.ipynb`: scratch notebook.
 

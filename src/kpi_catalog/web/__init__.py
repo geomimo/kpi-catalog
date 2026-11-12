@@ -5,9 +5,11 @@ Run with: uv run flask --app kpi_catalog.web run --debug
 
 from flask import Flask, render_template
 
+from kpi_catalog import db
+
 # The PRD §10 site map: (endpoint, URL rule, page title, what the page will do).
-# Every page is a placeholder for now; the database comes in W2 and the
-# "log in as" switcher and permission checks in W3.
+# Every page is a placeholder for now (data appears from W4); the "log in as"
+# switcher and permission checks come in W3. Database access: db.get_db().
 PAGES = [
     ("home", "/", "Home", 'Search, "KPIs of <your divisions>", facet entry points.'),
     ("browse", "/kpis", "Browse KPIs", "Facets, community-tag filter, A–Z index, tag cloud."),
@@ -39,8 +41,10 @@ NAV = [
 ]
 
 
-def create_app() -> Flask:
-    app = Flask(__name__)
+def create_app(config: dict | None = None) -> Flask:
+    app = Flask(__name__, instance_path=str(db.INSTANCE))
+    app.config.update(config or {})
+    db.init_app(app)
 
     @app.context_processor
     def inject_nav():

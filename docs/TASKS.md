@@ -62,7 +62,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
 ### Liam
 - [x] **W1 · Flask skeleton** · by 12 Nov · §10–11 · *done 11 Nov: placeholders for all 13 site-map routes, simple.css vendored, `tests/test_web.py`*
   - App factory in `src/kpi_catalog/web/`, base layout with navbar, small classless CSS, a placeholder for every page in the site map. Done when: `uv run flask --app kpi_catalog.web run --debug` serves every route.
-- [ ] **W2 · Database loader (`db.py`)** · by 15 Nov · §4, §11 · needs D3
+- [x] **W2 · Database loader (`db.py`)** · by 15 Nov · §4, §11 · needs D3 · *done 11 Nov: `flask init-db`, FTS5 table `definitions_fts`, `tests/test_db.py`*
   - Creates `instance/catalog.sqlite` from `schema.sql`, loads `data/seed/*.csv`, builds the FTS5 index. Use the generated seed in `data/seed/`. Done when: it loads the real seed with foreign keys enforced.
 - [ ] **W3 · "Log in as" and permission checks** · by 19 Nov · F1, §4.1, §4.5, §10 · needs W2
   - Switcher with seed users grouped by division and persona shortcuts; one check function (user, permission, division); the visibility rule for unpublished definitions. Done when: pytest covers every cell of the §10 capability table.

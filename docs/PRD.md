@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Course** | Information Organization, group project |
-| **Status** | Draft v5, 11 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode (106 definitions); the ML stack runs on Python 3.14; curation files and the GenAI-drafted texts reviewed; company named Konfusio; the ML batch skips deprecated definitions (§14 Q8); Flask skeleton with placeholder pages for the whole site map (§11). History in [§15](#15-change-log) |
+| **Status** | Draft v5, 11 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode (106 definitions); the ML stack runs on Python 3.14; curation files and the GenAI-drafted texts reviewed; company named Konfusio; the ML batch skips deprecated definitions (§14 Q8); Flask skeleton with placeholder pages for the whole site map; the database loader builds `instance/catalog.sqlite` with an FTS5 index (§11). History in [§15](#15-change-log) |
 | **Deadlines** | Mid-term description **19 Nov 2026** · Final delivery **21 Dec 2026** |
 | **Team** | **A** = George (dataset, vocabulary, ML) · **B** = Liam (web app) · **W** = Liam (report) and Ioanna (personas, user journeys, UI wireframes). Slides owner still open ([§14](#14-open-questions)) |
 | **Tasks and progress** | [`docs/TASKS.md`](TASKS.md) |
@@ -461,7 +461,7 @@ Embeddings for the seed data are **computed offline once**; the web app only enc
 | F0 | **Seed generation**: `kpigen`, curation files, `scenarios.yaml`, `schema.sql`, validation ([§3](#3-collection-and-generation-plan)) | MVP | all | dataset, data quality | A |
 | F1 | Navbar + **"log in as" switcher** (seed users grouped by division; persona shortcuts); permissions checked through `user_roles` × `role_permissions` | MVP | all | website, interactions | B |
 | F2 | **Browse with facets** from official tags and fields: Division, Category (2-level), Business line, Measure Type, Metric Type, Grain, Status; a **separate "Community tags" filter**; A–Z index | MVP | UC1 | formal + informal org | B |
-| F3 | **Keyword search** (SQLite FTS5 over KPI names, labels, definition text, official and community tags) with **query expansion through SKOS altLabels**; each result shows why it matched (e.g. "matched community tag #board-pack") | MVP | UC2 | vocabulary integration | B + A |
+| F3 | **Keyword search** (SQLite FTS5 over KPI names, labels, definition text, official and community tags) with **query expansion through SKOS altLabels** (index: FTS5 table `definitions_fts`, one row per definition, Porter stemming; built by the loader and rebuilt when tags change; visibility applied at query time); each result shows why it matched (e.g. "matched community tag #board-pack") | MVP | UC2 | vocabulary integration | B + A |
 | F4 | **KPI page**: every visible definition, grouped by division (label, text, formula, unit/currency, grain, source table/column, owner, status). **Official tags** as solid chips grouped by facet, linked to concept pages, ML ones marked **"auto"** with the confidence on hover. **Community tags** in a separate row ("unofficial, not reviewed") as outlined `#tag` chips with a count | MVP | UC1, UC2 | formal vs informal, made visible | B |
 | F5 | **Divergence panel**: "definitions diverge" warnings + "similar KPIs" | MVP | UC2 | ML | B + A |
 | F6 | **Lineage panel** (read-only `kpi_relationships`: numerator/denominator/input, subset, cumulative) | MVP | UC2 | formal org (relationships) | B |
@@ -539,7 +539,7 @@ data/{gold,annotated}/      gold labels; exported annotated dataset
 vocab/                      hand-authored SKOS seed + generated exports
 src/kpigen/                 seed generator: download, inputs + coverage check, generate, write, validate
 src/kpi_catalog/
-  db.py                     create from schema.sql + load seed CSVs
+  db.py                     create from schema.sql + load seed CSVs (shared loader in kpigen), FTS5 index, get_db()
   vocab/skos.py             load / query / export SKOS; unit → measure type; official tags
   ml/tagger.py              T1/T2 tagging, T3 unit check, submit suggestions
   ml/similarity.py          synonym / divergence flags
@@ -551,7 +551,7 @@ tests/test_kpigen.py        generator tests (determinism, coverage, validation c
 docs/PRD.md
 ```
 
-**Commands:** `uv run kpigen download` (pinned sources) · `uv run kpigen` (generate + validate seed) · `uv run kpi-catalog build` (load → tag → flag; reuses the existing `kpi-catalog` script entry point) · `uv run flask --app kpi_catalog.web run --debug`.
+**Commands:** `uv run kpigen download` (pinned sources) · `uv run kpigen` (generate + validate seed) · `uv run flask --app kpi_catalog.web init-db` (build the database from the seed) · `uv run kpi-catalog build` (load → tag → flag; reuses the existing `kpi-catalog` script entry point) · `uv run flask --app kpi_catalog.web run --debug`.
 
 ## 12. Milestones
 
@@ -643,3 +643,4 @@ Every change to a feature or decision gets a row here, with the PRD sections it 
 | 11 Nov 2026 | v5 | Open questions added: supersede in the app (Q7, task W20) and ML tags on superseded definitions (Q8, task M10) | §14 |
 | 11 Nov 2026 | v5 | M10: the ML batch (T1–T3, similarity flags) skips deprecated definitions and leaves them out of the gold set and evaluation; deprecated rows have no theme or business line in the annotated dataset | header, §4.5, §6, §14 Q8 |
 | 11 Nov 2026 | v5 | W1: Flask skeleton with a placeholder page for every site-map route; Simple.css vendored as the classless stylesheet | header, §11 |
+| 11 Nov 2026 | v5 | W2: database loader. `flask init-db` builds `instance/catalog.sqlite` from `schema.sql` + the seed in one transaction (foreign keys on, `foreign_key_check` before commit; a failed build leaves no file), sharing kpigen's CSV loader; FTS5 index `definitions_fts` over KPI name, display name, definition text and tag labels | header, §9 F3, §11 |

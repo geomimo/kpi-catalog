@@ -19,7 +19,7 @@ Group project for the course *Information Organization*.
 The full scope, personas, use cases and plan are in **[docs/PRD.md](docs/PRD.md)**.
 
 ## Status
-The seed generator `kpigen` and `schema.sql` (reviewed) are written and the seed validates (106 definitions). The ML stack (`sentence-transformers` with `all-MiniLM-L6-v2`) runs on Python 3.14. The curation files and our own texts (drafted with GenAI) have been reviewed. The Flask app skeleton serves a placeholder for every page in the site map. Next: vocabulary v0, first tagging run, the database loader and "log in as" (mid-term: 19 Nov 2026; final: 21 Dec 2026). Tasks and progress are tracked in [docs/TASKS.md](docs/TASKS.md).
+The seed generator `kpigen` and `schema.sql` (reviewed) are written and the seed validates (106 definitions). The ML stack (`sentence-transformers` with `all-MiniLM-L6-v2`) runs on Python 3.14. The curation files and our own texts (drafted with GenAI) have been reviewed. The Flask app skeleton serves a placeholder for every page in the site map, and `flask init-db` builds the app database (SQLite with a full-text search index) from the seed. Next: vocabulary v0, first tagging run, "log in as" (mid-term: 19 Nov 2026; final: 21 Dec 2026). Tasks and progress are tracked in [docs/TASKS.md](docs/TASKS.md).
 
 ## Setup
 Requires [uv](https://docs.astral.sh/uv/) and Python 3.14.
@@ -28,7 +28,8 @@ Requires [uv](https://docs.astral.sh/uv/) and Python 3.14.
 uv sync
 uv run kpigen download                 # fetch the pinned sources into data/raw/ (git-ignored)
 uv run kpigen                          # generate data/seed/*.csv and validate it against schema.sql + business rules
-uv run pytest                          # generator, seed and web tests
+uv run pytest                          # generator, seed, database and web tests
+uv run flask --app kpi_catalog.web init-db       # build instance/catalog.sqlite from schema.sql + data/seed/
 uv run flask --app kpi_catalog.web run --debug   # web app at http://127.0.0.1:5000 (placeholder pages for now)
 uv run jupyter lab exploration.ipynb   # explore the dataset
 ```
