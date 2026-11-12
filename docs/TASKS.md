@@ -92,7 +92,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - `vocab/skos.py`: create official tags from the Category and Business line concepts, and map `unit` to Measure Type. Done when: the loader calls it and the facets can query both.
 - [ ] **M3 · Gold labels** · George + one other member (TBD) · by 26 Nov · §6 · needs D7
   - Done when: 40 definitions have T1 theme labels from two annotators working independently, disagreements are resolved, and the T1 and T2 gold sets are in `data/gold/`.
-- [ ] **V2 · Check the NAICS 2022 codes** · by 26 Nov · §5, §14 Q4
+- [x] **V2 · Check the NAICS 2022 codes** · by 26 Nov · §5, §14 Q4 · *done 12 Nov: all v0 codes confirmed against the Census NAICS 2022 code list, concordance and manual; none changed*
   - Done when: every Business line's `skos:closeMatch` and `skos:notation` has been checked against NAICS 2022, with the source cited.
 - [ ] **V4 · Vocabulary v1** · by 27 Nov · §5 · needs V3
   - Generate the Division and KPI Glossary schemes from the database (altLabels from `display_name`, `dct:subject`, lineage properties), plus an altLabel lookup for search expansion (W5). Done when: rdflib parses the combined vocabulary and "Stock Turnover Rate" resolves to Inventory Turnover.

@@ -191,17 +191,21 @@ kv:Workforce a skos:Concept ;
 # =========================================================================================================
 # Local names match the business_line column of kpigen/curation/domain_to_division.csv (also the T2 gold labels).
 #
-# NAICS links are DRAFTS, not yet checked against the official NAICS 2022 manual (task V2, PRD §14 Q4).
+# NAICS links checked on 12 Nov 2026 (task V2, PRD §14 Q4) against the US Census Bureau's NAICS 2022 code list
+# (2-6 digit_2022_Codes.xlsx), the 2022-to-2017 concordance (2022_to_2017_NAICS.xlsx) and the 2022 NAICS Manual.
+# Every code exists in NAICS 2022 with the title given in the comments below.
 #   - closeMatch, not exactMatch: a Konfusio business line is similar to a NAICS industry, not the same thing.
-#   - Online uses broadMatch: NAICS 2022 removed the separate nonstore / e-commerce industries (old 454110
-#     Electronic Shopping), so online grocery sales fall under the broader grocery-retail industry.
-#   - Membership has no NAICS match: a paid retail membership is not an industry. V2 confirms or finds one.
+#   - Online uses broadMatch: NAICS 2022 removed the nonstore industries (old 454110 Electronic Shopping and
+#     Mail-Order Houses). The manual's Retail Trade introduction groups retailers by merchandise line and treats
+#     websites as one way of selling, so a grocer's own web shop falls under the broader grocery-retail industry.
+#   - Membership has no NAICS match: a paid retail membership is not an industry. The manual's "membership"
+#     entries are civic organizations and membership hotels; warehouse clubs (455211) are classified by what they sell.
 #   - The closeMatch targets are the Census Bureau's NAICS pages; NAICS has no official linked-data URIs.
 
 kv:BusinessLineScheme a skos:ConceptScheme ;
     dct:title "Business line"@en ;
     dct:description "Konfusio's lines of business, the industries a KPI applies to. Group-wide covers KPIs not tied to one line."@en ;
-    dct:source "North American Industry Classification System (NAICS), 2022 edition, US Census Bureau." ;
+    dct:source "Executive Office of the President, Office of Management and Budget (2022). North American Industry Classification System, United States, 2022. Codes checked against the US Census Bureau's 2022 NAICS code list and 2022-to-2017 concordance (census.gov/naics)." ;
     dct:created "2026-11-11"^^xsd:date ;
     skos:hasTopConcept kv:Stores, kv:Online, kv:FoodToGo, kv:Membership, kv:Banking,
                        kv:Insurance, kv:Mobile, kv:Property, kv:OwnBrandProduction, kv:GroupWide .
@@ -211,6 +215,7 @@ kv:Stores a skos:Concept ;
     skos:prefLabel "Stores"@en ;
     skos:altLabel "Retail Stores"@en, "Supermarkets"@en ;
     skos:definition "Konfusio's physical supermarkets and shops: in-store retail sales of groceries and general merchandise."@en ;
+    # 445110 Supermarkets and Other Grocery Retailers (except Convenience Retailers); 2022 renamed it from "... Stores".
     skos:notation "445110"^^kv:NAICS2022 ;
     skos:closeMatch <https://www.census.gov/naics/?input=445110&year=2022&details=445110> .
 
@@ -226,6 +231,8 @@ kv:FoodToGo a skos:Concept ;
     skos:prefLabel "Food-to-go"@en ;
     skos:altLabel "Food to Go"@en, "Takeaway"@en, "Quick Service"@en ;
     skos:definition "Konfusio's food-to-go counters and cafes: ready-to-eat food and drinks ordered and paid for before eating, including food orders and food revenue."@en ;
+    # 722513 Limited-Service Restaurants: patrons "order or select items and pay before eating". 722515 Snack and
+    # Nonalcoholic Beverage Bars (coffee, snacks) is narrower than counters that sell meals.
     skos:notation "722513"^^kv:NAICS2022 ;
     skos:closeMatch <https://www.census.gov/naics/?input=722513&year=2022&details=722513> .
 
@@ -234,13 +241,15 @@ kv:Membership a skos:Concept ;
     skos:prefLabel "Membership"@en ;
     skos:altLabel "Paid Membership"@en, "Subscription"@en ;
     skos:definition "Konfusio's paid membership: a subscription that gives customers benefits such as free delivery and discounts, with subscribers, renewals and cancellations."@en ;
-    skos:scopeNote "No NAICS industry matches a paid retail membership; see task V2."@en .
+    skos:scopeNote "No NAICS 2022 industry matches a paid retail membership, so this concept has no NAICS link."@en .
 
 kv:Banking a skos:Concept ;
     skos:inScheme kv:BusinessLineScheme ; skos:topConceptOf kv:BusinessLineScheme ;
     skos:prefLabel "Banking"@en ;
     skos:altLabel "Retail Banking"@en, "Bank"@en ;
     skos:definition "Konfusio's banking arm: savings accounts, credit cards and personal loans, with deposits, loan portfolios, interest and defaults."@en ;
+    # 522110 Commercial Banking: accepting deposits and making consumer loans. Pure credit-card banking would be
+    # 522210, but cards are a side business here.
     skos:notation "522110"^^kv:NAICS2022 ;
     skos:closeMatch <https://www.census.gov/naics/?input=522110&year=2022&details=522110> .
 
@@ -249,8 +258,9 @@ kv:Insurance a skos:Concept ;
     skos:prefLabel "Insurance"@en ;
     skos:altLabel "Insurance Arm"@en ;
     skos:definition "Konfusio's insurance arm: home, car and pet insurance policies, with premiums, claims filed and claims settled."@en ;
-    # Draft: a direct property and casualty carrier, because the seed's insurance KPIs settle claims themselves.
-    # If Konfusio only brokers policies, 524210 Insurance Agencies and Brokerages fits better (V2).
+    # 524126 Direct Property and Casualty Insurance Carriers: Konfusio underwrites its own policies (it takes the
+    # premiums and settles the claims); homeowners' and automobile carriers are among the manual's examples.
+    # 524210 Insurance Agencies and Brokerages would only fit if it sold other insurers' policies.
     skos:notation "524126"^^kv:NAICS2022 ;
     skos:closeMatch <https://www.census.gov/naics/?input=524126&year=2022&details=524126> .
 
@@ -259,7 +269,8 @@ kv:Mobile a skos:Concept ;
     skos:prefLabel "Mobile"@en ;
     skos:altLabel "Mobile Network"@en, "Telecommunications"@en ;
     skos:definition "Konfusio's mobile phone service, resold on another operator's network: SIM plans, subscribers, data usage and airtime."@en ;
-    # Draft: a reseller (MVNO), as retailers' mobile brands usually are. A network operator would be 517112 (V2).
+    # 517121 Telecommunications Resellers (2017: 517911): the manual lists mobile virtual network operators (MVNOs)
+    # as an example. A network operator would be 517112 Wireless Telecommunications Carriers (except Satellite).
     skos:notation "517121"^^kv:NAICS2022 ;
     skos:closeMatch <https://www.census.gov/naics/?input=517121&year=2022&details=517121> .
 
@@ -268,6 +279,8 @@ kv:Property a skos:Concept ;
     skos:prefLabel "Property"@en ;
     skos:altLabel "Real Estate"@en, "Shopping Centres"@en ;
     skos:definition "Konfusio's property business: shopping centres and retail units leased to tenants, with rent, occupancy and tenant receivables."@en ;
+    # 531120 Lessors of Nonresidential Buildings (except Miniwarehouses); the manual's index files shopping-centre
+    # rental or leasing here.
     skos:notation "531120"^^kv:NAICS2022 ;
     skos:closeMatch <https://www.census.gov/naics/?input=531120&year=2022&details=531120> .
 
@@ -286,6 +299,7 @@ kv:GroupWide a skos:Concept ;
     skos:altLabel "Group"@en, "Corporate"@en, "All Business Lines"@en ;
     skos:definition "KPIs of the group as a whole rather than one line of business: group finance and accounting, corporate functions, marketing, human resources and the shared supply chain."@en ;
     skos:scopeNote "Use when a KPI covers several business lines or none in particular."@en ;
+    # 551114 Corporate, Subsidiary, and Regional Managing Offices (head offices).
     skos:notation "551114"^^kv:NAICS2022 ;
     skos:closeMatch <https://www.census.gov/naics/?input=551114&year=2022&details=551114> .
 
