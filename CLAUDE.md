@@ -30,7 +30,7 @@ University group project for *Information Organization*: a website that organize
 - `uv run kpigen download`: fetch the pinned sources into `data/raw/` (the only network step)
 - `uv run kpigen`: generate `data/seed/` and validate it (`schema.sql` + `tests/test_seed_rules.py`); `--strict` also fails on any `TODO(george)` placeholder
 - `uv run pytest`: generator, seed, vocabulary and gold-set tests
-- `uv run python -m kpi_catalog.ml.gold prepare|compare`: gold-set sample, blank annotator sheets and T2 gold / check the sheets and write `t1_gold.csv` (M3; see `data/gold/README.md`)
+- `uv run python -m kpi_catalog.ml.gold prepare|finalize`: gold-set sample, blank annotator sheet and T2 gold / check the sheet and write `t1_gold.csv` (M3; one annotator, George; see `data/gold/README.md`)
 - Planned: `uv run kpi-catalog build` (load → tag → flag), `uv run flask --app kpi_catalog.web run --debug`
 
 ## Layout (planned, see PRD §11)

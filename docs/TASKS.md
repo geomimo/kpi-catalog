@@ -90,8 +90,8 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
 ### George
 - [ ] **V3 · Official tags and measure type at load** · by 22 Nov · §4.2–4.3, §5 · needs V1, W2
   - `vocab/skos.py`: create official tags from the Category and Business line concepts, and map `unit` to Measure Type. Done when: the loader calls it and the facets can query both.
-- [ ] **M3 · Gold labels** *(in progress)* · George + one other member (TBD) · by 26 Nov · §6 · needs D7 · *15 Nov: sample, blank sheets, guidelines and T2 gold ready in `data/gold/`; labelling open*
-  - Done when: 40 definitions have T1 theme labels from two annotators working independently, disagreements are resolved, and the T1 and T2 gold sets are in `data/gold/`.
+- [x] **M3 · Gold labels** · George · by 26 Nov · §6 · needs D7 · *done 15 Nov: 40 definitions labelled by George (one annotator), 5 with a second theme; T1 and T2 gold sets in `data/gold/`*
+  - Done when: 40 definitions have hand-made T1 theme labels, `finalize` passes, and the T1 and T2 gold sets are in `data/gold/`.
 - [x] **V2 · Check the NAICS 2022 codes** · by 26 Nov · §5, §14 Q4 · *done 12 Nov: all v0 codes confirmed against the Census NAICS 2022 code list, concordance and manual; none changed*
   - Done when: every Business line's `skos:closeMatch` and `skos:notation` has been checked against NAICS 2022, with the source cited.
 - [ ] **V4 · Vocabulary v1** · by 27 Nov · §5 · needs V3
@@ -215,4 +215,4 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
 - [ ] **S2 · Semantic search with the stored embeddings** · George · F3, §9
 - [ ] **S3 · Comments on definitions** · Liam · §9
 - [ ] **S4 · Dashboard page listing its definitions** · Liam · §9
-- [ ] **S5 · Cohen's κ on the gold set** · George + the second M3 annotator · needs M3 · §6
+- [x] **S5 · Cohen's κ on the gold set** · *dropped 15 Nov: the gold set has one annotator (M3)*

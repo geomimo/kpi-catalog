@@ -8,39 +8,30 @@ its own kind of answers (PRD §3.5).
 |---|---|---|
 | `themes.csv` | The 11 themes you can choose from, with their perspective, SKOS definition and scope note | `prepare`, from `vocab/kpi-vocabulary.ttl` |
 | `t1_sample.csv` | The 40 definitions to label: 40 of the 57 eligible KPIs at random (seed 42), one definition each | `prepare` |
-| `t1_annotator_a.csv` | Annotator A's labels: **George** | A, by hand |
-| `t1_annotator_b.csv` | Annotator B's labels: **TBD** | B, by hand |
-| `t1_gold.csv` | Both annotators' labels side by side and the agreed T1 gold label | `compare`, then both annotators for the disagreements |
+| `t1_annotator_a.csv` | The T1 labels, with notes: annotator A, **George** (the only annotator, decided 15 Nov) | George, by hand |
+| `t1_gold.csv` | The T1 gold set M5 reads: `definition_id`, `theme_1`, `theme_2` | `finalize`, from the sheet |
 | `t2_gold.csv` | Business line of every eligible HF definition, from its `domain` via `kpigen/curation/domain_to_division.csv` | `prepare` |
 
 Eligible = real source text (Hugging Face or dbt) and not deprecated: 96 definitions of 57 KPIs. The 11
-GenAI-drafted definitions and the deprecated DEF-0025 are left out (PRD §3.5, §6).
+GenAI-drafted definitions and the deprecated DEF-0025 are left out (PRD §3.5, §6). With one annotator there is
+no inter-annotator agreement; the report names this as a limitation.
 
 ## Commands
 ```
-uv run python -m kpi_catalog.ml.gold prepare   # regenerate themes, sample and T2; never overwrites an annotator sheet
-uv run python -m kpi_catalog.ml.gold compare   # check both sheets, write t1_gold.csv, print the agreement
+uv run python -m kpi_catalog.ml.gold prepare    # regenerate themes, sample and T2; never overwrites the sheet
+uv run python -m kpi_catalog.ml.gold finalize   # check the sheet, write t1_gold.csv
 ```
 
-## How to label (both annotators)
+## How to label
 
-1. **Open only your own sheet** (`t1_annotator_a.csv` or `_b.csv`; Excel or Google Sheets is fine, but save it
-   back as CSV with the same columns and row order). Don't look at the other sheet, talk about specific
-   definitions, or look at ML output until both sheets are finished.
-2. **Read `themes.csv` first**, including the scope notes: they settle the borderline cases.
-3. **For each row, judge only what you see**: `display_name`, `definition_text` and `formula`. That is all the
+1. **Read `themes.csv` first**, including the scope notes: they settle the borderline cases.
+2. **For each row, judge only what you see**: `display_name`, `definition_text` and `formula`. That is all the
    tagger sees. Ask "what does this number measure?", not "which department owns it?".
-4. **`theme_1` (required):** the one theme that best describes what the KPI measures. Write the name exactly
+3. **`theme_1` (required):** the one theme that best describes what the KPI measures. Write the name exactly
    as in the `theme` column of `themes.csv` (e.g. `BalanceSheet`, `CustomerRelationship`).
-5. **`theme_2` (optional):** only if the definition is clearly also about a second theme, as a scope note
-   allows (e.g. Supply Chain with Cost for shipping costs). Leave it empty when in doubt. Most rows have one theme.
-6. **`note` (optional):** anything you were unsure about. It helps the resolution meeting.
-7. Run `compare` when you're done. It lists every empty, misspelled or unknown theme; fix them and run it again.
-
-## Resolving disagreements
-
-Once both sheets pass, `compare` writes `t1_gold.csv`. Rows where both annotators gave the same labels are
-filled in automatically (`agreement = same`). For every other row (`partial` or `none`), meet, decide
-together, and fill in `theme_1`, `theme_2` and a short `resolution_note`. Run `compare` again: it keeps your
-resolutions (unless one of the annotators later changes that row) and reports "T1 gold set complete" when no
-row is open. Record the agreement figures in `data/quality_log.md` and PRD §6.
+4. **`theme_2` (optional):** only if the definition is clearly also about a second, different theme, as a scope
+   note allows (e.g. Supply Chain with Cost for shipping costs). Leave it empty when in doubt.
+5. **`note` (optional):** anything you were unsure about; it feeds the report's discussion of the results.
+6. Edit the sheet in VS Code, or in Excel or Google Sheets saved as CSV UTF-8 with the same columns and row order.
+7. Run `finalize`. It lists every empty, misspelled, unknown or repeated theme; fix them and run it again until
+   it reports "T1 gold set complete". Commit both the sheet and `t1_gold.csv`.
