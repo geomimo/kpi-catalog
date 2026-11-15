@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="notice-page">
+  <span class="page-icon">{{ icon("lock", 30) }}</span>
+  <h1>You can't open this page</h1>
+  <p>{{ message }}</p>
+  {% if user %}
+  <p class="muted">You are logged in as {{ user.full_name }} ({{ role_label(user) }}). Try another persona from the account menu at the top right.</p>
+  {% else %}
+  <p class="muted">You are browsing as a read-only visitor. Log in as one of the personas from the account menu at the top right.</p>
+  {% endif %}
+  <p><a class="button" href="{{ url_for('home') }}">Back to Home</a></p>
+</div>
+{% endblock %}

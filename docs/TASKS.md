@@ -64,8 +64,8 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - App factory in `src/kpi_catalog/web/`, base layout with navbar, small classless CSS, a placeholder for every page in the site map. Done when: `uv run flask --app kpi_catalog.web run --debug` serves every route.
 - [x] **W2 · Database loader (`db.py`)** · by 15 Nov · §4, §11 · needs D3 · *done 11 Nov: `flask init-db`, FTS5 table `definitions_fts`, `tests/test_db.py`*
   - Creates `instance/catalog.sqlite` from `schema.sql`, loads `data/seed/*.csv`, builds the FTS5 index. Use the generated seed in `data/seed/`. Done when: it loads the real seed with foreign keys enforced.
-- [ ] **W3 · "Log in as" and permission checks** · by 19 Nov · F1, §4.1, §4.5, §10 · needs W2
-  - Switcher with seed users grouped by division and persona shortcuts; one check function (user, permission, division); the visibility rule for unpublished definitions. Done when: pytest covers every cell of the §10 capability table.
+- [x] **W3 · "Log in as" and permission checks** · by 19 Nov · F1, §4.1, §4.5, §10 · needs W2 · *done 15 Nov: three personas only, role-based menus, `tests/test_auth_editor.py` covers all 40 cells*
+  - Switcher with the three personas (Emma, Katerina, Noah); one check function (user, permission, division); the visibility rule for unpublished definitions. Done when: pytest covers every cell of the §10 capability table.
 - [ ] **R1 · Mid-term description** · draft by 16 Nov, submit 19 Nov · §13 mid-term checklist
   - Inputs from George (dataset, vocabulary, ML status) and Ioanna (personas, site map). Done when: all six checklist questions are answered and the whole team has read it.
 
@@ -145,13 +145,13 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - Done when: the decision is in the PRD; if it is "go", S1 gets broken into tasks here.
 
 ### Liam
-- [ ] **W12 · My definitions** · by 8 Dec · F11 · needs W3
+- [x] **W12 · My definitions** · by 8 Dec · F11 · needs W3 · *done 15 Nov: tabs by status with counts, latest review comment, Edit link on drafts*
   - Done when: a user's own drafts, in-review and rejected definitions are listed with their review comments.
 - [ ] **W13 · Review queue** · by 8 Dec · F12, §4.5 · needs W3
-  - Done when: a Reviewer can approve, reject or request changes with a comment, only in their own divisions and never on their own definitions, and the decision appears in the review history (UC3 as Dimitris).
+  - Done when: a Reviewer can approve, reject or request changes with a comment, only in their own divisions and never on their own definitions, and the decision appears in the review history (UC3 as Noah; Dimitris's division-scoped case in pytest).
 - [ ] **W14 · Community tags** · by 8 Dec · F14 · needs W6
   - Done when: any user can add a tag to a definition, and browse shows a tag cloud.
-- [ ] **W11 · Definition editor and submit** · by 10 Dec · F10 · needs M8, U5
+- [ ] **W11 · Definition editor and submit** · by 10 Dec · F10 · needs M8, U5 · *(in progress): form from Ioanna's wireframe, create and edit drafts, Save Draft / Submit for Review and server-side validation done on 15 Nov; ML suggestions (M8, stub `ml/suggest.py`) and the similar-KPI warning missing*
   - Build the form first; plug in M8 when it is ready. Done when: a Contributor or Curator can create and edit a draft, sees the ML suggestions and the similar-KPI warning, and submits it (draft → in_review).
 - [ ] **R5 · Personas and use cases section** · Liam + Ioanna · by 10 Dec · §7–8 · needs U1, U2
 - [ ] **W15 · ML tag validation queue** · by 12 Dec · F13 · needs W6, M2 · cut #3

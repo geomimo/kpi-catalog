@@ -5,6 +5,13 @@
 {{ page_header(d.kpi_name ~ " – " ~ d.division_name, "KPI Definition", url_for("compare", slug=d.kpi_slug),
                subtitle=("Called “" ~ d.display_name ~ "” in " ~ d.division_name) if d.display_name|lower != d.kpi_name|lower else None) }}
 
+{% if d.status in ("draft", "in_review", "rejected") %}
+<div class="banner" role="status">{{ icon("info-circle") }}
+  <div>This definition is <strong>{{ status_labels[d.status]|lower }}</strong>: only its owner, its division and admins can see it.
+    {% if can_edit %}<a class="button" href="{{ url_for('edit_definition', definition_id=d.definition_id) }}">{{ icon("pencil", 18) }} Edit draft</a>{% endif %}</div>
+</div>
+{% endif %}
+
 {% if d.status == "deprecated" and d.superseded_by_id %}
 <div class="banner" role="status">{{ icon("versions") }}
   <div>This version is deprecated. <a href="{{ url_for('definition', definition_id=d.superseded_by_id) }}">See the current version</a>.</div>

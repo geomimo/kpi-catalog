@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Course** | Information Organization, group project |
-| **Status** | Draft v5, 15 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode (108 definitions); the ML stack runs on Python 3.14; curation files and the GenAI-drafted texts reviewed; company named Konfusio; the ML batch skips deprecated definitions (§14 Q8); vocabulary v0 written and reviewed (four hand-written SKOS schemes); data-quality log started (`data/quality_log.md`); NAICS codes checked (§14 Q4); gold-set sample and T2 gold ready, gold set labelled by one annotator, M3 done (§6); Flask skeleton with placeholder pages for the whole site map; the database loader builds `instance/catalog.sqlite` with an FTS5 index (§11); homepage layout from the wireframe, with category tiles and "Recently Viewed" (§10, W10 in progress); KPI concept, definition and compare pages with lineage, usage, review history and the divergence banner (§10, W6–W8). History in [§15](#15-change-log) |
+| **Status** | Draft v5, 15 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode (108 definitions); the ML stack runs on Python 3.14; curation files and the GenAI-drafted texts reviewed; company named Konfusio; the ML batch skips deprecated definitions (§14 Q8); vocabulary v0 written and reviewed (four hand-written SKOS schemes); data-quality log started (`data/quality_log.md`); NAICS codes checked (§14 Q4); gold-set sample and T2 gold ready, gold set labelled by one annotator, M3 done (§6); Flask skeleton with placeholder pages for the whole site map; the database loader builds `instance/catalog.sqlite` with an FTS5 index (§11); homepage layout from the wireframe, with category tiles and "Recently Viewed" (§10, W10 in progress); KPI concept, definition and compare pages with lineage, usage, review history and the divergence banner (§10, W6–W8); "log in as" with three personas, permission checks, the definition editor and My Definitions (§7, §8, §10, W3, W11, W12). History in [§15](#15-change-log) |
 | **Deadlines** | Mid-term description **19 Nov 2026** · Final delivery **21 Dec 2026** |
 | **Team** | **A** = George (dataset, vocabulary, ML) · **B** = Liam (web app) · **W** = Liam (report) and Ioanna (personas, user journeys, UI wireframes). Slides owner still open ([§14](#14-open-questions)) |
 | **Tasks and progress** | [`docs/TASKS.md`](TASKS.md) |
@@ -421,7 +421,7 @@ Embeddings for the seed data are **computed offline once**; the web app only enc
 
 ## 7. Personas
 
-> Each persona is a **fixed seed user** from `scenarios.yaml` that the demo can "log in as". Pronouns are they/them throughout.
+> Each persona is a **fixed seed user** from `scenarios.yaml` that the demo can "log in as". The switcher offers **exactly these three personas** (`auth.PERSONA_USER_IDS`); every other seed user stays an owner or reviewer in the data but can't be chosen. Pronouns are they/them throughout.
 
 ### P1: Emma Papadopoulos, Business Analyst, Finance (USR-005, **Observer** in Finance)
 - **Context:** joined in October 2026. Builds the weekly finance flash report and is comfortable with spreadsheets and SQL.
@@ -441,7 +441,7 @@ Embeddings for the seed data are **computed offline once**; the web app only enc
 - **Frustrations:** every division invents new names for the same metric; community tags multiply (`north-star`, `northstar`, `North Star`); unit errors slip into reports.
 - **Uses:** UC4.
 
-**Supporting seed users (in the demo, no persona write-up):** Dimitris Jansen (USR-008, Commercial Controller, **Reviewer**) approves Katerina's submissions; Anna Okafor (USR-009, BI Developer, **Contributor** in Commercial) proposes definitions.
+**Supporting seed users (no persona write-up, not in the switcher):** Dimitris Jansen (USR-008, Commercial Controller, **Reviewer**) is Commercial's reviewer in the seed's review history; Anna Okafor (USR-009, BI Developer, **Contributor** in Commercial) owns proposed definitions. The tests set them as the session user directly, so the Contributor and Reviewer columns of the [§10](#10-site-map-and-permissions) capability table are still covered. In the demo, Noah (Admin) does the reviewing (UC3).
 
 ## 8. Use cases
 
@@ -449,7 +449,7 @@ Embeddings for the seed data are **computed offline once**; the web app only enc
 |---|---|---|---|---|
 | **UC1 Onboard** | P1 (Observer) | Find and understand the KPIs that matter to my division | Log in as Emma → home shows "Finance KPIs" → facet Category: Financial → revenue → open a Finance KPI → read Finance's definition, unit, grain and source table, its lineage, its official and community tags, and "used in *Finance Weekly Flash Report*" | `/`, `/kpis`, `/kpis/<slug>` |
 | **UC2 Clarify across divisions** | P1, P2 | Understand why a KPI's numbers differ between divisions | Search "turnover" → KPI *Turnover* lists the Finance, Commercial and Product definitions (and currencies) with a "definitions diverge" warning → open *ATOPU*: the lineage panel shows Finance's version divides Finance turnover by Product active users, while Product's divides Product turnover by Product active users | `/kpis?q=`, `/kpis/<slug>` |
-| **UC3 Contribute** | P2 (Curator) + Reviewer | Publish my division's definition | Log in as Katerina → open the scenario draft → the form shows theme and business-line suggestions, the measure type from the unit, and "similar definitions already exist under …" → confirm the KPI and submit → log in as Dimitris (Reviewer) → approve, or request changes with a comment → the status and review history appear on the definition | `/definitions/<id>/edit`, `/my-definitions`, `/review` |
+| **UC3 Contribute** | P2 (Curator) + Reviewer | Publish my division's definition | Log in as Katerina → open the scenario draft → the form shows theme and business-line suggestions, the measure type from the unit, and "similar definitions already exist under …" → confirm the KPI and submit → log in as Noah (Admin, who may approve in every division) → approve, or request changes with a comment → the status and review history appear on the definition | `/definitions/<id>/edit`, `/my-definitions`, `/review` |
 | **UC4 Govern** | P3 (Admin) | Keep the catalog consistent and trustworthy | Log in as Noah → check low-confidence "auto" tags → resolve similarity flags (merge / relate / dismiss) → fix the `unit_mismatch` flag on *Operating Expenses* → promote the community tag `north-star` (merging `northstar` and `North Star` into it) → export the updated TTL | `/curate/tags`, `/curate/community-tags`, `/governance/flags` |
 
 **Success criteria (for the demo):** each use case runs end to end in the local site with the scenario data, and each step is visible in a screenshot for the report.
@@ -461,7 +461,7 @@ Embeddings for the seed data are **computed offline once**; the web app only enc
 | ID | Feature | Priority | Use case | Course requirement | Owner |
 |---|---|---|---|---|---|
 | F0 | **Seed generation**: `kpigen`, curation files, `scenarios.yaml`, `schema.sql`, validation ([§3](#3-collection-and-generation-plan)) | MVP | all | dataset, data quality | A |
-| F1 | Navbar + **"log in as" switcher** (seed users grouped by division; persona shortcuts); permissions checked through `user_roles` × `role_permissions` | MVP | all | website, interactions | B |
+| F1 | Navbar + **"log in as" switcher** (the three personas: Emma, Katerina, Noah); menus follow the user's permissions; permissions checked through `user_roles` × `role_permissions` | MVP | all | website, interactions | B |
 | F2 | **Browse with facets** from official tags and fields: Division, Category (2-level), Business line, Measure Type, Metric Type, Grain, Status; a **separate "Community tags" filter**; A–Z index | MVP | UC1 | formal + informal org | B |
 | F3 | **Keyword search** (SQLite FTS5 over KPI names, labels, definition text, official and community tags) with **query expansion through SKOS altLabels** (index: FTS5 table `definitions_fts`, one row per definition, Porter stemming; built by the loader and rebuilt when tags change; visibility applied at query time); each result shows why it matched (e.g. "matched community tag #board-pack") | MVP | UC2 | vocabulary integration | B + A |
 | F4 | **KPI page**: every visible definition, grouped by division (label, text, formula, unit/currency, grain, source table/column, owner, status). **Official tags** as solid chips grouped by facet, linked to concept pages, ML ones marked **"auto"** with the confidence on hover. **Community tags** in a separate row ("unofficial, not reviewed") as outlined `#tag` chips with a count | MVP | UC1, UC2 | formal vs informal, made visible | B |
@@ -494,7 +494,8 @@ Embeddings for the seed data are **computed offline once**; the web app only enc
 │   └── /kpis/<slug>       KPI page (tabs: overview, definitions, dependencies, related KPIs): definitions by division, divergence, lineage, tags
 │       └── /kpis/<slug>/compare  Compare definitions side by side (?d=… picks them; differing rows highlighted)
 ├── /definitions/<id>      Definition page (tabs: overview, definition, dependencies, usage, history): every field, lineage, used-in, review history, versions
-├── /definitions/<id>/edit [definition.propose / definition.edit] Editor with ML suggestions; submit for review
+├── /definitions/new       [definition.propose] Create a definition (or a new KPI concept); save a draft or submit for review
+├── /definitions/<id>/edit [definition.propose] Edit a draft (approved ones: W20); ML suggestions; submit for review
 ├── /my-definitions        [definition.propose] Own drafts / in-review / rejected + review comments
 ├── /review                [definition.approve] Review queue for the reviewer's divisions
 ├── /vocabulary            Concept schemes
@@ -503,7 +504,8 @@ Embeddings for the seed data are **computed offline once**; the web app only enc
 ├── /curate/community-tags [tag.manage] Community tags by frequency → merge / promote
 ├── /governance/flags      [governance.manage] Synonyms, divergences, unit mismatches; TTL export
 ├── /downloads             SKOS TTL, annotated dataset
-└── /about                 Problem, personas, use cases, methodology
+├── /about                 Problem, personas, use cases, methodology
+└── /login-as, /logout     POST only: switch to one of the three personas / back to an anonymous, read-only visitor
 ```
 
 | Capability | Observer | Contributor | Curator | Reviewer | Admin |
@@ -519,7 +521,11 @@ Embeddings for the seed data are **computed offline once**; the web app only enc
 
 "Division" means: in the divisions where the user holds that role (`user_roles.division_id`). Users can hold roles in more than one division. The home page uses `home_division_id`.
 
-**Visibility on the KPI pages.** The KPI, definition and compare pages apply the §4.5 rule through one helper (`auth.visible()`), also to counts ("Definitions (3)") and to the far end of lineage links. Until "log in as" (W3) every visitor is treated as an Observer: approved and deprecated definitions only. A KPI with no definition the visitor may see, and a definition they may not see, return 404.
+**"Log in as" and menus (W3, from Ioanna's navigation wireframe).** The account icon opens the switcher with the three personas (name, job title, role); `/login-as` accepts only those IDs and keeps the user in the session. A visitor who picks no persona is a read-only Observer. The Catalog dropdown is built from permissions: Browse KPIs for everyone; My Definitions and Create New KPI ("Create / Edit KPI" with `definition.edit`) with `definition.propose`; Review Queue with `definition.approve`; Tag Curation with `tag.manage`. With only Browse KPIs, Catalog is a plain link. Governance appears in the top bar only with `governance.manage`. One check, `auth.has_permission(user, code, division)`; a page that fails it returns a 403 page that names the missing permission.
+
+**Definition editor (W11) and My Definitions (W12).** The form follows the wireframe, mapped onto `schema.sql`: KPI concept (an existing one, or a new concept with a one-line neutral description), division (only those where the user may propose), the name used in the division (missing from the wireframe, required by the schema; defaults to the KPI's name), full text, formula (required unless the metric type is *base*), unit, grain and metric type (the schema's allowed values), source table and column. The wireframe's "Data Source" dropdown is dropped: there is no such field. The owner is the user; Curators and Admins may name another owner, who must hold a role in that division (Admins hold none, so they always name one). "Save Draft" keeps `draft`, "Submit for Review" sets `in_review`; errors are shown next to the fields and nothing is saved. Only drafts are editable here (approved ones: [§14 Q7](#14-open-questions), W20). My Definitions lists the user's own definitions by status with the latest review comment. Definitions created in the app are lost when the database is rebuilt (`init-db`); that is fine for the demo.
+
+**Visibility on the KPI pages.** The KPI, definition and compare pages apply the §4.5 rule through one helper (`auth.visible()`), also to counts ("Definitions (3)") and to the far end of lineage links. It follows the logged-in user (owner, `definition.view_unpublished` in the division, Admin); a visitor with no persona sees approved and deprecated definitions only. A KPI with no definition the visitor may see, and a definition they may not see, return 404.
 
 **Home page and top bar (from Ioanna's wireframe, 15 Nov).** Every page shares a top bar: the *konfusio* wordmark, Home · Catalog (a dropdown, "Browse KPIs" for now; role-specific entries come with W3) · Vocabulary, a bell icon and the account icon where the "log in as" switcher goes. The bell is decoration only: notifications are not a feature. Home shows the search box (a GET to `/kpis?q=`), "Browse by Category" (the 4 groups with the most KPIs, each linking to `/kpis` filtered to it; for now the groups are divisions counted by distinct KPIs with an approved definition, to be switched to the SKOS Category concepts once official tags exist) and "Recently Viewed" (the last 5 KPIs opened, kept in the Flask session, so no schema change).
 
@@ -661,3 +667,4 @@ Every change to a feature or decision gets a row here, with the PRD sections it 
 | 15 Nov 2026 | v5 | M3: the T1 gold set has one annotator (George) instead of two; no inter-annotator agreement, named as a limitation; stretch S5 (Cohen's κ) dropped; `compare` replaced by `finalize` | header, §6, §9, §11 |
 | 15 Nov 2026 | v5 | W10 (in progress): homepage from Ioanna's wireframe: shared top bar (Catalog dropdown, decorative bell, account icon for W3), search box, "Browse by Category" tiles (divisions for now), "Recently Viewed" in the Flask session; Simple.css replaced by `app.css` with CSS variables; Tabler icons | header, §10, §11 |
 | 15 Nov 2026 | v5 | W6–W8: KPI concept page (overview, definitions, dependencies, related KPIs), new definition page `/definitions/<id>` (overview, definition, dependencies, usage, history) and new compare page `/kpis/<slug>/compare` (columns are definitions, not divisions), from Ioanna's wireframes; divergence banner from open `definitions_diverge` flags; one visibility helper, everyone an Observer until W3; KPIs without a visible definition return 404 | header, §10 |
+| 15 Nov 2026 | v5 | W3, W11, W12: "log in as" offers only the three personas (Emma, Katerina, Noah); Anna and Dimitris stay seed users and are covered by tests; in UC3 Noah approves Katerina's submission instead of Dimitris. One permission check `has_permission(user, code, division)`, visibility follows the logged-in user, 403 page; role-based top bar and Catalog dropdown from Ioanna's wireframe; new pages `/definitions/new` (editor; the wireframe's "Data Source" dropdown dropped, "name used in your division" added) and `/my-definitions`; ML suggestions are a stub until M8 | header, §7, §8, §9 F1, §10 |

@@ -21,3 +21,16 @@ def app(seed_db):
 @pytest.fixture
 def client(app):
     return app.test_client()
+
+
+@pytest.fixture
+def login_as(client):
+    """Set the session user directly (bypasses the switcher's three personas, so every role can be tested).
+    Pass None to log out."""
+    def login(user_id):
+        with client.session_transaction() as s:
+            if user_id is None:
+                s.pop("user_id", None)
+            else:
+                s["user_id"] = user_id
+    return login

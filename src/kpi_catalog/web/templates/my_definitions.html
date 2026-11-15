@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% from "_kpi_macros.html" import status_chip %}
+{% block content %}
+<div class="page-header">
+  <span class="page-icon">{{ icon("file-text", 28) }}</span>
+  <div class="page-title">
+    <h1>My Definitions</h1>
+    <p class="subtitle">Definitions you own, newest change first.</p>
+  </div>
+  <a class="button" href="{{ url_for('new_definition') }}">{{ icon("plus") }} New definition</a>
+</div>
+
+<nav class="tabs" aria-label="Filter by status">
+  {% for key, label in tabs %}
+  <a href="{{ url_for('my_definitions', tab=key) }}"{% if key == tab %} aria-current="page"{% endif %}>{{ label }} ({{ counts[key] }})</a>
+  {% endfor %}
+</nav>
+
+{% if rows %}
+<div class="table-scroll card flush">
+  <table class="data">
+    <thead><tr><th>KPI</th><th>Division</th><th>Last updated</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for d in rows %}
+      <tr>
+        <td><a href="{{ url_for('definition', definition_id=d.definition_id) }}">{{ d.kpi_name }}</a>
+          {% if d.display_name != d.kpi_name %}<div class="muted small">“{{ d.display_name }}”</div>{% endif %}
+          {% if d.show_comment %}
+          <div class="review-note"><strong>{{ d.reviewer_name }}</strong> ({{ d.review_decision|replace("_", " ") }}, {{ d.reviewed_at[:10] }}): {{ d.review_comment }}</div>
+          {% endif %}
+        </td>
+        <td><span class="chip">{{ d.division_name }}</span></td>
+        <td><time datetime="{{ d.updated_at }}">{{ d.updated_at[:10] }}</time></td>
+        <td>{{ status_chip(d.status, status_labels) }}</td>
+        <td>{% if d.editable %}<a href="{{ url_for('edit_definition', definition_id=d.definition_id) }}">{{ icon("pencil", 16) }} Edit</a>{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="empty">{% if tab == "all" %}You don't own any definitions yet. <a href="{{ url_for('new_definition') }}">Create one</a>.{% else %}None with this status.{% endif %}</p>
+{% endif %}
+{% endblock %}

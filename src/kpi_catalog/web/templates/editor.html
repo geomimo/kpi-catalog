@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% macro error(field) -%}
+{% if errors[field] %}<p class="field-error" id="{{ field }}-error">{{ errors[field] }}</p>{% endif %}
+{%- endmacro %}
+{% macro invalid(field) -%}
+{% if errors[field] %} aria-invalid="true" aria-describedby="{{ field }}-error"{% endif %}
+{%- endmacro %}
+{% block content %}
+<div class="page-header">
+  <span class="page-icon">{{ icon("pencil" if definition else "plus", 28) }}</span>
+  <div class="page-title">
+    <h1>{% if definition %}Edit Draft {{ definition.definition_id }}{% else %}Create New KPI Definition{% endif %}</h1>
+    {% if definition and definition.kpi_name %}<p class="subtitle">{{ definition.kpi_name }} – {{ definition.division_name }}</p>{% endif %}
+  </div>
+</div>
+
+{% if errors %}
+<div class="banner banner-error" role="alert">{{ icon("alert-triangle") }}
+  <div><strong>Nothing was saved.</strong> Fix the {{ errors|length }} field{{ "" if errors|length == 1 else "s" }} marked below.</div>
+</div>
+{% endif %}
+
+<form method="post" class="editor" novalidate>
+  <div class="editor-main card">
+    <div class="form-row">
+      <div class="field">
+        <label for="kpi_name">KPI Concept <span class="req">*</span></label>
+        <input id="kpi_name" name="kpi_name" list="kpi-names" value="{{ form.kpi_name }}" autocomplete="off" placeholder="Start typing, e.g. Turnover"{{ invalid("kpi_name") }}>
+        <datalist id="kpi-names">{% for n in kpi_names %}<option value="{{ n }}">{% endfor %}</datalist>
+        {{ error("kpi_name") }}
+        <label class="check"><input type="checkbox" name="new_kpi" value="1"{% if form.new_kpi == "1" %} checked{% endif %}> This is a new KPI concept</label>
+      </div>
+      <div class="field">
+        <label for="division_id">Division <span class="req">*</span></label>
+        <select id="division_id" name="division_id"{{ invalid("division_id") }}>
+          <option value="">Choose a division</option>
+          {% for d in divisions %}<option value="{{ d.division_id }}"{% if form.division_id == d.division_id %} selected{% endif %}>{{ d.name }}</option>{% endfor %}
+        </select>
+        {{ error("division_id") }}
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="new_kpi_description">Description of the new KPI concept <span class="hint">only for a new concept: one neutral line, no division's view</span></label>
+      <input id="new_kpi_description" name="new_kpi_description" value="{{ form.new_kpi_description }}"{{ invalid("new_kpi_description") }}>
+      {{ error("new_kpi_description") }}
+    </div>
+
+    <div class="field">
+      <label for="display_name">Name used in your division <span class="req">*</span> <span class="hint">leave empty to use the KPI's name</span></label>
+      <input id="display_name" name="display_name" value="{{ form.display_name }}"{{ invalid("display_name") }}>
+      {{ error("display_name") }}
+    </div>
+
+    <div class="field">
+      <label for="definition_text">Definition (Full Text) <span class="req">*</span></label>
+      <textarea id="definition_text" name="definition_text" rows="5"{{ invalid("definition_text") }}>{{ form.definition_text }}</textarea>
+      {{ error("definition_text") }}
+    </div>
+
+    <div class="field">
+      <label for="formula">Formula / Calculation <span class="req">*</span> <span class="hint">not needed when the metric type is “base”</span></label>
+      <input id="formula" name="formula" class="mono" value="{{ form.formula }}" placeholder="e.g. sum(order_item_revenue_excl_tax)"{{ invalid("formula") }}>
+      {{ error("formula") }}
+    </div>
+
+    <div class="form-row three">
+      {% for field, label, options in [("unit", "Unit", units), ("grain", "Grain", grains), ("metric_type", "Metric Type", metric_types)] %}
+      <div class="field">
+        <label for="{{ field }}">{{ label }} <span class="req">*</span></label>
+        <select id="{{ field }}" name="{{ field }}"{{ invalid(field) }}>
+          <option value="">Choose…</option>
+          {% for o in options %}<option value="{{ o }}"{% if form[field] == o %} selected{% endif %}>{{ o if field == "unit" else o|capitalize }}</option>{% endfor %}
+        </select>
+        {{ error(field) }}
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="form-row">
+      <div class="field">
+        <label for="source_table">Source table</label>
+        <input id="source_table" name="source_table" class="mono" value="{{ form.source_table }}" placeholder="e.g. sales_revenue"{{ invalid("source_table") }}>
+        {{ error("source_table") }}
+      </div>
+      <div class="field">
+        <label for="source_column">Source column</label>
+        <input id="source_column" name="source_column" class="mono" value="{{ form.source_column }}" placeholder="e.g. amount"{{ invalid("source_column") }}>
+        {{ error("source_column") }}
+      </div>
+    </div>
+  </div>
+
+  <aside class="editor-side">
+    <div class="card side-panel">
+      <h2>Suggested Tags (ML) <span title="Theme and business line suggested from the definition text">{{ icon("info-circle", 18) }}</span></h2>
+      {% if suggestions %}
+      <div class="chips">{% for s in suggestions %}<span class="chip">{{ s.label }}</span>{% endfor %}</div>
+      {% else %}
+      <p class="muted small">Tag suggestions arrive with the ML model.</p>
+      {% endif %}
+
+      <h2>Owner</h2>
+      {% if can_pick_owner %}
+      <select id="owner_user_id" name="owner_user_id" aria-label="Owner"{{ invalid("owner_user_id") }}>
+        <option value="">{% if user.admin %}Choose an owner{% else %}Me ({{ user.full_name }}){% endif %}</option>
+        {% for division, members in owner_groups %}
+        <optgroup label="{{ division.name }}">
+          {% for m in members %}<option value="{{ m.user_id }}"{% if form.owner_user_id == m.user_id %} selected{% endif %}>{{ m.full_name }} – {{ m.job_title }}</option>{% endfor %}
+        </optgroup>
+        {% endfor %}
+      </select>
+      <p class="muted small">The owner must hold a role in the definition's division.</p>
+      {% else %}
+      <p class="owner-fixed">{{ icon("user", 18) }} {{ user.full_name }}</p>
+      {% endif %}
+      {{ error("owner_user_id") }}
+    </div>
+    <div class="form-actions">
+      {{ error("action") }}
+      <button type="submit" name="action" value="draft" class="button">Save Draft</button>
+      <button type="submit" name="action" value="submit" class="button button-primary">Submit for Review</button>
+    </div>
+  </aside>
+</form>
+{% endblock %}

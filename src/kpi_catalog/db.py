@@ -17,7 +17,7 @@ from kpigen.validate import SeedError, fill_from_seed
 INSTANCE = ROOT / "instance"
 DATABASE = INSTANCE / "catalog.sqlite"
 
-__all__ = ["DATABASE", "INSTANCE", "SeedError", "build", "build_search_index", "connect", "get_db", "init_app"]
+__all__ = ["DATABASE", "INSTANCE", "SeedError", "build", "build_search_index", "connect", "get_db", "index_definition", "init_app"]
 
 
 def connect(path: Path) -> sqlite3.Connection:
@@ -68,16 +68,25 @@ def build_search_index(con: sqlite3.Connection) -> None:
             " definition_id UNINDEXED, kpi_name, display_name, definition_text, tag_labels,"
             " tokenize = 'porter unicode61')"
         )
-        con.execute(
-            """
-            INSERT INTO definitions_fts (definition_id, kpi_name, display_name, definition_text, tag_labels)
-            SELECT d.definition_id, k.name, d.display_name, d.definition_text,
-                   (SELECT group_concat(t.label, ' ; ')
-                      FROM definition_tags dt JOIN tags t ON t.tag_id = dt.tag_id
-                     WHERE dt.definition_id = d.definition_id)
-              FROM definitions d JOIN kpis k ON k.kpi_id = d.kpi_id
-            """
-        )
+        con.execute(_FTS_INSERT)
+
+
+# One row per definition; the WHERE clause is added for single-definition updates.
+_FTS_INSERT = """
+    INSERT INTO definitions_fts (definition_id, kpi_name, display_name, definition_text, tag_labels)
+    SELECT d.definition_id, k.name, d.display_name, d.definition_text,
+           (SELECT group_concat(t.label, ' ; ')
+              FROM definition_tags dt JOIN tags t ON t.tag_id = dt.tag_id
+             WHERE dt.definition_id = d.definition_id)
+      FROM definitions d JOIN kpis k ON k.kpi_id = d.kpi_id
+"""
+
+
+def index_definition(con: sqlite3.Connection, definition_id: str) -> None:
+    """Refresh one definition's row in definitions_fts (after it is created or edited in the app). Runs in the
+    caller's transaction."""
+    con.execute("DELETE FROM definitions_fts WHERE definition_id = ?", (definition_id,))
+    con.execute(_FTS_INSERT + " WHERE d.definition_id = ?", (definition_id,))
 
 
 def get_db() -> sqlite3.Connection:

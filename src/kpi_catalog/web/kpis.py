@@ -8,7 +8,7 @@ import sqlite3
 
 from flask import abort, render_template, request, url_for
 
-from kpi_catalog.auth import visible
+from kpi_catalog.auth import current_user, has_permission, visible
 from kpi_catalog.db import get_db
 from kpi_catalog.web.home import remember_kpi
 
@@ -36,6 +36,7 @@ DEFINITION_TABS = [("overview", "Overview"), ("definition", "Definition"), ("dep
 DEF_COLUMNS = """
     d.definition_id, d.kpi_id, d.division_id, d.display_name, d.definition_text, d.metric_type, d.formula, d.unit,
     d.grain, d.source_table, d.source_column, d.related_columns, d.status, d.version, d.superseded_by_id,
+    d.owner_user_id, d.updated_at,
     v.code AS division_code, v.name AS division_name, u.full_name AS owner_name, u.job_title AS owner_title,
     k.slug AS kpi_slug, k.name AS kpi_name"""
 DEF_JOINS = """
@@ -313,6 +314,7 @@ def definition_page(definition_id: str):
         "definition.html",
         title=f"{d['kpi_name']} – {d['division_name']}",
         d=d,
+        can_edit=d["status"] == "draft" and has_permission(current_user(), "definition.propose", d["division_id"]),
         tab=tab,
         tabs=DEFINITION_TABS,
         official=official_tags(con, ids),

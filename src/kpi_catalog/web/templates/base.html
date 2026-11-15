@@ -11,23 +11,64 @@
     <a class="wordmark" href="{{ url_for('home') }}">konfusio</a>
     <nav class="mainnav" aria-label="Main">
       <a href="{{ url_for('home') }}"{% if section == 'home' %} aria-current="page"{% endif %}>Home</a>
+      {% if catalog_items|length > 1 %}
       <details class="dropdown">
         <summary{% if section == 'catalog' %} aria-current="page"{% endif %}>Catalog {{ icon("chevron-down", 16) }}</summary>
-        <ul>
-          <li><a href="{{ url_for('browse') }}">Browse KPIs</a></li>
-          {# Role-specific entries (My definitions, Review, curation, governance) come with W3. #}
+        <ul class="catalog-menu">
+          {% for endpoint, label, item_icon in catalog_items %}
+          <li><a href="{{ url_for(endpoint) }}">{{ icon(item_icon, 18) }} {{ label }}</a></li>
+          {% endfor %}
         </ul>
       </details>
+      {% else %}
+      <a href="{{ url_for('browse') }}"{% if section == 'catalog' %} aria-current="page"{% endif %}>Catalog</a>
+      {% endif %}
       <a href="{{ url_for('vocabulary') }}"{% if section == 'vocabulary' %} aria-current="page"{% endif %}>Vocabulary</a>
+      {% if show_governance %}
+      <a href="{{ url_for('governance_flags') }}"{% if section == 'governance' %} aria-current="page"{% endif %}>Governance</a>
+      {% endif %}
     </nav>
     <div class="topbar-actions">
       {# Visual only: there is no notifications feature (PRD §9). #}
       <span class="icon-button" title="Notifications (not available)">{{ icon("bell", 22, label="Notifications") }}</span>
-      {# "Log in as" switcher goes here (task W3). #}
-      <div id="login-as">{% block login_as %}<button type="button" class="icon-button" title="Log in as (coming soon)">{{ icon("user-circle", 24, label="Account") }}</button>{% endblock %}</div>
+      {# "Log in as" (W3): only the three demo personas (auth.PERSONA_USER_IDS). #}
+      <details class="dropdown account" id="login-as">
+        <summary class="account-button" title="{{ 'Logged in as ' ~ user.full_name if user else 'Log in as a persona' }}">
+          {{ icon("user-circle", 24, label="Account") }}{% if user %}<span class="account-name">{{ user.full_name.split()[0] }}</span>{% endif %}
+        </summary>
+        <div class="account-menu">
+          <p class="menu-heading">{% if user %}Logged in as {{ user.full_name }}{% else %}Browsing as a read-only visitor{% endif %}</p>
+          <p class="menu-subheading">Log in as</p>
+          <ul>
+            {% for p in personas %}
+            {% set current = user and user.user_id == p.user_id %}
+            <li>
+              <form method="post" action="{{ url_for('login_as') }}">
+                <input type="hidden" name="user_id" value="{{ p.user_id }}">
+                <input type="hidden" name="next" value="{{ request.full_path }}">
+                <button type="submit" class="persona{% if current %} is-current{% endif %}"{% if current %} aria-current="true"{% endif %}>
+                  <strong>{{ p.full_name }}</strong>
+                  <span class="persona-title">{{ p.job_title }}</span>
+                  <span class="chip">{{ role_label(p) }}</span>
+                </button>
+              </form>
+            </li>
+            {% endfor %}
+          </ul>
+          {% if user %}
+          <form method="post" action="{{ url_for('logout') }}" class="logout">
+            <input type="hidden" name="next" value="{{ request.full_path }}">
+            <button type="submit">{{ icon("logout", 18) }} Log out</button>
+          </form>
+          {% endif %}
+        </div>
+      </details>
     </div>
   </header>
   <main>
+    {% with messages = get_flashed_messages() %}{% if messages %}
+    <div class="flashes" role="status">{% for m in messages %}<p class="flash">{{ icon("circle-check", 18) }} {{ m }}</p>{% endfor %}</div>
+    {% endif %}{% endwith %}
     {% block content %}{% endblock %}
   </main>
   <footer>

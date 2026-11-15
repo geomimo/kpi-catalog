@@ -123,12 +123,12 @@ footer a { color: inherit; }
 .dropdown summary { list-style: none; }
 .dropdown summary::-webkit-details-marker { display: none; }
 .dropdown[open] summary .icon { transform: rotate(180deg); }
-.dropdown ul {
+.dropdown > ul {
   position: absolute;
   z-index: 10;
   top: calc(100% + var(--space-1));
   left: 0;
-  min-width: 11rem;
+  min-width: 13rem;
   margin: 0;
   padding: var(--space-2);
   list-style: none;
@@ -137,14 +137,15 @@ footer a { color: inherit; }
   border-radius: var(--radius);
   box-shadow: 0 8px 24px rgb(30 27 58 / 0.08);
 }
-.dropdown li a {
+.dropdown > ul li a {
+  white-space: nowrap;
   display: block;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-sm);
   color: var(--text);
   text-decoration: none;
 }
-.dropdown li a:hover { background: var(--accent-soft); }
+.dropdown > ul li a:hover { background: var(--accent-soft); }
 
 .topbar-actions { display: flex; align-items: center; gap: var(--space-2); margin-left: auto; }
 
@@ -439,3 +440,104 @@ table.compare th[scope="row"] { background: var(--surface); width: 9rem; }
 table.compare td { min-width: 12rem; }
 table.compare tr.differs td, table.compare tr.differs th[scope="row"] { background: var(--diff-bg); }
 .differs-mark { color: var(--warn-fg); font-weight: 700; }
+
+/* ==== Accounts, forms, editor, My Definitions (W3, W11, W12) ============================ */
+
+:root {
+  --error: #b42318;
+  --error-bg: #fef3f2;
+}
+
+/* Catalog menu items with icons */
+.catalog-menu a { display: flex !important; align-items: center; gap: var(--space-2); }
+.catalog-menu .icon { color: var(--accent); }
+
+/* Account ("log in as") menu */
+.account { position: relative; }
+.account-button {
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  height: 2.5rem; padding: 0 var(--space-2); border-radius: var(--radius-pill);
+  list-style: none; cursor: pointer; color: var(--text);
+}
+.account-button::-webkit-details-marker { display: none; }
+.account-button:hover { background: var(--accent-soft-strong); }
+.account-name { font-weight: 600; font-size: 0.9rem; }
+.account-menu {
+  position: absolute; right: 0; top: calc(100% + var(--space-1)); z-index: 20;
+  width: min(20rem, calc(100vw - 2rem)); padding: var(--space-3);
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgb(30 27 58 / 0.12);
+}
+.account-menu ul { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--space-1); }
+.menu-heading { margin: 0 0 var(--space-2); font-weight: 600; font-size: 0.9rem; }
+.menu-subheading { margin: 0 0 var(--space-1); color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.persona {
+  display: grid; justify-items: start; gap: 0.15rem; width: 100%; text-align: left;
+  padding: var(--space-2) var(--space-3); border: 1px solid transparent; border-radius: var(--radius-sm);
+  background: none; cursor: pointer;
+}
+.persona:hover { background: var(--accent-soft); }
+.persona.is-current { background: var(--accent-soft); border-color: var(--accent); }
+.persona-title { color: var(--muted); font-size: 0.85rem; }
+.persona .chip { font-size: 0.75rem; }
+.logout { margin-top: var(--space-2); padding-top: var(--space-2); border-top: 1px solid var(--border); }
+.logout button {
+  display: flex; align-items: center; gap: var(--space-2); width: 100%;
+  padding: var(--space-2) var(--space-3); border: 0; border-radius: var(--radius-sm); background: none; cursor: pointer;
+}
+.logout button:hover { background: var(--accent-soft); }
+@media (max-width: 34rem) { .account-name { display: none; } }
+
+/* Flash messages and notices */
+.flashes { margin-bottom: var(--space-4); }
+.flash {
+  display: flex; align-items: center; gap: var(--space-2); margin: 0 0 var(--space-2);
+  padding: var(--space-2) var(--space-4); border-radius: var(--radius); background: var(--ok-bg); color: var(--ok-fg); font-weight: 500;
+}
+.banner .button { margin-left: var(--space-2); padding: 0.2rem var(--space-3); }
+.banner-error { background: var(--error-bg); border-color: #f5c2bd; color: var(--error); }
+.notice-page { max-width: 36rem; margin: var(--space-6) auto; text-align: center; }
+.notice-page .page-icon { margin-bottom: var(--space-3); }
+
+/* Buttons */
+.button { cursor: pointer; font: inherit; font-weight: 600; }
+.button-primary { background: var(--accent-strong); border-color: var(--accent-strong); color: #fff; }
+.button-primary:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* Forms */
+.field { display: grid; gap: var(--space-1); align-content: start; margin-bottom: var(--space-4); min-width: 0; }
+.field label { font-weight: 600; font-size: 0.92rem; }
+.req { color: var(--accent-strong); }
+.field .hint { font-weight: 400; margin-left: var(--space-1); }
+input[type="text"], input:not([type]), input[type="search"], select, textarea {
+  width: 100%; padding: var(--space-2) var(--space-3); line-height: 1.5;
+  border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface);
+}
+textarea { resize: vertical; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.search input { width: auto; padding: 0; border: 0; box-shadow: none; }
+input:not([type]), input[type="text"], select { height: 2.6rem; }
+.field select { padding-top: 0; padding-bottom: 0; }
+.mono { font-family: var(--mono); font-size: 0.92rem; }
+[aria-invalid="true"] { border-color: var(--error) !important; background: var(--error-bg); }
+.field-error { margin: 0; color: var(--error); font-size: 0.85rem; font-weight: 500; }
+label.check { display: flex; align-items: center; gap: var(--space-2); font-weight: 400; font-size: 0.9rem; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 var(--space-4); }
+.form-row.three { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 40rem) { .form-row, .form-row.three { grid-template-columns: minmax(0, 1fr); } }
+
+/* Editor layout: form + side panel (suggested tags, owner, buttons) */
+.editor { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--space-4); align-items: start; }
+@media (max-width: 50rem) { .editor { grid-template-columns: minmax(0, 1fr); } }
+.side-panel { background: var(--accent-soft); }
+.side-panel h2 { display: flex; align-items: center; gap: var(--space-2); font-size: 1rem; margin-top: var(--space-3); }
+.side-panel h2:first-child { margin-top: 0; }
+.owner-fixed { display: flex; align-items: center; gap: var(--space-2); margin: 0; font-weight: 500; }
+.form-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-4); }
+
+/* My Definitions */
+.review-note {
+  margin-top: var(--space-2); padding: var(--space-2) var(--space-3);
+  border-left: 3px solid var(--accent); background: var(--accent-soft); border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 0.85rem;
+}
