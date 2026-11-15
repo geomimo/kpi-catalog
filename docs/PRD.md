@@ -263,7 +263,7 @@ The app has one check function: *does user U hold a role with permission P in di
 | `assets` | `asset_id` PK · `asset_type` ∈ {dashboard, report} · `name` UNIQUE · `description` · `tool` · `url` · `division_id` FK · `owner_user_id` FK · `created_at` | ✅ |
 | `asset_definitions` | `asset_id` FK · `definition_id` FK · PK (both) | ✅ |
 
-**Derived at load time, not in the seed:** each definition's **measure type**, taken from `unit` through the SKOS Measure Type mapping ([§5](#5-controlled-vocabulary-skos)).
+**Looked up, not stored:** each definition's **measure type** comes from its `unit` through the SKOS Measure Type notations ([§5](#5-controlled-vocabulary-skos)). `vocab/skos.measure_types()` reads the mapping from the vocabulary, and the Measure Type facet, the unit check (T3) and the editor look the unit up in it. There is no measure-type column or table (decided 15 Nov, V3): it is the smallest change, and the vocabulary stays the only place that mapping is written down. The cost is that the facet maps units in Python instead of joining in SQL.
 
 ### 4.3 Tags (official and community)
 | Table | Columns (constraints) | In seed |
@@ -525,7 +525,7 @@ Embeddings for the seed data are **computed offline once** (`instance/embeddings
 
 ```
 data/raw (pinned downloads) + kpigen/curation + scenarios.yaml ──► kpigen ──► data/seed/*.csv
-data/seed ──► validate (schema.sql + pytest) ──► load (+ official tags from SKOS, measure type) ──► instance/catalog.sqlite
+data/seed ──► validate (schema.sql + pytest) ──► load (+ official tags from SKOS) ──► instance/catalog.sqlite
 catalog.sqlite ──► ml tag / unit check / similarity ──► definition_tags (source=ml), similarity_flags
 data/gold/*.csv ──► ml evaluate ──► reports/ml_eval.md
 catalog.sqlite ──► Flask app ──► export ──► data/annotated/, vocab/kpi-vocabulary.export.ttl
@@ -544,7 +544,7 @@ vocab/                      hand-authored SKOS seed + generated exports
 src/kpigen/                 seed generator: download, inputs + coverage check, generate, write, validate
 src/kpi_catalog/
   db.py                     create from schema.sql + load seed CSVs
-  vocab/skos.py             load / query / export SKOS; unit → measure type; official tags
+  vocab/skos.py             load / query / export SKOS; unit → measure type lookup; official tags
   ml/tagger.py              T1/T2 tagging (done), T3 unit check, submit suggestions
   ml/similarity.py          synonym / divergence flags
   ml/gold.py                gold-set sample, annotator sheet, T2 export, T1 gold check
@@ -656,3 +656,4 @@ Every change to a feature or decision gets a row here, with the PRD sections it 
 | 15 Nov 2026 | v5 | M3 set up: gold-set tooling `ml/gold.py`; T1 sample = 40 of the 57 eligible KPIs at random (seed 42), one definition each; annotators see only the tagger's input; T2 gold generated for the 81 eligible HF definitions; labels still to be made by two people | header, §6, §11 |
 | 15 Nov 2026 | v5 | M3: the T1 gold set has one annotator (George) instead of two; no inter-annotator agreement, named as a limitation; stretch S5 (Cohen's κ) dropped; `compare` replaced by `finalize` | header, §6, §9, §11 |
 | 15 Nov 2026 | v5 | M2: first tagging run (`ml/tagger.py`). Every definition gets its best theme and business line even below `τ_min`, which only gates a second theme (provisional 0.45). Official tags created from the vocabulary as `TAG-<local name>` (the official-tag part of V3). Until the loader (W2) exists, `--from-seed` builds `instance/catalog.sqlite` from the seed. First results: T1 34/40, T2 at the majority baseline | header, top, §4.3, §6, §11, §14 Q3 |
+| 15 Nov 2026 | v5 | V3: measure type is a lookup from `unit` through the vocabulary's unit notations (`vocab/skos.measure_types()`), not a stored column or table; the load step only adds the official tags | §4.2, §11 |

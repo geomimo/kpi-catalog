@@ -1,8 +1,11 @@
-"""Read the SKOS vocabulary (PRD §5) and create the official tags from it.
+"""Read the SKOS vocabulary (PRD §5): official tags and the unit → measure type lookup (task V3).
 
 Official tags are the Category and Business line concepts as rows of `tags` (`kind = official`), so that
 definitions can be tagged with them. Their IDs are `TAG-<concept local name>` (e.g. `TAG-Revenue`): stable, and
 apart from the numbered community tags of the seed (`TAG-001`, ...).
+
+A definition's measure type is not stored: `measure_types()` reads it from the Measure Type concepts' unit
+notations (`kv:UnitCode`), and the facet, the unit check (T3) and the editor look the unit up in it.
 """
 
 import sqlite3
@@ -59,6 +62,14 @@ def themes(g: Graph) -> list[Concept]:
 
 def business_lines(g: Graph) -> list[Concept]:
     return concepts(g, KV.BusinessLineScheme)
+
+
+def measure_types(g: Graph) -> dict[str, Concept]:
+    """Unit code (`definitions.unit`, e.g. "EUR") → its Measure Type concept, from the `kv:UnitCode` notations."""
+    by_uri = {c.uri: c for c in concepts(g, KV.MeasureTypeScheme)}
+    return {str(code): by_uri[str(c)]
+            for c in g.subjects(SKOS.inScheme, KV.MeasureTypeScheme)
+            for code in g.objects(c, SKOS.notation) if code.datatype == KV.UnitCode}
 
 
 def official_tag_id(concept_name: str) -> str:

@@ -88,8 +88,8 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - The presentation has no owner yet. Done when: the owner is named in the Team table and on R10.
 
 ### George
-- [ ] **V3 · Official tags and measure type at load** · by 22 Nov · §4.2–4.3, §5 · needs V1, W2
-  - `vocab/skos.py`: create official tags from the Category and Business line concepts, and map `unit` to Measure Type. Done when: the loader calls it and the facets can query both. *The official tags (`ensure_official_tags`) were written for M2; still to do: the unit → Measure Type mapping and the loader call.*
+- [ ] **V3 · Official tags and measure type** · by 22 Nov · §4.2–4.3, §5 · needs V1, W2
+  - `vocab/skos.py`: create official tags from the Category and Business line concepts, and look up `unit` → Measure Type (not stored). Done when: the loader calls `ensure_official_tags` and the facets can query both (Measure Type through `measure_types()`). *15 Nov: `ensure_official_tags` (written for M2) and `measure_types()` are done and tested; only the loader call is left, once W2 exists.*
 - [x] **M3 · Gold labels** · George · by 26 Nov · §6 · needs D7 · *done 15 Nov: 40 definitions labelled by George (one annotator), 5 with a second theme; T1 and T2 gold sets in `data/gold/`*
   - Done when: 40 definitions have hand-made T1 theme labels, `finalize` passes, and the T1 and T2 gold sets are in `data/gold/`.
 - [x] **V2 · Check the NAICS 2022 codes** · by 26 Nov · §5, §14 Q4 · *done 12 Nov: all v0 codes confirmed against the Census NAICS 2022 code list, concordance and manual; none changed*
