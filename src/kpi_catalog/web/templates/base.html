@@ -1,26 +1,37 @@
-<!doctype html>
+{% from "_icons.html" import icon %}<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}{{ title }}{% endblock %} · KPI Catalog</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='simple.min.css') }}">
+  <title>{% block title %}{{ title }}{% endblock %} · Konfusio KPI Catalog</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
 </head>
 <body>
-  <header>
-    <nav>
-      {% for endpoint, label in nav %}
-      <a href="{{ url_for(endpoint) }}"{% if request.endpoint == endpoint %} aria-current="page"{% endif %}>{{ label }}</a>
-      {% endfor %}
+  <header class="topbar">
+    <a class="wordmark" href="{{ url_for('home') }}">konfusio</a>
+    <nav class="mainnav" aria-label="Main">
+      <a href="{{ url_for('home') }}"{% if section == 'home' %} aria-current="page"{% endif %}>Home</a>
+      <details class="dropdown">
+        <summary{% if section == 'catalog' %} aria-current="page"{% endif %}>Catalog {{ icon("chevron-down", 16) }}</summary>
+        <ul>
+          <li><a href="{{ url_for('browse') }}">Browse KPIs</a></li>
+          {# Role-specific entries (My definitions, Review, curation, governance) come with W3. #}
+        </ul>
+      </details>
+      <a href="{{ url_for('vocabulary') }}"{% if section == 'vocabulary' %} aria-current="page"{% endif %}>Vocabulary</a>
     </nav>
-    {# "Log in as" switcher goes here (task W3). #}
-    <div id="login-as">{% block login_as %}{% endblock %}</div>
+    <div class="topbar-actions">
+      {# Visual only: there is no notifications feature (PRD §9). #}
+      <span class="icon-button" title="Notifications (not available)">{{ icon("bell", 22, label="Notifications") }}</span>
+      {# "Log in as" switcher goes here (task W3). #}
+      <div id="login-as">{% block login_as %}<button type="button" class="icon-button" title="Log in as (coming soon)">{{ icon("user-circle", 24, label="Account") }}</button>{% endblock %}</div>
+    </div>
   </header>
   <main>
     {% block content %}{% endblock %}
   </main>
   <footer>
-    <p>KPI Catalog · Konfusio (fictional) · Information Organization group project</p>
+    <p>Konfusio KPI Catalog (fictional company) · <a href="{{ url_for('about') }}">About</a> · <a href="{{ url_for('downloads') }}">Downloads</a></p>
   </footer>
 </body>
 </html>

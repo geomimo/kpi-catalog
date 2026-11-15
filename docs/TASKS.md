@@ -120,7 +120,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - Use a few hand-inserted `similarity_flags` rows until M7 lands. Done when: Turnover shows a "definitions diverge" warning.
 - [ ] **W9 · Vocabulary browser** · by 3 Dec · F8 · needs V4
   - Done when: `/vocabulary` lists the schemes, and each concept page shows its definition, broader, narrower and related concepts, and the definitions tagged with it.
-- [ ] **W10 · Home page** · by 3 Dec · §10 · needs W4, W5
+- [ ] **W10 · Home page** · by 3 Dec · §10 · needs W4, W5 · *(in progress): top bar, search box (GET to `/kpis`), "Browse by Category" tiles and "Recently Viewed" built from Ioanna's wireframe on 15 Nov; search results (W5) and "KPIs of <your divisions>" (W3) still missing*
   - Done when: it shows search, "KPIs of <your divisions>" for the logged-in user, and facet entry points.
 - [ ] **R3 · Dataset and data-quality section** · Liam + George · by 3 Dec · §3, §13 · needs D8
 - [ ] **R4 · Six-question case study** · by 3 Dec · §13

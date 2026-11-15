@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Course** | Information Organization, group project |
-| **Status** | Draft v5, 15 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode (108 definitions); the ML stack runs on Python 3.14; curation files and the GenAI-drafted texts reviewed; company named Konfusio; the ML batch skips deprecated definitions (§14 Q8); vocabulary v0 written and reviewed (four hand-written SKOS schemes); data-quality log started (`data/quality_log.md`); NAICS codes checked (§14 Q4); gold-set sample and T2 gold ready, gold set labelled by one annotator, M3 done (§6); Flask skeleton with placeholder pages for the whole site map; the database loader builds `instance/catalog.sqlite` with an FTS5 index (§11). History in [§15](#15-change-log) |
+| **Status** | Draft v5, 15 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode (108 definitions); the ML stack runs on Python 3.14; curation files and the GenAI-drafted texts reviewed; company named Konfusio; the ML batch skips deprecated definitions (§14 Q8); vocabulary v0 written and reviewed (four hand-written SKOS schemes); data-quality log started (`data/quality_log.md`); NAICS codes checked (§14 Q4); gold-set sample and T2 gold ready, gold set labelled by one annotator, M3 done (§6); Flask skeleton with placeholder pages for the whole site map; the database loader builds `instance/catalog.sqlite` with an FTS5 index (§11); homepage layout from the wireframe, with category tiles and "Recently Viewed" (§10, W10 in progress). History in [§15](#15-change-log) |
 | **Deadlines** | Mid-term description **19 Nov 2026** · Final delivery **21 Dec 2026** |
 | **Team** | **A** = George (dataset, vocabulary, ML) · **B** = Liam (web app) · **W** = Liam (report) and Ioanna (personas, user journeys, UI wireframes). Slides owner still open ([§14](#14-open-questions)) |
 | **Tasks and progress** | [`docs/TASKS.md`](TASKS.md) |
@@ -489,7 +489,7 @@ Embeddings for the seed data are **computed offline once**; the web app only enc
 ## 10. Site map and permissions
 
 ```
-/                          Home: search, "KPIs of <your divisions>", facet entry points, log-in-as switcher
+/                          Home: search, "KPIs of <your divisions>", facet entry points ("Browse by Category" tiles), "Recently Viewed", log-in-as switcher
 ├── /kpis                  Browse & search: facets, community-tag filter, A–Z, tag cloud
 │   └── /kpis/<slug>       KPI page: definitions by division, divergence, lineage, used-in, versions, tags
 ├── /definitions/<id>/edit [definition.propose / definition.edit] Editor with ML suggestions; submit for review
@@ -517,9 +517,11 @@ Embeddings for the seed data are **computed offline once**; the web app only enc
 
 "Division" means: in the divisions where the user holds that role (`user_roles.division_id`). Users can hold roles in more than one division. The home page uses `home_division_id`.
 
+**Home page and top bar (from Ioanna's wireframe, 15 Nov).** Every page shares a top bar: the *konfusio* wordmark, Home · Catalog (a dropdown, "Browse KPIs" for now; role-specific entries come with W3) · Vocabulary, a bell icon and the account icon where the "log in as" switcher goes. The bell is decoration only: notifications are not a feature. Home shows the search box (a GET to `/kpis?q=`), "Browse by Category" (the 4 groups with the most KPIs, each linking to `/kpis` filtered to it; for now the groups are divisions counted by distinct KPIs with an approved definition, to be switched to the SKOS Category concepts once official tags exist) and "Recently Viewed" (the last 5 KPIs opened, kept in the Flask session, so no schema change).
+
 ## 11. Architecture and repo layout
 
-**Stack:** Python 3.14 (uv) · Flask + Jinja templates · SQLite (FTS5, verified available) · rdflib · sentence-transformers · scikit-learn (metrics only) · pandas · pytest. Minimal CSS: the classless [Simple.css](https://simplecss.org) v2.3.7 (MIT), vendored into `web/static/` (no CDN, no JS build step), easy to restyle once the wireframes are in.
+**Stack:** Python 3.14 (uv) · Flask + Jinja templates · SQLite (FTS5, verified available) · rdflib · sentence-transformers · scikit-learn (metrics only) · pandas · pytest. Minimal CSS: one hand-written stylesheet `web/static/app.css` with the colours, radii and spacing as CSS variables (white, lavender accent, from the wireframes), classless defaults for plain elements; it replaced the vendored Simple.css when the homepage wireframe arrived. Icons: inline SVGs copied from Tabler Icons (MIT) into a Jinja macro. No CDN, no JS build step.
 
 ```
 data/raw (pinned downloads) + kpigen/curation + scenarios.yaml ──► kpigen ──► data/seed/*.csv
@@ -653,3 +655,4 @@ Every change to a feature or decision gets a row here, with the PRD sections it 
 | 12 Nov 2026 | v5 | V2: every Business line NAICS code checked against the NAICS 2022 code list, concordance and manual; no code changes; Insurance stays a direct carrier (524126) and Mobile a reseller (517121); Online keeps its `broadMatch`, Membership no match; sources cited in the vocabulary | header, §5, §14 Q4 |
 | 15 Nov 2026 | v5 | M3 set up: gold-set tooling `ml/gold.py`; T1 sample = 40 of the 57 eligible KPIs at random (seed 42), one definition each; annotators see only the tagger's input; T2 gold generated for the 81 eligible HF definitions; labels still to be made by two people | header, §6, §11 |
 | 15 Nov 2026 | v5 | M3: the T1 gold set has one annotator (George) instead of two; no inter-annotator agreement, named as a limitation; stretch S5 (Cohen's κ) dropped; `compare` replaced by `finalize` | header, §6, §9, §11 |
+| 15 Nov 2026 | v5 | W10 (in progress): homepage from Ioanna's wireframe: shared top bar (Catalog dropdown, decorative bell, account icon for W3), search box, "Browse by Category" tiles (divisions for now), "Recently Viewed" in the Flask session; Simple.css replaced by `app.css` with CSS variables; Tabler icons | header, §10, §11 |

@@ -21,11 +21,6 @@ SITE_MAP = [
 ]
 
 
-@pytest.fixture
-def client():
-    return create_app().test_client()
-
-
 @pytest.mark.parametrize("path", SITE_MAP)
 def test_route_serves_page(client, path):
     response = client.get(path)

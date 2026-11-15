@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="visually-hidden">Konfusio KPI Catalog</h1>
+
+<form class="search" action="{{ url_for('browse') }}" method="get" role="search">
+  <label for="q" class="visually-hidden">Search KPIs</label>
+  {{ icon("search") }}
+  <input id="q" name="q" type="search" placeholder="Search for a KPI (e.g., Turnover, Active Users…)">
+</form>
+
+<section aria-labelledby="browse-heading">
+  <h2 id="browse-heading"><a href="{{ url_for('browse') }}">Browse by Category {{ icon("chevron-right", 22) }}</a></h2>
+  <ul class="tiles">
+    {% for tile in tiles %}
+    <li>
+      <a class="tile" href="{{ tile.href }}">
+        {{ icon(tile.icon, 30) }}
+        <span class="tile-label">{{ tile.label }}</span>
+        <span class="tile-count">{{ tile.count }} KPI{{ "" if tile.count == 1 else "s" }}</span>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section id="recent" aria-labelledby="recent-heading">
+  <h2 id="recent-heading">Recently Viewed</h2>
+  {% if recent %}
+  <ul class="rows">
+    {% for kpi in recent %}
+    <li>
+      <a class="row" href="{{ kpi.href }}">
+        {{ icon("chart-bar") }}
+        <span class="row-name">{{ kpi.name }}</span>
+        <span class="chips">{% for d in kpi.divisions %}<span class="chip">{{ d }}</span>{% endfor %}</span>
+        {{ icon("chevron-right") }}
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="empty">KPIs you open will show up here.</p>
+  {% endif %}
+</section>
+{% endblock %}

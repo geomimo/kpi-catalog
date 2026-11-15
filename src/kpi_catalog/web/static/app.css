@@ -1,0 +1,277 @@
+/* Konfusio KPI Catalog: the one stylesheet (W10, from Ioanna's homepage wireframe).
+   Colours, radii and spacing are variables so every page reuses them. Plain elements get sensible
+   defaults (classless), components below use a few classes. No framework, no build step. */
+
+:root {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --text: #2e1a6b;            /* dark purple: all text */
+  --muted: #5b4a91;           /* lighter dark purple: counts, hints */
+  --border: #d9d2f5;          /* thin light lavender borders */
+  --accent: #6c5ce7;          /* purple: active underline, icons */
+  --accent-strong: #4b3cc4;   /* links, hover */
+  --accent-soft: #ece9fc;     /* light purple: top bar, tiles, chips */
+  --accent-soft-strong: #ddd6fa; /* hover on light-purple surfaces */
+  --focus: #8b7ff0;
+
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-pill: 999px;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, Consolas, Menlo, monospace;
+  --page-width: 60rem;
+}
+
+/* ---- Base (classless) ---------------------------------------------------------------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+main, footer {
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+main { padding-top: var(--space-5); padding-bottom: var(--space-6); }
+
+h1, h2, h3 { line-height: 1.25; margin: 0 0 var(--space-3); }
+h1 { font-size: 1.75rem; }
+h2 { font-size: 1.3rem; }
+h3 { font-size: 1.1rem; }
+p { margin: 0 0 var(--space-4); }
+
+a { color: var(--accent-strong); }
+a:hover { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: var(--radius-sm); }
+
+code { font-family: var(--mono); font-size: 0.9em; background: var(--accent-soft); padding: 0.1em 0.35em; border-radius: 4px; }
+mark { background: var(--accent-soft); color: var(--accent-strong); padding: 0.1em 0.5em; border-radius: var(--radius-pill); font-size: 0.85em; font-weight: 600; }
+
+input, button, select, textarea { font: inherit; color: inherit; }
+
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--border); }
+
+footer { color: var(--muted); font-size: 0.875rem; padding-bottom: var(--space-5); }
+footer a { color: inherit; }
+
+.icon { flex: none; vertical-align: middle; }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ---- Top bar --------------------------------------------------------------------------- */
+
+.topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-5);
+  padding: var(--space-3) max(var(--space-4), calc((100% - var(--page-width)) / 2 + var(--space-4)));
+  border-bottom: 1px solid var(--border);
+  background: var(--accent-soft);
+}
+
+.wordmark {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  text-decoration: none;
+}
+.wordmark:hover { color: var(--text); }
+
+.mainnav { display: flex; align-items: center; gap: var(--space-2); }
+
+.mainnav > a,
+.mainnav summary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+.mainnav > a:hover, .mainnav summary:hover { color: var(--accent-strong); }
+.mainnav [aria-current="page"] { border-bottom-color: var(--accent); font-weight: 600; }
+
+/* Catalog dropdown: <details>, no JavaScript. */
+.dropdown { position: relative; }
+.dropdown summary { list-style: none; }
+.dropdown summary::-webkit-details-marker { display: none; }
+.dropdown[open] summary .icon { transform: rotate(180deg); }
+.dropdown ul {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + var(--space-1));
+  left: 0;
+  min-width: 11rem;
+  margin: 0;
+  padding: var(--space-2);
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgb(30 27 58 / 0.08);
+}
+.dropdown li a {
+  display: block;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  text-decoration: none;
+}
+.dropdown li a:hover { background: var(--accent-soft); }
+
+.topbar-actions { display: flex; align-items: center; gap: var(--space-2); margin-left: auto; }
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: none;
+  color: var(--text);
+}
+button.icon-button { cursor: pointer; }
+button.icon-button:hover { background: var(--accent-soft-strong); color: var(--accent-strong); }
+
+/* On narrow screens the nav links move to their own row under the wordmark and icons. */
+@media (max-width: 34rem) {
+  .topbar { gap: var(--space-1) var(--space-3); }
+  .mainnav { order: 3; width: 100%; margin-left: calc(-1 * var(--space-3)); }
+}
+
+/* ---- Search ------------------------------------------------------------------------------ */
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--muted);
+}
+.search:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: none;
+  color: var(--text);
+}
+.search input::placeholder { color: var(--muted); }
+
+/* ---- Sections ---------------------------------------------------------------------------- */
+
+section { margin-bottom: var(--space-6); }
+
+section > h2 a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--text);
+  text-decoration: none;
+}
+section > h2 a:hover { color: var(--accent-strong); }
+
+/* Tiles: icon, name, count. They wrap on narrow screens. */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  height: 100%;
+  padding: var(--space-4) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+  color: var(--text);
+  text-align: center;
+  text-decoration: none;
+}
+.tile .icon { color: var(--accent); margin-bottom: var(--space-1); }
+.tile:hover { border-color: var(--accent); background: var(--accent-soft-strong); color: var(--text); }
+.tile-label { font-weight: 500; }
+.tile-count { color: var(--muted); font-size: 0.875rem; }
+
+/* Rows: icon, name, division chips, chevron. */
+.rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.rows li + li { border-top: 1px solid var(--border); }
+.row {
+  display: grid;
+  grid-template-columns: auto minmax(7rem, 14rem) 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  color: var(--text);
+  text-decoration: none;
+}
+.row:hover { background: var(--accent-soft); color: var(--text); }
+.row > .icon:first-child { color: var(--accent); }
+.row > .icon:last-child { color: var(--muted); }
+.row-name { font-weight: 600; }
+
+.chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.chip {
+  padding: 0.1rem 0.65rem;
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft);
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+@media (max-width: 34rem) {
+  .row { grid-template-columns: auto 1fr auto; }
+  .row .chips { grid-column: 2; grid-row: 2; }
+  .row > .icon:last-child { grid-column: 3; grid-row: 1 / span 2; }
+}
+
+.empty { color: var(--muted); padding: var(--space-4); border: 1px dashed var(--border); border-radius: var(--radius); }
