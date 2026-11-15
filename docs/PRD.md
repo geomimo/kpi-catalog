@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Course** | Information Organization, group project |
-| **Status** | Draft v5, 12 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode (108 definitions); the ML stack runs on Python 3.14; curation files and the GenAI-drafted texts reviewed; company named Konfusio; the ML batch skips deprecated definitions (§14 Q8); vocabulary v0 written and reviewed (four hand-written SKOS schemes); data-quality log started (`data/quality_log.md`); NAICS codes checked (§14 Q4). History in [§15](#15-change-log) |
+| **Status** | Draft v5, 12 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode (108 definitions); the ML stack runs on Python 3.14; curation files and the GenAI-drafted texts reviewed; company named Konfusio; the ML batch skips deprecated definitions (§14 Q8); vocabulary v0 written and reviewed (four hand-written SKOS schemes); data-quality log started (`data/quality_log.md`); NAICS codes checked (§14 Q4); gold-set sample and annotator sheets ready, labelling open (§6). History in [§15](#15-change-log) |
 | **Deadlines** | Mid-term description **19 Nov 2026** · Final delivery **21 Dec 2026** |
 | **Team** | **A** = George (dataset, vocabulary, ML) · **B** = Liam (web app) · **W** = Liam (report) and Ioanna (personas, user journeys, UI wireframes). Slides owner still open ([§14](#14-open-questions)) |
 | **Tasks and progress** | [`docs/TASKS.md`](TASKS.md) |
@@ -384,7 +384,7 @@ The seed has **no** theme or business-line tags, so ML is their only automatic s
 
 | Task | Predicts | Input | Gold labels for evaluation (`data/gold/`) |
 |---|---|---|---|
-| **T1 Theme** | 1–2 Category themes (perspective derived via `skos:broader`) | `display_name + definition_text` (+ formula, when present) | 40 definitions labelled by hand by two team members |
+| **T1 Theme** | 1–2 Category themes (perspective derived via `skos:broader`) | `display_name + definition_text` (+ formula, when present) | 40 definitions labelled by hand by two team members, independently (details under **Gold set** below) |
 | **T2 Business line** | 1 Business line concept | same | The original HF `domain`, mapped through `domain_to_division.csv` (all non-deprecated HF definitions; not evaluated on dbt and hand-written ones) |
 | **T3 Unit check** | Measure Type, predicted from the text alone | same | Compared with the measure type derived from `unit`; a disagreement creates a `unit_mismatch` flag (the seeded *Operating Expenses* error must be caught) |
 
@@ -397,6 +397,8 @@ The seed has **no** theme or business-line tags, so ML is their only automatic s
 Embeddings for the seed data are **computed offline once**; the web app only encodes new submissions.
 
 **Scope (decided 11 Nov, [§14 Q8](#14-open-questions)):** the batch tasks (T1, T2, T3 and the similarity flags) skip definitions with `status = deprecated`; in the seed that is only DEF-0025, *Capital Expenditure* v1, superseded by DEF-0041. Drafts, in-review and rejected definitions are tagged like approved ones. Deprecated definitions are also left out of the gold set and the evaluation. Reasons: [§4.5](#45-definition-lifecycle-and-visibility) already moves every other live link off a superseded definition; its auto tags and flags would sit in the curator queues for a definition nobody should fix; and its text is nearly the same as its successor's, so it would count twice in the evaluation. Cost: it drops out of the Category and Business line facets and is reached through its successor's version chain. If superseding in the app is built (Q7, task W20), the same rule applies to the old version.
+
+**Gold set (task M3, `data/gold/`):** the pool is the 96 definitions with real source text that the batch tags (82 HF + 15 dbt, minus the deprecated DEF-0025), from 57 KPIs. The T1 sample is 40 of those KPIs drawn at random (seed 42), one definition each, so the five near-identical variants of a KPI such as Inventory Turnover can't count five times. Because every dbt metric is its own KPI, dbt is over-represented in the sample (11 of 40, against 15 of 96 in the pool); the report says so. Annotators see exactly the tagger's input (`display_name`, `definition_text`, `formula`) and choose `theme_1` (required) and `theme_2` (optional) from the vocabulary's themes, guided by the scope notes. The T2 gold set is generated: all 81 eligible HF definitions with the business line of their `domain`. `uv run python -m kpi_catalog.ml.gold prepare` writes the sample, the blank sheets and the T2 set; `compare` checks both sheets and writes `t1_gold.csv` with both annotators' labels and the agreed one.
 
 **Evaluation (for the report):**
 - **Metrics:** accuracy and macro-F1 per task. T1 at both theme and perspective level.
@@ -544,6 +546,7 @@ src/kpi_catalog/
   vocab/skos.py             load / query / export SKOS; unit → measure type; official tags
   ml/tagger.py              T1/T2 tagging, T3 unit check, submit suggestions
   ml/similarity.py          synonym / divergence flags
+  ml/gold.py                gold-set sample, annotator sheets, T2 export, annotator comparison
   ml/evaluate.py            gold-set metrics vs baselines
   auth.py                   log-in-as + permission check
   web/                      Flask app factory, routes, templates/, static/
@@ -647,3 +650,4 @@ Every change to a feature or decision gets a row here, with the PRD sections it 
 | 11 Nov 2026 | v5 | V1: vocabulary v0 drafted in `vocab/kpi-vocabulary.ttl` (Category, Business line, Measure Type, Metric Type) with `tests/test_vocabulary.py`; perspectives renamed `kv:…Perspective`, theme *customer* labelled *Customer Relationship*, profit filed under Revenue; typed notations for units, metric types and NAICS codes; draft NAICS codes; concept texts GenAI-drafted, reviewed by George | header, top, §3.5, §5, §14 Q4 |
 | 11 Nov 2026 | v5 | M10: the ML batch (T1–T3, similarity flags) skips deprecated definitions and leaves them out of the gold set and evaluation; deprecated rows have no theme or business line in the annotated dataset | header, §4.5, §6, §14 Q8 |
 | 12 Nov 2026 | v5 | V2: every Business line NAICS code checked against the NAICS 2022 code list, concordance and manual; no code changes; Insurance stays a direct carrier (524126) and Mobile a reseller (517121); Online keeps its `broadMatch`, Membership no match; sources cited in the vocabulary | header, §5, §14 Q4 |
+| 15 Nov 2026 | v5 | M3 set up: gold-set tooling `ml/gold.py`; T1 sample = 40 of the 57 eligible KPIs at random (seed 42), one definition each; annotators see only the tagger's input; T2 gold generated for the 81 eligible HF definitions; labels still to be made by two people | header, §6, §11 |

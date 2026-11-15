@@ -28,7 +28,8 @@ Requires [uv](https://docs.astral.sh/uv/) and Python 3.14.
 uv sync
 uv run kpigen download                 # fetch the pinned sources into data/raw/ (git-ignored)
 uv run kpigen                          # generate data/seed/*.csv and validate it against schema.sql + business rules
-uv run pytest                          # generator, seed and vocabulary tests
+uv run pytest                          # generator, seed, vocabulary and gold-set tests
+uv run python -m kpi_catalog.ml.gold prepare   # gold-set sample and annotator sheets (see data/gold/README.md)
 uv run jupyter lab exploration.ipynb   # explore the dataset
 ```
 

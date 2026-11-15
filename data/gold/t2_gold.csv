@@ -1,0 +1,82 @@
+definition_id,origin_ref,hf_domain,business_line
+DEF-0001,hf:0,in finance,GroupWide
+DEF-0002,hf:1,in finance,GroupWide
+DEF-0003,hf:2,in finance,GroupWide
+DEF-0004,hf:3,in finance,GroupWide
+DEF-0005,hf:4,in finance,GroupWide
+DEF-0006,hf:5,in finance,GroupWide
+DEF-0007,hf:6,in finance,GroupWide
+DEF-0008,hf:7,in real estate,Property
+DEF-0009,hf:8,in finance,GroupWide
+DEF-0010,hf:9,in finance,GroupWide
+DEF-0011,hf:10,in finance,GroupWide
+DEF-0012,hf:11,in retail,Stores
+DEF-0013,hf:12,in finance,GroupWide
+DEF-0014,hf:13,in accounting,GroupWide
+DEF-0015,hf:14,in accounting,GroupWide
+DEF-0016,hf:15,in finance,GroupWide
+DEF-0017,hf:16,in accounting,GroupWide
+DEF-0018,hf:17,in real estate,Property
+DEF-0019,hf:18,in finance,GroupWide
+DEF-0021,hf:20,in finance,GroupWide
+DEF-0022,hf:21,in banking,Banking
+DEF-0023,hf:22,in finance,GroupWide
+DEF-0024,hf:23,in retail,Stores
+DEF-0027,hf:26,in finance,GroupWide
+DEF-0028,hf:27,in corporate,GroupWide
+DEF-0029,hf:28,in supply chain,GroupWide
+DEF-0030,hf:29,in finance,GroupWide
+DEF-0031,hf:30,in accounting,GroupWide
+DEF-0033,hf:32,in accounting,GroupWide
+DEF-0034,hf:33,in real estate,Property
+DEF-0035,hf:34,in finance,GroupWide
+DEF-0037,hf:36,in banking,Banking
+DEF-0038,hf:37,in finance,GroupWide
+DEF-0039,hf:38,in finance,GroupWide
+DEF-0040,hf:39,in retail,Stores
+DEF-0041,hf:40,in finance,GroupWide
+DEF-0044,hf:43,in e-commerce,Online
+DEF-0048,hf:47,in e-commerce,Online
+DEF-0049,hf:48,in manufacturing,OwnBrandProduction
+DEF-0050,hf:49,in telecommunications,Mobile
+DEF-0051,hf:50,in telecommunications,Mobile
+DEF-0054,hf:53,in manufacturing,OwnBrandProduction
+DEF-0056,hf:55,in e-commerce,Online
+DEF-0057,hf:56,in telecommunications,Mobile
+DEF-0058,hf:57,in manufacturing,OwnBrandProduction
+DEF-0059,hf:58,in retail,Stores
+DEF-0060,hf:59,in retail,Stores
+DEF-0061,hf:60,in retail,Stores
+DEF-0062,hf:61,in e-commerce,Online
+DEF-0063,hf:62,in e-commerce,Online
+DEF-0064,hf:63,in e-commerce,Online
+DEF-0065,hf:64,in insurance,Insurance
+DEF-0066,hf:65,in insurance,Insurance
+DEF-0067,hf:66,in insurance,Insurance
+DEF-0068,hf:67,in retail,Stores
+DEF-0069,hf:68,in saas,Membership
+DEF-0070,hf:69,in telecommunications,Mobile
+DEF-0071,hf:70,in finance,GroupWide
+DEF-0072,hf:71,in finance,GroupWide
+DEF-0073,hf:72,in finance,GroupWide
+DEF-0077,hf:76,in marketing,GroupWide
+DEF-0078,hf:77,in marketing,GroupWide
+DEF-0079,hf:78,in marketing,GroupWide
+DEF-0080,hf:79,in retail,Stores
+DEF-0081,hf:80,in retail,Stores
+DEF-0082,hf:81,in retail,Stores
+DEF-0083,hf:82,in human resources,GroupWide
+DEF-0084,hf:83,in human resources,GroupWide
+DEF-0085,hf:84,in human resources,GroupWide
+DEF-0086,hf:85,in retail,Stores
+DEF-0087,hf:86,in retail,Stores
+DEF-0088,hf:87,in retail,Stores
+DEF-0089,hf:88,in retail,Stores
+DEF-0090,hf:89,in retail,Stores
+DEF-0091,hf:90,in retail,Stores
+DEF-0092,hf:91,in manufacturing,OwnBrandProduction
+DEF-0093,hf:92,in manufacturing,OwnBrandProduction
+DEF-0094,hf:93,in manufacturing,OwnBrandProduction
+DEF-0095,hf:94,in e-commerce,Online
+DEF-0096,hf:95,in logistics,GroupWide
+DEF-0097,hf:96,in e-commerce,Online

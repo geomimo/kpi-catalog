@@ -29,7 +29,8 @@ University group project for *Information Organization*: a website that organize
 - `uv add <pkg>`: add a dependency (use uv, never pip)
 - `uv run kpigen download`: fetch the pinned sources into `data/raw/` (the only network step)
 - `uv run kpigen`: generate `data/seed/` and validate it (`schema.sql` + `tests/test_seed_rules.py`); `--strict` also fails on any `TODO(george)` placeholder
-- `uv run pytest`: generator, seed and vocabulary tests
+- `uv run pytest`: generator, seed, vocabulary and gold-set tests
+- `uv run python -m kpi_catalog.ml.gold prepare|compare`: gold-set sample, blank annotator sheets and T2 gold / check the sheets and write `t1_gold.csv` (M3; see `data/gold/README.md`)
 - Planned: `uv run kpi-catalog build` (load → tag → flag), `uv run flask --app kpi_catalog.web run --debug`
 
 ## Layout (planned, see PRD §11)
@@ -37,7 +38,7 @@ University group project for *Information Organization*: a website that organize
 - `src/kpigen/`: seed generator code. `kpigen/curation/*.csv` (domain_to_division, kpis, row_to_kpi, exclusions, relationships) and `kpigen/scenarios.yaml` hold every hand-made data decision. `data/seed/` is its output and is never edited by hand; change the curation files or the generator instead.
 - `tests/test_seed_rules.py`: the PRD §3.6 business rules every seed must pass; `tests/test_kpigen.py`: generator tests.
 - `data/raw/`: pinned source downloads (git-ignored; never commit them).
-- `data/gold|annotated/`: gold labels and the exported annotated dataset. Every data-quality decision is logged in `data/quality_log.md` (it feeds the report), under a permanent ID (S, E, Q, C, L; never renumber).
+- `data/gold|annotated/`: gold labels and the exported annotated dataset. Gold labels are made by people only, never by an LLM or the tagger. Every data-quality decision is logged in `data/quality_log.md` (it feeds the report), under a permanent ID (S, E, Q, C, L; never renumber).
 - `vocab/`: hand-authored SKOS seed `kpi-vocabulary.ttl` (checked by `tests/test_vocabulary.py`) + generated exports.
 - `src/kpi_catalog/{data,vocab,ml,web}/` + `db.py`.
 - `docs/TASKS.md`: task tracker. `docs/user-journeys.md`, `docs/wireframes/`, `docs/demo-script.md`: Ioanna's UX inputs for the web pages and the demo.
