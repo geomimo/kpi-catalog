@@ -96,7 +96,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - Done when: every Business line's `skos:closeMatch` and `skos:notation` has been checked against NAICS 2022, with the source cited.
 - [ ] **V4 · Vocabulary v1** · by 27 Nov · §5 · needs V3
   - Generate the Division and KPI Glossary schemes from the database (altLabels from `display_name`, `dct:subject`, lineage properties), plus an altLabel lookup for search expansion (W5). Done when: rdflib parses the combined vocabulary and "Stock Turnover Rate" resolves to Inventory Turnover.
-- [ ] **M4 · Unit check (T3)** · by 1 Dec · F9, §6 · needs M2, V3
+- [x] **M4 · Unit check (T3)** · by 1 Dec · F9, §6 · needs M2, V3 · *done 15 Nov: neighbour vote (5 nearest definitions, ≥ 80%); Operating Expenses flagged at 100%; the 3 other flags reviewed and logged as C10*
   - Done when: *Operating Expenses* gets a `unit_mismatch` flag, and every other mismatch has been reviewed and logged in the quality log.
 - [ ] **V5 · Validate the vocabulary** · by 3 Dec · §5 · needs V4
   - Done when: Skosify or SKOS Play reports no errors (any remaining warnings are explained), and its visualizations are saved as report figures.

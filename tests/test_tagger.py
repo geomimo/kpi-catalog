@@ -96,3 +96,36 @@ def test_definition_input_matches_what_annotators_see():
     d = {"display_name": "ATOPU", "definition_text": "Turnover per active user.", "formula": "turnover / users"}
     assert tagger.definition_input(d) == "ATOPU. Turnover per active user. Formula: turnover / users."
     assert tagger.definition_input({**d, "formula": None}) == "ATOPU. Turnover per active user."
+
+
+def unit_flags(con):
+    return con.execute("SELECT a_definition_id, status, score FROM similarity_flags"
+                       " WHERE type = 'unit_mismatch' ORDER BY a_definition_id").fetchall()
+
+
+@pytest.fixture
+def money_and_opex(con):
+    """DEF-0007 (Operating Expenses, unit `score`, Q1) and five EUR definitions, all with the same vector."""
+    eur = [r[0] for r in con.execute("SELECT definition_id FROM definitions WHERE unit = 'EUR'"
+                                     " AND status <> 'deprecated' ORDER BY definition_id LIMIT 5")]
+    ids = ["DEF-0007", *eur]
+    return ids, np.ones((len(ids), 4)) / 2
+
+
+def test_unit_check_flags_the_odd_one_out(con, g, money_and_opex):
+    found = tagger.check_units(con, *money_and_opex, g)
+    assert [(f["definition_id"], f["predicted"]) for f in found] == [("DEF-0007", "MonetaryAmount")]
+    assert unit_flags(con) == [("DEF-0007", "open", 1.0)]  # the EUR ones get 4 of 5 votes for their own type
+
+
+def test_unit_check_rerun_keeps_resolved_flags(con, g, money_and_opex):
+    tagger.check_units(con, *money_and_opex, g)
+    con.execute("UPDATE similarity_flags SET status = 'dismissed', resolved_by = 'USR-053',"
+                " resolved_at = '2026-11-15T00:00:00Z'")
+    tagger.check_units(con, *money_and_opex, g)
+    assert unit_flags(con) == [("DEF-0007", "dismissed", 1.0)]
+
+
+def test_unit_check_needs_a_clear_majority(con, g, money_and_opex):
+    assert tagger.check_units(con, *money_and_opex, g, min_share=1.01) == []
+    assert unit_flags(con) == []

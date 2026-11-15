@@ -19,7 +19,7 @@ Group project for the course *Information Organization*.
 The full scope, personas, use cases and plan are in **[docs/PRD.md](docs/PRD.md)**.
 
 ## Status
-The seed generator `kpigen` and `schema.sql` (reviewed) are written and the seed validates (108 definitions). The ML stack (`sentence-transformers` with `all-MiniLM-L6-v2`) runs on Python 3.14. The curation files and our own texts (drafted with GenAI) have been reviewed. Vocabulary v0 (`vocab/kpi-vocabulary.ttl`, SKOS) is written and reviewed, and its NAICS codes are checked against NAICS 2022. Data-quality findings and decisions are logged in `data/quality_log.md`. The first ML tagging run (theme and business line) is done; see `reports/m2_spot_check.md`. Next: the database loader and the Flask app (mid-term: 19 Nov 2026; final: 21 Dec 2026). Tasks and progress are tracked in [docs/TASKS.md](docs/TASKS.md).
+The seed generator `kpigen` and `schema.sql` (reviewed) are written and the seed validates (108 definitions). The ML stack (`sentence-transformers` with `all-MiniLM-L6-v2`) runs on Python 3.14. The curation files and our own texts (drafted with GenAI) have been reviewed. Vocabulary v0 (`vocab/kpi-vocabulary.ttl`, SKOS) is written and reviewed, and its NAICS codes are checked against NAICS 2022. Data-quality findings and decisions are logged in `data/quality_log.md`. The first ML tagging run (theme and business line) and the unit check are done; see `reports/m2_spot_check.md` and PRD §6. Next: the database loader and the Flask app (mid-term: 19 Nov 2026; final: 21 Dec 2026). Tasks and progress are tracked in [docs/TASKS.md](docs/TASKS.md).
 
 ## Setup
 Requires [uv](https://docs.astral.sh/uv/) and Python 3.14.
@@ -30,7 +30,7 @@ uv run kpigen download                 # fetch the pinned sources into data/raw/
 uv run kpigen                          # generate data/seed/*.csv and validate it against schema.sql + business rules
 uv run pytest                          # generator, seed, vocabulary, gold-set and tagger tests
 uv run python -m kpi_catalog.ml.gold prepare   # gold-set sample and annotator sheet (see data/gold/README.md)
-uv run python -m kpi_catalog.ml.tagger --from-seed   # build instance/catalog.sqlite from the seed and auto-tag it
+uv run python -m kpi_catalog.ml.tagger --from-seed   # build instance/catalog.sqlite from the seed, auto-tag it and check units
 uv run jupyter lab exploration.ipynb   # explore the dataset
 ```
 

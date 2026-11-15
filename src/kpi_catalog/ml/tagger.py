@@ -1,4 +1,4 @@
-"""ML tagging (task M2, PRD §6): T1 theme and T2 business line by embedding similarity, no training.
+"""ML tagging (PRD §6): T1 theme and T2 business line (task M2) and the T3 unit check (task M4), no training.
 
 Each definition (`display_name`, `definition_text`, `formula`) and each concept (prefLabel, altLabels,
 skos:definition) is encoded with all-MiniLM-L6-v2. A definition gets its most similar theme, plus a second theme
@@ -9,6 +9,12 @@ Rows go to `definition_tags` with `source = ml`, the cosine similarity as `confi
 Deprecated definitions are skipped (M10). A rerun replaces the `auto` rows and keeps every tag a curator has
 accepted or rejected. The definition embeddings are saved as `.npy` next to the database, for the similarity
 flags (M7) and the submit suggestions (M8).
+
+T3 predicts each definition's measure type from its `K_UNIT` most similar other definitions: their measure types
+(looked up from their units) vote, weighted by similarity. If at least `MIN_SHARE` of the vote goes to a measure
+type other than the one the definition's own unit gives, it gets an open `unit_mismatch` flag with that share as
+its score. Comparing the text with the Measure Type concepts directly was tried first and rejected: MiniLM
+captures what a text is about, not what kind of number it gives, so it flagged 33 of 107 definitions (PRD §6).
 
     uv run python -m kpi_catalog.ml.tagger [--db instance/catalog.sqlite]
     uv run python -m kpi_catalog.ml.tagger --from-seed   # build the database from data/seed first (until W2)
@@ -31,6 +37,8 @@ MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 DB = ROOT / "instance" / "catalog.sqlite"
 MAX_THEMES = 2
 TAU_MIN = 0.45  # provisional: a second theme needs at least this score; M5 tunes it on the gold set (PRD §14 Q3)
+K_UNIT = 5  # neighbours that vote on a definition's measure type (T3)
+MIN_SHARE = 0.8  # share of the vote that must disagree with the unit before a unit_mismatch flag is raised
 
 Encoder = Callable[[Sequence[str]], np.ndarray]  # texts -> unit-length row vectors
 
@@ -94,6 +102,48 @@ def tag(con: sqlite3.Connection, encode: Encoder, g=None, embeddings: Path | Non
     return counts
 
 
+def load_embeddings(path: Path) -> tuple[list[str], np.ndarray]:
+    """The definition IDs and vectors that `tag` saved."""
+    return path.with_suffix(".ids.txt").read_text().split(), np.load(path)
+
+
+def unit_flag_id(definition_id: str) -> str:
+    return f"FLAG-UNIT-{definition_id}"
+
+
+def check_units(con: sqlite3.Connection, ids: Sequence[str], vectors: np.ndarray, g=None,
+                k: int = K_UNIT, min_share: float = MIN_SHARE) -> list[dict]:
+    """T3: raise a unit_mismatch flag where a definition's neighbours disagree with its unit. Returns the mismatches.
+
+    A rerun replaces the open flags and keeps every flag the Admin has already resolved (dismissed, fixed).
+    """
+    g = g if g is not None else skos.load_vocab()
+    lookup = skos.measure_types(g)
+    units = dict(con.execute("SELECT definition_id, unit FROM definitions"))
+    own = [lookup[units[i]].name for i in ids]
+    sims = vectors @ vectors.T
+    np.fill_diagonal(sims, -np.inf)  # a definition doesn't vote for itself
+    found = []
+    for a, row in enumerate(sims):
+        votes = Counter()
+        for j in np.argsort(-row, kind="stable")[:k]:
+            votes[own[j]] += max(float(row[j]), 0.0)
+        total = sum(votes.values())
+        if not total:
+            continue
+        predicted, weight = votes.most_common(1)[0]
+        share = weight / total
+        if predicted != own[a] and share >= min_share:
+            found.append({"definition_id": ids[a], "unit": units[ids[a]], "measure_type": own[a],
+                          "predicted": predicted, "share": round(share, 4)})
+    con.execute("DELETE FROM similarity_flags WHERE type = 'unit_mismatch' AND status = 'open'")
+    con.executemany("INSERT OR IGNORE INTO similarity_flags (flag_id, type, a_definition_id, b_definition_id, score,"
+                    " status, resolved_by, resolved_at) VALUES (?, 'unit_mismatch', ?, NULL, ?, 'open', NULL, NULL)",
+                    [(unit_flag_id(f["definition_id"]), f["definition_id"], f["share"]) for f in found])
+    con.commit()
+    return found
+
+
 def build_from_seed(db: Path, seed_dir: Path = SEED) -> None:
     """Stopgap until the loader (W2, db.py) exists: schema.sql + the seed CSVs, written to `db`."""
     from kpigen.validate import load_seed
@@ -117,9 +167,16 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     con = sqlite3.connect(args.db)
     con.execute("PRAGMA foreign_keys = ON")
-    counts = tag(con, sentence_encoder(), embeddings=args.db.with_name("embeddings.npy"))
+    g = skos.load_vocab()
+    embeddings = args.db.with_name("embeddings.npy")
+    counts = tag(con, sentence_encoder(), g, embeddings=embeddings)
     for facet, c in counts.items():
         print(f"{facet}: {sum(c.values())} auto tags; {dict(c.most_common())}")
+    mismatches = check_units(con, *load_embeddings(embeddings), g)
+    print(f"unit check: {len(mismatches)} unit_mismatch flag(s)")
+    for f in mismatches:
+        print(f"  {f['definition_id']}: unit {f['unit']} ({f['measure_type']}), neighbours say {f['predicted']}"
+              f" ({f['share']:.0%})")
     return 0
 
 
