@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% from "_kpi_macros.html" import status_chip, breadcrumb, page_header, tab_bar, official_tags, community_tags, def_link, lineage_list %}
+{% block content %}
+{{ breadcrumb([("KPI Catalog", url_for("browse")), (d.kpi_name, url_for("kpi", slug=d.kpi_slug)), (d.division_name, None)]) }}
+{{ page_header(d.kpi_name ~ " – " ~ d.division_name, "KPI Definition", url_for("compare", slug=d.kpi_slug),
+               subtitle=("Called “" ~ d.display_name ~ "” in " ~ d.division_name) if d.display_name|lower != d.kpi_name|lower else None) }}
+
+{% if d.status == "deprecated" and d.superseded_by_id %}
+<div class="banner" role="status">{{ icon("versions") }}
+  <div>This version is deprecated. <a href="{{ url_for('definition', definition_id=d.superseded_by_id) }}">See the current version</a>.</div>
+</div>
+{% endif %}
+
+{{ tab_bar(tabs, tab, "definition", definition_id=d.definition_id) }}
+
+{% if tab == "overview" %}
+<div class="split">
+  <div class="card">
+    <h2>Short Description</h2>
+    <p>{{ d.definition_text|truncate(220) }}</p>
+    <table class="kv">
+      <tr><th>Division</th><td><span class="chip">{{ d.division_name }}</span></td></tr>
+      <tr><th>Owner</th><td>{{ d.owner_name }}<div class="muted small">{{ d.owner_title }}</div></td></tr>
+      <tr><th>Unit</th><td>{{ d.unit }}</td></tr>
+      <tr><th>Data Source</th><td>{% if d.source_table %}<code>{{ d.source_table }}{% if d.source_column %}.{{ d.source_column }}{% endif %}</code>{% else %}<span class="muted">Not recorded</span>{% endif %}</td></tr>
+      <tr><th>Status</th><td>{{ status_chip(d.status, status_labels) }}</td></tr>
+    </table>
+    {{ official_tags(official) }}
+    {{ community_tags(community, show_counts=False) }}
+  </div>
+  <aside class="card">
+    <h2>Key Details</h2>
+    <ul class="key-details">
+      <li>{{ icon("calendar") }}<span><strong>Grain:</strong> {{ d.grain|capitalize }}</span></li>
+      <li>{{ icon("stack-2") }}<span><strong>Metric Type:</strong> {{ d.metric_type|capitalize }}</span></li>
+      <li>{{ icon("table") }}<span><strong>Source Table / Column:</strong>
+        {% if d.source_table %}<code>{{ d.source_table }}{% if d.source_column %} / {{ d.source_column }}{% endif %}</code>{% else %}<span class="muted">Not recorded</span>{% endif %}</span></li>
+      <li>{{ icon("versions") }}<span><strong>Version:</strong> v{{ d.version }}</span></li>
+    </ul>
+  </aside>
+</div>
+
+{% elif tab == "definition" %}
+<div class="card prose">
+  <h2>Definition</h2>
+  <p>{{ d.definition_text }}</p>
+  <h3>Formula</h3>
+  {% if d.formula %}<pre><code>{{ d.formula }}</code></pre>
+  {% elif d.metric_type == "base" %}<p class="muted">No formula recorded (base measure: read directly from the source).</p>
+  {% else %}<p class="muted">No formula recorded.</p>{% endif %}
+  <h3>Related columns</h3>
+  {% if d.related_columns %}<p><code>{{ d.related_columns }}</code></p>{% else %}<p class="muted">None recorded.</p>{% endif %}
+</div>
+
+{% elif tab == "dependencies" %}
+<div class="split even">
+  <section class="card"><h2>Built from</h2>{{ lineage_list(lineage.built_from, "Not computed from other definitions.") }}</section>
+  <section class="card"><h2>Used to build</h2>{{ lineage_list(lineage.feeds, "No other definition is computed from it.") }}</section>
+</div>
+
+{% elif tab == "usage" %}
+<div class="table-scroll card flush">
+  {% if usage %}
+  <table class="data">
+    <thead><tr><th>Name</th><th>Type</th><th>Tool</th><th>Owning division</th></tr></thead>
+    <tbody>
+      {% for a in usage %}
+      <tr><td><strong>{{ a.name }}</strong><div class="muted small">{{ a.description }}</div></td><td>{{ a.asset_type|capitalize }}</td><td>{{ a.tool }}</td><td><span class="chip">{{ a.division_name }}</span></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted pad">No dashboards or reports use this definition.</p>
+  {% endif %}
+</div>
+
+{% elif tab == "history" %}
+<div class="split">
+  <section class="card">
+    <h2>Review history</h2>
+    {% if reviews %}
+    <ol class="timeline">
+      {% for r in reviews %}
+      <li>
+        <div><span class="decision decision-{{ r.decision }}">{{ decision_labels.get(r.decision, r.decision) }}</span>
+          by <strong>{{ r.reviewer_name }}</strong> <span class="muted small">{{ r.reviewer_title }}</span>
+          <time class="muted small" datetime="{{ r.reviewed_at }}">· {{ r.reviewed_at[:10] }}</time></div>
+        <p>{{ r.comment }}</p>
+      </li>
+      {% endfor %}
+    </ol>
+    {% else %}
+    <p class="muted">Not reviewed yet.</p>
+    {% endif %}
+  </section>
+  <aside class="card">
+    <h2>Versions</h2>
+    <ol class="versions">
+      {% for v in versions %}
+      <li{% if v.definition_id == d.definition_id %} aria-current="true"{% endif %}>
+        {% if v.definition_id == d.definition_id %}<strong>v{{ v.version }}</strong> (this version)
+        {% else %}<a href="{{ url_for('definition', definition_id=v.definition_id) }}">v{{ v.version }}</a>{% endif %}
+        {{ status_chip(v.status, status_labels) }}
+      </li>
+      {% endfor %}
+    </ol>
+    {% if versions|length == 1 %}<p class="muted small">No earlier or later versions.</p>{% endif %}
+  </aside>
+</div>
+{% endif %}
+{% endblock %}

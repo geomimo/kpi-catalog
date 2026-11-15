@@ -112,11 +112,11 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - Division, Category (two levels), Business line, Measure Type, Metric Type, Grain, Status; a separate community-tag filter; A–Z index. Done when: UC1's browse steps work as described in U2.
 - [ ] **W5 · Search** · by 1 Dec · F3 · needs W4, V4
   - FTS5 over KPI names, labels, definition text and both kinds of tag, with altLabel expansion; each result says why it matched. Done when: "stock turnover" finds Inventory Turnover and the result says it matched an altLabel.
-- [ ] **W6 · KPI page** · by 1 Dec · F4 · needs W3, V3, M2, U4
+- [ ] **W6 · KPI page** · by 1 Dec · F4 · needs W3, V3, M2, U4 · *(in progress): concept page (overview, definitions, dependencies, related KPIs) and definition page built from Ioanna's wireframes on 15 Nov; official-tag chips grouped by facet with "auto" work but are only tested with hand-inserted tags until V3/M2; visibility is Observer-only until W3*
   - Done when: definitions are grouped by division with every field, official tags show as chips grouped by facet (ML ones marked "auto", with the confidence on hover), and community tags sit in their own row with counts.
-- [ ] **W7 · Lineage, used-in, versions, review history** · by 3 Dec · F6, F7 · needs W6 · versions and history are cut #5
+- [x] **W7 · Lineage, used-in, versions, review history** · by 3 Dec · F6, F7 · needs W6 · versions and history are cut #5 · *done 15 Nov: Dependencies, Usage and History tabs; ATOPU and the Flash Report checked in `tests/test_kpis.py`*
   - Done when: ATOPU shows that Finance's version divides Finance turnover by Product active users (UC2), and the Finance Weekly Flash Report appears under "used in".
-- [ ] **W8 · Divergence panel** · by 3 Dec · F5 · needs W6
+- [ ] **W8 · Divergence panel** · by 3 Dec · F5 · needs W6 · *(in progress): banner "Divisions define this KPI differently" from open `definitions_diverge` flags and the compare page are built; tested with a hand-inserted flag, but the built database has no flags yet, so Turnover shows no warning; "similar KPIs" missing*
   - Use a few hand-inserted `similarity_flags` rows until M7 lands. Done when: Turnover shows a "definitions diverge" warning.
 - [ ] **W9 · Vocabulary browser** · by 3 Dec · F8 · needs V4
   - Done when: `/vocabulary` lists the schemes, and each concept page shows its definition, broader, narrower and related concepts, and the definitions tagged with it.

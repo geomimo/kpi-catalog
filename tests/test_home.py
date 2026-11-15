@@ -63,7 +63,9 @@ def test_recently_viewed_lists_opened_kpi(client):
 
 
 def test_recently_viewed_newest_first_no_duplicates_max(client):
-    slugs = [r["slug"] for r in csv_rows("kpis")][: RECENT_MAX + 2]
+    # KPIs an Observer can open (a KPI with no published definition is a 404 and isn't remembered).
+    public = {d["kpi_id"] for d in csv_rows("definitions") if d["status"] in ("approved", "deprecated")}
+    slugs = [r["slug"] for r in csv_rows("kpis") if r["kpi_id"] in public][: RECENT_MAX + 2]
     for slug in [*slugs, slugs[-1], slugs[-3]]:
         client.get(f"/kpis/{slug}")
     with client.session_transaction() as s:

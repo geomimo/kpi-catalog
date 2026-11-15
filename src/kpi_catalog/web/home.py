@@ -8,14 +8,12 @@ import sqlite3
 
 from flask import render_template, session, url_for
 
+from kpi_catalog.auth import visible
 from kpi_catalog.db import get_db
 
 RECENT_KEY = "recent_kpis"
 RECENT_MAX = 5
 TILE_LIMIT = 4
-
-# Statuses everyone may read (PRD §4.5). Until "log in as" (W3) the visitor is anonymous.
-PUBLIC_STATUSES = ("approved", "deprecated")
 
 # Decoration only: an icon per tile key. A key not listed here gets DEFAULT_ICON, so new divisions (or, later,
 # SKOS concepts) need no code change.
@@ -59,8 +57,8 @@ def remember_kpi(slug: str) -> None:
 
 
 def recent_kpis(con: sqlite3.Connection, slugs: list[str]) -> list[dict]:
-    """The KPIs for `slugs`, in that order: {slug, name, href, divisions} with the divisions that publish a
-    definition of it. Slugs that no longer exist are dropped."""
+    """The KPIs for `slugs`, in that order: {slug, name, href, divisions} with the divisions that have a
+    definition of it the visitor may see. Slugs that no longer exist are dropped."""
     if not slugs:
         return []
     marks = ", ".join("?" * len(slugs))
@@ -69,15 +67,16 @@ def recent_kpis(con: sqlite3.Connection, slugs: list[str]) -> list[dict]:
     by_id = {k["kpi_id"]: k for k in kpis.values()}
     if by_id:
         ids = list(by_id)
+        cond, params = visible("d")
         rows = con.execute(
             f"""
             SELECT DISTINCT d.kpi_id, v.name
               FROM definitions d JOIN divisions v ON v.division_id = d.division_id
              WHERE d.kpi_id IN ({", ".join("?" * len(ids))})
-               AND d.status IN ({", ".join("?" * len(PUBLIC_STATUSES))})
+               AND {cond}
              ORDER BY v.name
             """,
-            [*ids, *PUBLIC_STATUSES],
+            [*ids, *params],
         )
         for r in rows:
             by_id[r["kpi_id"]]["divisions"].append(r["name"])

@@ -6,7 +6,7 @@ Run with: uv run flask --app kpi_catalog.web run --debug
 from flask import Flask, render_template, request
 
 from kpi_catalog import db
-from kpi_catalog.web import home
+from kpi_catalog.web import home, kpis
 
 # The PRD §10 site map: (endpoint, URL rule, page title, what the page will do).
 # Pages without an entry in VIEWS are placeholders (data appears from W4); the
@@ -15,6 +15,8 @@ PAGES = [
     ("home", "/", "Home", 'Search, "KPIs of <your divisions>", facet entry points.'),
     ("browse", "/kpis", "Browse KPIs", "Facets, community-tag filter, A–Z index, tag cloud."),
     ("kpi", "/kpis/<slug>", "KPI", "Definitions by division, divergence, lineage, used-in, versions, tags."),
+    ("compare", "/kpis/<slug>/compare", "Compare definitions", "The KPI's definitions side by side."),
+    ("definition", "/definitions/<definition_id>", "Definition", "One definition: details, lineage, usage, history."),
     ("edit_definition", "/definitions/<def_id>/edit", "Edit definition", "Editor with ML suggestions; submit for review."),
     ("my_definitions", "/my-definitions", "My definitions", "Own drafts, in-review and rejected definitions with review comments."),
     ("review", "/review", "Review queue", "Definitions awaiting review in the reviewer's divisions."),
@@ -31,15 +33,17 @@ PAGES = [
 # Role-specific pages get menu entries with W3.
 NAV_SECTION = {
     "home": "home",
-    "browse": "catalog", "kpi": "catalog",
+    "browse": "catalog", "kpi": "catalog", "compare": "catalog", "definition": "catalog",
     "vocabulary": "vocabulary", "concept": "vocabulary",
 }
 
 # Pages with a real view; every other page in PAGES is still a placeholder.
-VIEWS = {"home": home.index}
-
-# Extra work before a placeholder renders (until the page itself is built).
-BEFORE = {"kpi": home.remember_kpi}  # W10 "Recently Viewed"; W4 replaces the KPI page
+VIEWS = {
+    "home": home.index,
+    "kpi": kpis.kpi_page,
+    "compare": kpis.compare_page,
+    "definition": kpis.definition_page,
+}
 
 
 def create_app(config: dict | None = None) -> Flask:
@@ -56,16 +60,14 @@ def create_app(config: dict | None = None) -> Flask:
         return {"section": NAV_SECTION.get(request.endpoint)}
 
     for endpoint, rule, title, summary in PAGES:
-        view = VIEWS.get(endpoint) or _placeholder(title, summary, BEFORE.get(endpoint))
+        view = VIEWS.get(endpoint) or _placeholder(title, summary)
         app.add_url_rule(rule, endpoint, view)
 
     return app
 
 
-def _placeholder(title: str, summary: str, before=None):
+def _placeholder(title: str, summary: str):
     def view(**params):
-        if before:
-            before(**params)
         return render_template("placeholder.html", title=title, summary=summary, params=params)
 
     return view

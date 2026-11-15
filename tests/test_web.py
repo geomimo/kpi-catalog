@@ -7,7 +7,9 @@ from kpi_catalog.web import create_app
 SITE_MAP = [
     "/",
     "/kpis",
-    "/kpis/gross-margin",
+    "/kpis/turnover",
+    "/kpis/turnover/compare",
+    "/definitions/DEF-0301",
     "/definitions/DEF-0308/edit",
     "/my-definitions",
     "/review",

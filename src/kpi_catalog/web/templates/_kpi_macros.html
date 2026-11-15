@@ -1,0 +1,86 @@
+{#- Building blocks shared by the KPI, definition and compare pages. -#}
+{% from "_icons.html" import icon %}
+
+{% macro status_chip(status, labels) -%}
+<span class="status status-{{ status }}">{{ labels.get(status, status) }}</span>
+{%- endmacro %}
+
+{% macro breadcrumb(items) -%}
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <ol>
+    {% for label, href in items %}
+    <li>{% if href %}<a href="{{ href }}">{{ label }}</a>{% else %}<span aria-current="page">{{ label }}</span>{% endif %}</li>
+    {% endfor %}
+  </ol>
+</nav>
+{%- endmacro %}
+
+{% macro page_header(title, badge, compare_href, subtitle=None) -%}
+<div class="page-header">
+  <span class="page-icon">{{ icon("chart-bar", 30) }}</span>
+  <div class="page-title">
+    <h1>{{ title }} <span class="badge">{{ badge }}</span></h1>
+    {% if subtitle %}<p class="subtitle">{{ subtitle }}</p>{% endif %}
+  </div>
+  <a class="button" href="{{ compare_href }}">{{ icon("scale") }} Compare Definitions</a>
+</div>
+{%- endmacro %}
+
+{% macro tab_bar(tabs, current, endpoint, counts={}) -%}
+<nav class="tabs" aria-label="Sections">
+  {% for key, label in tabs %}
+  <a href="{{ url_for(endpoint, tab=key, **kwargs) }}"{% if key == current %} aria-current="page"{% endif %}>{{ label }}{% if key in counts %} ({{ counts[key] }}){% endif %}</a>
+  {% endfor %}
+</nav>
+{%- endmacro %}
+
+{% macro official_tags(groups, empty="Not categorised yet") -%}
+{% if groups %}
+  {% for facet, tags in groups.items() %}
+  <div class="tag-group">
+    <h3>{{ facet }}</h3>
+    <div class="chips">
+      {% for t in tags %}
+      <a class="chip" href="{{ t.href }}"{% if t.auto %} title="Suggested by ML{% if t.confidence is not none %}, confidence {{ '%.2f'|format(t.confidence) }}{% endif %}; not checked by a curator yet"{% endif %}>{{ t.label }}{% if t.auto %} <span class="auto">auto</span>{% endif %}</a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="tag-group"><h3>Categories</h3><p class="muted">{{ empty }}</p></div>
+{% endif %}
+{%- endmacro %}
+
+{% macro community_tags(tags, show_counts=True) -%}
+<div class="tag-group community">
+  <h3>Community tags <span class="hint">unofficial, not reviewed</span></h3>
+  {% if tags %}
+  <div class="chips">
+    {% for t in tags %}<span class="chip chip-outline">#{{ t.label }}{% if show_counts %} <span class="count">{{ t.count }}</span>{% endif %}</span>{% endfor %}
+  </div>
+  {% else %}
+  <p class="muted">No community tags yet.</p>
+  {% endif %}
+</div>
+{%- endmacro %}
+
+{% macro def_link(d, show_kpi=True) -%}
+<a href="{{ url_for('definition', definition_id=d.definition_id) }}">{% if show_kpi %}{{ d.kpi_name }}{% else %}{{ d.display_name }}{% endif %}</a>
+<span class="chip">{{ d.division_name }}</span>
+{%- endmacro %}
+
+{% macro lineage_list(links, empty) -%}
+{% if links %}
+<ul class="link-list">
+  {% for l in links %}
+  <li>
+    {% if l.role %}<span class="role">{{ l.role }}</span>{% elif l.relationship_type == 'cumulative_of' %}<span class="role">cumulative{% if l.offset_window %} ({{ l.offset_window }}){% endif %}</span>{% else %}<span class="role">input</span>{% endif %}
+    {{ def_link(l) }}
+    {% if l.display_name != l.kpi_name %}<span class="muted">“{{ l.display_name }}”</span>{% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="muted">{{ empty }}</p>
+{% endif %}
+{%- endmacro %}

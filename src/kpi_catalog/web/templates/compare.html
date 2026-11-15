@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% from "_kpi_macros.html" import status_chip, breadcrumb %}
+{% block content %}
+{{ breadcrumb([("KPI Catalog", url_for("browse")), (kpi.name, url_for("kpi", slug=kpi.slug)), ("Compare", None)]) }}
+<div class="page-header">
+  <span class="page-icon">{{ icon("scale", 30) }}</span>
+  <div class="page-title">
+    <h1>Compare Definitions</h1>
+    <p class="subtitle">Comparing definitions of: <strong>{{ kpi.name }}</strong></p>
+  </div>
+</div>
+
+<div class="selection">
+  {% for c in selected %}
+  <span class="chip chip-select">{{ c.division_name }}{% if labels[loop.index0].sub %} · {{ labels[loop.index0].sub }}{% endif %}
+    <a href="{{ c.remove_href }}" title="Remove from comparison" aria-label="Remove {{ c.division_name }} {{ c.display_name }}">{{ icon("x", 16) }}</a></span>
+  {% endfor %}
+  {% if available %}
+  <details class="dropdown add-definition">
+    <summary class="chip chip-outline">{{ icon("plus", 16) }} Add definition</summary>
+    <ul>
+      {% for a in available %}
+      <li><a href="{{ a.add_href }}">{{ a.division_name }} · {{ a.display_name }}{% if a.status == "deprecated" %} (deprecated){% endif %}</a></li>
+      {% endfor %}
+    </ul>
+  </details>
+  {% endif %}
+</div>
+
+{% if columns %}
+<div class="table-scroll card flush">
+  <table class="data compare">
+    <thead>
+      <tr>
+        <th scope="col">Attribute</th>
+        {% for c in columns %}
+        <th scope="col"><a href="{{ url_for('definition', definition_id=c.definition_id) }}">{{ icon("chart-bar") }} {{ labels[loop.index0].title }}</a>
+          {% if labels[loop.index0].sub %}<div class="muted small">{{ labels[loop.index0].sub }}</div>{% endif %}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr{% if row.differs %} class="differs"{% endif %}>
+        <th scope="row">{{ row.label }}{% if row.differs %} <span class="differs-mark" title="Values differ between the definitions">≠</span>{% endif %}</th>
+        {% for v in row.cells %}
+        <td>
+          {%- if v is none -%}<span class="muted">–</span>
+          {%- elif row.field == "status" -%}{{ status_chip(v, status_labels) }}
+          {%- elif row.field in ("formula", "source_table") -%}<code>{{ v }}</code>
+          {%- elif row.field == "grain" -%}{{ v|capitalize }}
+          {%- else -%}{{ v }}{%- endif -%}
+        </td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="muted small">Rows marked ≠ differ between the selected definitions.</p>
+{% else %}
+<p class="empty">No definitions selected. Use “Add definition” to pick some.</p>
+{% endif %}
+{% endblock %}

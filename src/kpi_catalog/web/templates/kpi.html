@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% from "_kpi_macros.html" import status_chip, breadcrumb, page_header, tab_bar, official_tags, community_tags, def_link, lineage_list %}
+{% block content %}
+{{ breadcrumb([("KPI Catalog", url_for("browse")), (kpi.name, None)]) }}
+{{ page_header(kpi.name, "KPI Concept", url_for("compare", slug=kpi.slug)) }}
+
+{% if diverges %}
+<div class="banner banner-warning" role="status">
+  {{ icon("alert-triangle") }}
+  <div><strong>Divisions define this KPI differently.</strong>
+    <a href="{{ url_for('compare', slug=kpi.slug) }}">Compare the definitions</a> before you combine figures from different divisions.</div>
+</div>
+{% endif %}
+
+{{ tab_bar(tabs, tab, "kpi", {"definitions": definitions|length}, slug=kpi.slug) }}
+
+{% if tab == "overview" %}
+<div class="split">
+  <div class="card">
+    <h2>Description</h2>
+    <p>{{ kpi.description }}</p>
+    {{ official_tags(official) }}
+    <div class="tag-group">
+      <h3>Synonyms</h3>
+      {% if synonyms %}
+      <div class="chips">{% for s in synonyms %}<span class="chip">{{ s }}</span>{% endfor %}</div>
+      {% else %}<p class="muted">Every division calls it “{{ kpi.name }}”.</p>{% endif %}
+    </div>
+    {{ community_tags(community) }}
+  </div>
+  <aside class="card">
+    <h2>Used by Divisions</h2>
+    <ul class="division-cards">
+      {% for card in divisions %}
+      <li><a href="{{ card.href }}">{{ icon("chart-bar") }} <span>{{ card.name }}</span>{% if card.count > 1 %} <span class="muted">{{ card.count }} definitions</span>{% endif %}</a></li>
+      {% endfor %}
+    </ul>
+  </aside>
+</div>
+
+{% elif tab == "definitions" %}
+<div class="table-scroll card flush">
+  <table class="data">
+    <thead><tr><th>Division</th><th>Name</th><th>Summary</th><th>Formula</th><th>Unit</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for d in definitions %}
+      <tr{% if d.status == "deprecated" %} class="is-deprecated"{% endif %}>
+        <td><span class="chip">{{ d.division_name }}</span></td>
+        <td><a href="{{ url_for('definition', definition_id=d.definition_id) }}">{{ d.display_name }}</a>
+          {% if d.successor %}<div class="muted small">superseded by <a href="{{ url_for('definition', definition_id=d.successor.definition_id) }}">{{ d.successor.display_name }} v{{ d.successor.version }}</a></div>{% endif %}</td>
+        <td>{{ d.definition_text|truncate(110) }}</td>
+        <td>{% if d.formula %}<code>{{ d.formula }}</code>{% else %}<span class="muted">–</span>{% endif %}</td>
+        <td>{{ d.unit }}</td>
+        <td>{{ status_chip(d.status, status_labels) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% elif tab == "dependencies" %}
+{% for d in definitions %}
+<section class="card dependency">
+  <h2>{{ def_link(d, show_kpi=False) }} {{ status_chip(d.status, status_labels) }}</h2>
+  {% if d.formula %}<p><code>{{ d.formula }}</code></p>{% endif %}
+  <div class="split even">
+    <div><h3>Built from</h3>{{ lineage_list(lineage[d.definition_id].built_from, "Not computed from other definitions.") }}</div>
+    <div><h3>Used to build</h3>{{ lineage_list(lineage[d.definition_id].feeds, "No other definition is computed from it.") }}</div>
+  </div>
+</section>
+{% endfor %}
+
+{% elif tab == "related" %}
+<div class="card">
+  {% if related %}
+  <ul class="link-list">
+    {% for r in related %}
+    <li><span class="role">{{ r.relation }}</span> <a href="{{ url_for('kpi', slug=r.slug) }}">{{ r.name }}</a></li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="muted">No related KPIs recorded.</p>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}
