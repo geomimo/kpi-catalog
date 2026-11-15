@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Course** | Information Organization, group project |
-| **Status** | Draft v5, 12 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode (108 definitions); the ML stack runs on Python 3.14; curation files and the GenAI-drafted texts reviewed; company named Konfusio; the ML batch skips deprecated definitions (§14 Q8); vocabulary v0 written and reviewed (four hand-written SKOS schemes); data-quality log started (`data/quality_log.md`); NAICS codes checked (§14 Q4); gold-set sample and T2 gold ready, gold set labelled by one annotator, M3 done (§6). History in [§15](#15-change-log) |
+| **Status** | Draft v5, 12 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode (108 definitions); the ML stack runs on Python 3.14; curation files and the GenAI-drafted texts reviewed; company named Konfusio; the ML batch skips deprecated definitions (§14 Q8); vocabulary v0 written and reviewed (four hand-written SKOS schemes); data-quality log started (`data/quality_log.md`); NAICS codes checked (§14 Q4); gold-set sample and T2 gold ready, gold set labelled by one annotator, M3 done (§6); first ML tagging run done, M2 (§6). History in [§15](#15-change-log) |
 | **Deadlines** | Mid-term description **19 Nov 2026** · Final delivery **21 Dec 2026** |
 | **Team** | **A** = George (dataset, vocabulary, ML) · **B** = Liam (web app) · **W** = Liam (report) and Ioanna (personas, user journeys, UI wireframes). Slides owner still open ([§14](#14-open-questions)) |
 | **Tasks and progress** | [`docs/TASKS.md`](TASKS.md) |
@@ -15,7 +15,7 @@ Guiding rule: **build the smallest thing that satisfies every course requirement
 
 ## At a glance (5-minute read)
 
-**Status (11 Nov 2026):** planning is done (this PRD). The seed generator `kpigen` (written from scratch; there was no earlier generator to rework) and `schema.sql` (reviewed by Liam, 5 Nov) exist, and the generated seed passes validation. The curation files and the GenAI-drafted texts (see [§3.5](#35-real-vs-synthetic-state-this-in-the-report)) have been reviewed (George, 11 Nov); more demo cases may be added once the user journeys are written ([§3](#3-collection-and-generation-plan)). Vocabulary v0 (the four hand-written SKOS schemes, `vocab/kpi-vocabulary.ttl`) is written and reviewed (George, 11 Nov); the website and ML are not started.
+**Status (11 Nov 2026):** planning is done (this PRD). The seed generator `kpigen` (written from scratch; there was no earlier generator to rework) and `schema.sql` (reviewed by Liam, 5 Nov) exist, and the generated seed passes validation. The curation files and the GenAI-drafted texts (see [§3.5](#35-real-vs-synthetic-state-this-in-the-report)) have been reviewed (George, 11 Nov); more demo cases may be added once the user journeys are written ([§3](#3-collection-and-generation-plan)). Vocabulary v0 (the four hand-written SKOS schemes, `vocab/kpi-vocabulary.ttl`) is written and reviewed (George, 11 Nov). The first ML tagging run (theme and business line) is done (15 Nov, [§6](#6-ml-approach)); the website is not started.
 
 **The problem.** In a company with many departments, the same KPI name means different things: *Turnover* is counted one way in Finance, another in Commercial and a third in Product. Different names also mean the same thing (*Inventory Turnover* = *Stock Turnover Rate*). New employees can't tell which KPIs matter to them or what they mean, and departments argue about numbers that were never comparable.
 
@@ -268,7 +268,7 @@ The app has one check function: *does user U hold a role with permission P in di
 ### 4.3 Tags (official and community)
 | Table | Columns (constraints) | In seed |
 |---|---|---|
-| `tags` | `tag_id` PK · `kind` ∈ {official, community} · `label` · `facet` ∈ {category, business_line}, required for official, NULL for community · `concept_uri`, required for official, NULL for community · `created_by` FK NULL · `created_at` · UNIQUE (kind, label) | Community tags only; official tags are generated from the SKOS file at load |
+| `tags` | `tag_id` PK · `kind` ∈ {official, community} · `label` · `facet` ∈ {category, business_line}, required for official, NULL for community · `concept_uri`, required for official, NULL for community · `created_by` FK NULL · `created_at` · UNIQUE (kind, label) | Community tags only; official tags are generated from the SKOS file at load: one per Category concept (perspectives and themes) and Business line concept, with the stable ID `TAG-<concept local name>` (e.g. `TAG-Revenue`) |
 | `definition_tags` | `definition_id` FK · `tag_id` FK · `source` ∈ {ml, curator, user} · `confidence` (ML only) · `status` ∈ {auto, accepted, rejected}, NULL for community tags · `tagged_by` FK NULL (NULL for ML) · `tagged_at` · PK (definition, tag) | Community taggings only |
 
 - **Official tags** are SKOS concepts. They come from ML (`status = auto` until checked) or from curators (`accepted`). A curator accepting or rejecting a tag changes its status; rejected tags are hidden.
@@ -391,10 +391,12 @@ The seed has **no** theme or business-line tags, so ML is their only automatic s
 **Method (embedding similarity, no training):**
 1. Encode each definition with `sentence-transformers/all-MiniLM-L6-v2` (small and CPU-friendly).
 2. Encode each concept as `prefLabel + altLabels + skos:definition`.
-3. Compute cosine similarity and keep the top-k concepts above a minimum score `τ_min`.
+3. Compute cosine similarity. T1 keeps the best theme plus a second one if it scores at least `τ_min`; T2 keeps the best business line. The best concept is always kept, however low its score, so every definition gets a theme and a business line; low scores come first in the curator's queue.
 4. Write `definition_tags` rows with `source = ml`, the `confidence`, and `status = auto`. They show up straight away as official tags with an **"auto"** marker. The curator's validation queue lists them lowest confidence first.
 
-Embeddings for the seed data are **computed offline once**; the web app only encodes new submissions.
+Embeddings for the seed data are **computed offline once** (`instance/embeddings.npy`, with the definition IDs in `embeddings.ids.txt`); the web app only encodes new submissions. A rerun replaces the `auto` tags and keeps every tag a curator has accepted or rejected.
+
+**First run (M2, 15 Nov, untuned, `τ_min` = 0.45):** the top theme matches the T1 gold label for 34 of 40 definitions, but 21 of 107 definitions get a second theme, against 5 of 40 in the gold set, so `τ_min` is too low. T2 matches 39 of 81, no better than always guessing Group-wide (38 of 81): the HF texts rarely name a business line, and Membership's concept text attracts customer-related definitions. Details in `reports/m2_spot_check.md`; M5 tunes and evaluates.
 
 **Scope (decided 11 Nov, [§14 Q8](#14-open-questions)):** the batch tasks (T1, T2, T3 and the similarity flags) skip definitions with `status = deprecated`; in the seed that is only DEF-0025, *Capital Expenditure* v1, superseded by DEF-0041. Drafts, in-review and rejected definitions are tagged like approved ones. Deprecated definitions are also left out of the gold set and the evaluation. Reasons: [§4.5](#45-definition-lifecycle-and-visibility) already moves every other live link off a superseded definition; its auto tags and flags would sit in the curator queues for a definition nobody should fix; and its text is nearly the same as its successor's, so it would count twice in the evaluation. Cost: it drops out of the Category and Business line facets and is reached through its successor's version chain. If superseding in the app is built (Q7, task W20), the same rule applies to the old version.
 
@@ -543,7 +545,7 @@ src/kpigen/                 seed generator: download, inputs + coverage check, g
 src/kpi_catalog/
   db.py                     create from schema.sql + load seed CSVs
   vocab/skos.py             load / query / export SKOS; unit → measure type; official tags
-  ml/tagger.py              T1/T2 tagging, T3 unit check, submit suggestions
+  ml/tagger.py              T1/T2 tagging (done), T3 unit check, submit suggestions
   ml/similarity.py          synonym / divergence flags
   ml/gold.py                gold-set sample, annotator sheet, T2 export, T1 gold check
   ml/evaluate.py            gold-set metrics vs baselines
@@ -551,6 +553,8 @@ src/kpi_catalog/
   web/                      Flask app factory, routes, templates/, static/
 tests/test_seed_rules.py    business-rule checks (§3.6)
 tests/test_kpigen.py        generator tests (determinism, coverage, validation catches errors)
+instance/                   catalog.sqlite + embeddings.npy (built, git-ignored)
+reports/                    ML spot check (M2) and evaluation (M5)
 docs/PRD.md
 ```
 
@@ -617,7 +621,7 @@ docs/PRD.md
 ## 14. Open questions
 1. **Company name:** resolved 11 Nov: **Konfusio** (replaces the working name "Acme"; set in `scenarios.yaml`, which also gives the `konfusio.example` email and BI domains).
 2. **Theme *quality*:** resolved 6 Nov: one hand-written quality KPI, *Food Safety Incident Rate* (Operations), was added so the theme isn't empty. An empty concept would still be a T1 candidate that no gold label can match, and would show as an empty facet value.
-3. **Thresholds:** `τ_min`, `τ_high`, `τ_low`, tuned on the gold set.
+3. **Thresholds:** `τ_min`, `τ_high`, `τ_low`, tuned on the gold set. `τ_min` is provisionally 0.45 (M2's first run, picked by eye); M5 tunes it.
 4. **NAICS codes:** resolved 12 Nov: every Business line code was checked against the Census Bureau's NAICS 2022 code list, the 2022-to-2017 concordance and the 2022 NAICS Manual, and all v0 codes stand. Online keeps a `broadMatch` to 445110 (NAICS 2022 dropped the nonstore industries and classifies retailers by merchandise line), Membership has no match, Insurance is a direct carrier (524126, because Konfusio underwrites its policies) and Mobile a reseller (517121, MVNO). Task V2.
 5. **OWL (S1):** go/no-go on 12 Dec.
 6. **Team split:** resolved 5 Nov (see the header; George owns `kpigen`). Still open: who makes the slides and leads the demo (task P4).
@@ -651,3 +655,4 @@ Every change to a feature or decision gets a row here, with the PRD sections it 
 | 12 Nov 2026 | v5 | V2: every Business line NAICS code checked against the NAICS 2022 code list, concordance and manual; no code changes; Insurance stays a direct carrier (524126) and Mobile a reseller (517121); Online keeps its `broadMatch`, Membership no match; sources cited in the vocabulary | header, §5, §14 Q4 |
 | 15 Nov 2026 | v5 | M3 set up: gold-set tooling `ml/gold.py`; T1 sample = 40 of the 57 eligible KPIs at random (seed 42), one definition each; annotators see only the tagger's input; T2 gold generated for the 81 eligible HF definitions; labels still to be made by two people | header, §6, §11 |
 | 15 Nov 2026 | v5 | M3: the T1 gold set has one annotator (George) instead of two; no inter-annotator agreement, named as a limitation; stretch S5 (Cohen's κ) dropped; `compare` replaced by `finalize` | header, §6, §9, §11 |
+| 15 Nov 2026 | v5 | M2: first tagging run (`ml/tagger.py`). Every definition gets its best theme and business line even below `τ_min`, which only gates a second theme (provisional 0.45). Official tags created from the vocabulary as `TAG-<local name>` (the official-tag part of V3). Until the loader (W2) exists, `--from-seed` builds `instance/catalog.sqlite` from the seed. First results: T1 34/40, T2 at the majority baseline | header, top, §4.3, §6, §11, §14 Q3 |
