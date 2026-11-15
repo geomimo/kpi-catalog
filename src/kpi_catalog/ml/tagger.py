@@ -36,7 +36,7 @@ from kpigen.paths import ROOT, SEED
 MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 DB = ROOT / "instance" / "catalog.sqlite"
 MAX_THEMES = 2
-TAU_MIN = 0.45  # provisional: a second theme needs at least this score; M5 tunes it on the gold set (PRD §14 Q3)
+TAU_MIN = 0.54  # a second theme needs at least this score; tuned on the T1 gold set by M5 (PRD §14 Q3)
 K_UNIT = 5  # neighbours that vote on a definition's measure type (T3)
 MIN_SHARE = 0.8  # share of the vote that must disagree with the unit before a unit_mismatch flag is raised
 

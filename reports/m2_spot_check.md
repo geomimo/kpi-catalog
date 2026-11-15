@@ -1,5 +1,7 @@
 # M2 spot check: first tagging run (15 Nov 2026)
 
+> Kept as a record of the first run. The evaluation (M5) in `reports/ml_eval.md` replaces these numbers; `τ_min` is now 0.54.
+
 First run of the ML tagger (`src/kpi_catalog/ml/tagger.py`, PRD §6) on the seed, for the mid-term status.
 These are **preliminary numbers** from an untuned first run (`τ_min` = 0.45 picked by eye). The real
 evaluation, with macro-F1, baselines and tuned thresholds, is task M5.

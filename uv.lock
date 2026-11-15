@@ -1051,6 +1051,7 @@ dependencies = [
     { name = "pandas" },
     { name = "pyyaml" },
     { name = "rdflib" },
+    { name = "scikit-learn" },
     { name = "sentence-transformers" },
 ]
 
@@ -1068,6 +1069,7 @@ requires-dist = [
     { name = "pandas", specifier = ">=3.1.0" },
     { name = "pyyaml", specifier = ">=6.0.3" },
     { name = "rdflib", specifier = ">=7.6.0" },
+    { name = "scikit-learn", specifier = ">=1.9.1" },
     { name = "sentence-transformers", specifier = ">=6.2.0" },
 ]
 

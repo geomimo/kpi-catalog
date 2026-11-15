@@ -100,7 +100,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - Done when: *Operating Expenses* gets a `unit_mismatch` flag, and every other mismatch has been reviewed and logged in the quality log.
 - [ ] **V5 · Validate the vocabulary** · by 3 Dec · §5 · needs V4
   - Done when: Skosify or SKOS Play reports no errors (any remaining warnings are explained), and its visualizations are saved as report figures.
-- [ ] **M5 · ML evaluation** · by 3 Dec · §6 · needs M2, M3
+- [x] **M5 · ML evaluation** · by 3 Dec · §6 · needs M2, M3 · *done 15 Nov: T1 85.0% / macro-F1 0.707 (keyword 57.5%, majority 37.5%); T2 48.1% / 0.506 (majority 46.9% / 0.071); `τ_min` tuned to 0.54; T2 fallback measured, not adopted*
   - `ml/evaluate.py`: accuracy and macro-F1 per task (T1 at theme and perspective level) against majority-class and keyword baselines; tune `τ_min`. Done when: the script generates `reports/ml_eval.md`.
 - [ ] **M6 · One build command** · by 3 Dec · §11 · needs W2, M2, M4
   - Done when: `uv run kpi-catalog build` goes from `data/seed/` to a tagged and flagged database, and the README lists the command.
