@@ -81,7 +81,7 @@ users:
     created_at: "2024-01-08T09:00:00Z"
     roles: [{role: admin, division: null}]
 
-# Hand-written conflict cases (PRD §3.2, UC2), Katerina's draft (UC3) and the one quality KPI (PRD §14 Q2).
+# Hand-written conflict cases (PRD §3.2, UC2: Turnover, Active Users, ATOPU, Gross Margin %), Katerina's draft (UC3) and the one quality KPI (PRD §14 Q2).
 # Texts drafted with GenAI (see the provenance note at the top).
 handwritten_definitions:
   - {definition_id: DEF-0301, ref: turnover_fin, kpi_id: KPI-0058, division: FIN, display_name: Turnover, metric_type: base, unit: EUR, grain: monthly,
@@ -105,6 +105,12 @@ handwritten_definitions:
   - {definition_id: DEF-0307, ref: atopu_fin, kpi_id: KPI-0060, division: FIN, display_name: ATOPU, metric_type: ratio, unit: EUR, grain: monthly,
      definition_text: "Finance's booked turnover for the month divided by Product's active users, as reported in the Finance board pack.",
      formula: "turnover_fin / active_users_prd"}
+  - {definition_id: DEF-0309, ref: gross_margin_fin, kpi_id: KPI-0062, division: FIN, display_name: Gross Margin %, metric_type: ratio, unit: "%", grain: monthly,
+     definition_text: "Net revenue minus the full cost of goods sold, including inbound freight, stock losses and shrinkage and net of supplier rebates, as a percentage of net revenue, as booked in the general ledger at month end.",
+     formula: "(net_revenue_eur - cogs_incl_freight_shrinkage_eur + supplier_rebates_eur) / net_revenue_eur * 100"}
+  - {definition_id: DEF-0311, ref: gross_margin_com, kpi_id: KPI-0062, division: COM, display_name: Gross Margin %, metric_type: ratio, unit: "%", grain: weekly, owner: USR-007,
+     definition_text: "Front margin on sales: sales excluding VAT minus the supplier invoice cost of the items sold, before rebates, freight and shrinkage, as a percentage of sales excluding VAT, from the commercial data model.",
+     formula: "(sales_excl_vat - supplier_invoice_cost) / sales_excl_vat * 100"}
   - {definition_id: DEF-0310, ref: katerina_draft, kpi_id: KPI-0018, division: COM, display_name: Stock Turn Ratio,
      metric_type: base, unit: times, grain: monthly, owner: USR-007,
      definition_text: "How many times the average stock in Commercial's stores is sold and replenished in a month: cost of goods sold divided by average inventory value at cost.",
@@ -132,6 +138,8 @@ definition_fixtures:
   - {definition_id: DEF-0305, status: approved}
   - {definition_id: DEF-0306, status: approved}
   - {definition_id: DEF-0307, status: approved}
+  - {definition_id: DEF-0309, status: approved}    # Gross Margin %, Finance (full cost, after rebates)
+  - {definition_id: DEF-0311, status: approved, owner: USR-007}    # Gross Margin %, Commercial (front margin)
   - {definition_id: DEF-0081, status: approved}    # Net Product Revenue (gross vs net)
   - {definition_id: DEF-0082, status: approved}    # Gross Revenue from Product Sales
   # UC1: Finance definitions in the Finance Weekly Flash Report

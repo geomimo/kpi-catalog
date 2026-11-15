@@ -60,3 +60,4 @@ KPI-0058,turnover,Turnover,"Money taken from sales in a period; divisions differ
 KPI-0059,active-users,Active Users,Number of customers or users counted as active over a recent window; divisions differ on what counts as activity.
 KPI-0060,atopu,Average Turnover per Active User,Turnover divided by active users for the same period: average turnover per active user.
 KPI-0061,food-safety-incident-rate,Food Safety Incident Rate,Share of food sites that recorded at least one food-safety incident in a period.
+KPI-0062,gross-margin-pct,Gross Margin %,"Gross profit as a percentage of sales: sales minus the cost of the goods sold, divided by sales; divisions differ on which costs and supplier rebates count."

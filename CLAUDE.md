@@ -13,13 +13,13 @@ University group project for *Information Organization*: a website that organize
 ## Key decisions (details in the PRD)
 | Topic | Decision |
 |---|---|
-| Dataset | Not fixed yet; the earlier sample catalog was inspiration only. A deterministic `kpigen`, written from scratch (fixed seed, no LLM or network calls at generation time), generates `data/seed/*.csv` (106 definitions). KPI text is **real** (HF `kavish218/multi_domain_dataset` @ `c148c8c`, dbt `jaffle-sl-template` @ `c54c8fb`, downloaded into git-ignored `data/raw/`) plus a few conflict cases and one quality KPI (PRD §14 Q2) we designed; the organization around it is synthetic. Our own seed text (KPI descriptions, conflict-case texts, community tags) was drafted with GenAI and is labelled so (PRD §3.5). Rows that don't fit the retail-group profile are excluded with a reason. See PRD §3. |
+| Dataset | Not fixed yet; the earlier sample catalog was inspiration only. A deterministic `kpigen`, written from scratch (fixed seed, no LLM or network calls at generation time), generates `data/seed/*.csv` (108 definitions). KPI text is **real** (HF `kavish218/multi_domain_dataset` @ `c148c8c`, dbt `jaffle-sl-template` @ `c54c8fb`, downloaded into git-ignored `data/raw/`) plus a few conflict cases and one quality KPI (PRD §14 Q2) we designed; the organization around it is synthetic. Our own seed text (KPI descriptions, conflict-case texts, community tags) was drafted with GenAI and is labelled so (PRD §3.5). Rows that don't fit the retail-group profile are excluded with a reason. See PRD §3. |
 | Schema | `schema.sql` is the single source of truth (PRD §4): the seed is validated against it and the app is built from it. IDs are fixed in the curation files and never renumbered. |
 | Stack | Flask + Jinja + SQLite (FTS5), Python 3.14 via uv. Local demo only, no hosting. |
 | Roles | 5 division-scoped roles (Observer, Contributor, Curator, Reviewer, Admin). "Log in as" any seed user (no real auth); permissions are checked for real. No admin management UI. |
 | Visibility | Approved and deprecated definitions are readable by everyone; drafts, in-review and rejected definitions only within the division (plus owner and Admin). |
 | Versions | When a definition is superseded, its dashboard links, lineage and community tags move to the successor; the old version keeps only its review history and version chain (PRD §4.5). |
-| Vocabulary | SKOS in Turtle (`vocab/kpi-vocabulary.ttl`), namespace `https://example.org/kpi-catalog/vocab/`. Schemes: Category (Balanced Scorecard + themes), Business line (NAICS), Division, Measure Type (from `unit`), Metric Type (dbt Semantic Layer), KPI Glossary. OWL is stretch only. |
+| Vocabulary | SKOS in Turtle (`vocab/kpi-vocabulary.ttl`), namespace `https://example.org/kpi-catalog/vocab/`. Schemes: Category (Balanced Scorecard + themes), Business line (NAICS), Division, Measure Type (from `unit`), Metric Type (dbt Semantic Layer), KPI Glossary. Concept local names are stable IDs; units, metric types and NAICS codes are typed `skos:notation`s (PRD §5). OWL is stretch only. |
 | ML | Embedding similarity with `sentence-transformers/all-MiniLM-L6-v2`: tags Theme + Business line (the seed has none), checks units, flags synonyms and diverging definitions, suggests tags on submit. ML tags show as official with an "auto" marker until a curator accepts or rejects them. The batch skips deprecated definitions (PRD §6, §14 Q8). Evaluated against gold labels in `data/gold/` and baselines. |
 | Tags | Official tags (`tags.kind = official`, SKOS concepts) and community tags (`kind = community`, folksonomy) attach to definitions and are always displayed as separate groups. Facets use official tags only; community tags get their own filter. Curators and Admin can promote community tags into SKOS. |
 | Personas | Seed users: Emma Papadopoulos (USR-005, Observer), Katerina Okafor (USR-007, Curator), Noah Garcia (USR-053, Admin). |
@@ -29,7 +29,8 @@ University group project for *Information Organization*: a website that organize
 - `uv add <pkg>`: add a dependency (use uv, never pip)
 - `uv run kpigen download`: fetch the pinned sources into `data/raw/` (the only network step)
 - `uv run kpigen`: generate `data/seed/` and validate it (`schema.sql` + `tests/test_seed_rules.py`); `--strict` also fails on any `TODO(george)` placeholder
-- `uv run pytest`: generator, seed, database and web tests
+- `uv run pytest`: generator, seed, vocabulary, gold-set, database and web tests
+- `uv run python -m kpi_catalog.ml.gold prepare|finalize`: gold-set sample, blank annotator sheet and T2 gold / check the sheet and write `t1_gold.csv` (M3; one annotator, George; see `data/gold/README.md`)
 - `uv run flask --app kpi_catalog.web init-db`: build `instance/catalog.sqlite` from `schema.sql` + `data/seed/` (deletes the old file; a failed build leaves none)
 - `uv run flask --app kpi_catalog.web run --debug`: run the web app (pages are placeholders until W3–W4)
 - Planned: `uv run kpi-catalog build` (load → tag → flag)
@@ -39,8 +40,8 @@ University group project for *Information Organization*: a website that organize
 - `src/kpigen/`: seed generator code. `kpigen/curation/*.csv` (domain_to_division, kpis, row_to_kpi, exclusions, relationships) and `kpigen/scenarios.yaml` hold every hand-made data decision. `data/seed/` is its output and is never edited by hand; change the curation files or the generator instead.
 - `tests/test_seed_rules.py`: the PRD §3.6 business rules every seed must pass; `tests/test_kpigen.py`: generator tests.
 - `data/raw/`: pinned source downloads (git-ignored; never commit them).
-- `data/gold|annotated/`: gold labels and the exported annotated dataset. Every data-quality decision is logged in `data/quality_log.md` (it feeds the report).
-- `vocab/`: hand-authored SKOS seed + generated exports.
+- `data/gold|annotated/`: gold labels and the exported annotated dataset. Gold labels are made by people only, never by an LLM or the tagger. Every data-quality decision is logged in `data/quality_log.md` (it feeds the report), under a permanent ID (S, E, Q, C, L; never renumber).
+- `vocab/`: hand-authored SKOS seed `kpi-vocabulary.ttl` (checked by `tests/test_vocabulary.py`) + generated exports.
 - `src/kpi_catalog/{data,vocab,ml,web}/` + `db.py`. `web/` exists: app factory and the site-map table `PAGES` in `__init__.py`, Jinja templates, vendored `static/simple.min.css` (no CDN, no JS build). `tests/test_web.py` requests every route. `db.py` exists: `build()` (plain function, reused by `kpi-catalog build`), `build_search_index()` (FTS5 table `definitions_fts`; re-run after tags change), `get_db()` per request. The CSV loading is shared with kpigen (`kpigen.validate.fill_from_seed`), never duplicated.
 - `instance/`: the built app database (git-ignored).
 - `docs/TASKS.md`: task tracker. `docs/user-journeys.md`, `docs/wireframes/`, `docs/demo-script.md`: Ioanna's UX inputs for the web pages and the demo.

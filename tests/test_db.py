@@ -31,7 +31,7 @@ def test_real_seed_loads_with_matching_counts(built):
     for table in SEED_TABLES:
         assert con.execute(f"SELECT count(*) FROM {table}").fetchone()[0] == len(csv_rows(table)), table
     counts = {t: con.execute(f"SELECT count(*) FROM {t}").fetchone()[0] for t in ("definitions", "kpis", "users")}
-    assert counts == {"definitions": 106, "kpis": 61, "users": 53}
+    assert counts == {"definitions": 108, "kpis": 62, "users": 53}
 
 
 def test_foreign_keys_on_and_consistent(built):
@@ -56,7 +56,7 @@ def test_search_finds_turnover(built):
     turnover_kpi = {r["definition_id"] for r in csv_rows("definitions") if r["kpi_id"] == "KPI-0058"}
     assert turnover_kpi == {"DEF-0301", "DEF-0302", "DEF-0303"}
     assert turnover_kpi <= hits
-    assert con.execute("SELECT count(*) FROM definitions_fts").fetchone()[0] == 106
+    assert con.execute("SELECT count(*) FROM definitions_fts").fetchone()[0] == len(csv_rows("definitions"))
 
 
 def test_search_index_includes_tag_labels(built):
@@ -72,7 +72,7 @@ def test_search_index_includes_tag_labels(built):
 def test_search_index_can_be_rebuilt(built):
     _, con = built
     db.build_search_index(con)
-    assert con.execute("SELECT count(*) FROM definitions_fts").fetchone()[0] == 106
+    assert con.execute("SELECT count(*) FROM definitions_fts").fetchone()[0] == len(csv_rows("definitions"))
 
 
 def test_broken_seed_fails_and_leaves_no_database(tmp_path):
@@ -108,5 +108,5 @@ def test_init_db_command(tmp_path):
     app = create_app({"DATABASE": str(path)})
     result = app.test_cli_runner().invoke(args=["init-db"])
     assert result.exit_code == 0, result.output
-    assert "106 definitions" in result.output
+    assert f"{len(csv_rows('definitions'))} definitions" in result.output
     assert path.exists()

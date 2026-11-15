@@ -18,7 +18,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
 | Ioanna | UI wireframes, personas, user journeys | U | W (personas, journeys) |
 | Everyone | Decisions, presentation, final checks | P | — |
 
-**Critical path to the mid-term:** M1 (ML stack on 3.14, done) and D3 (`schema.sql`, done) unblock the rest → D4–D5 (reviewed, done) → V1 (vocabulary v0) → M2 (first tagging run). Liam can build W1–W3 on the generated seed in `data/seed/` now.
+**Critical path to the mid-term:** M1 (ML stack on 3.14, done) and D3 (`schema.sql`, done) unblock the rest → D4–D5 (reviewed, done) → V1 (vocabulary v0, done) → M2 (first tagging run, waits on W2). Liam can build W1–W3 on the generated seed in `data/seed/` now.
 
 ---
 
@@ -46,13 +46,13 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - Done when: every fixture listed in §3.4 is present with a fixed ID, and every step of the user journeys (U2) has the seed data it needs. *Done 11 Nov: reviewed by George, hf:24 → hf:40 supersession confirmed; Konfusio set by P2; further cases for the journeys go in D10.*
 - [ ] **D10 · Add seed cases for the user journeys** · by 17 Nov · §3.4, §8 · needs U2
   - Done when: every step in `docs/user-journeys.md` has the seed data it needs (new fixtures in `scenarios.yaml` with fixed IDs), and `uv run kpigen` still passes.
-- [ ] **V1 · Vocabulary v0** · by 14 Nov · §5
+- [x] **V1 · Vocabulary v0** · by 14 Nov · §5 · *done 11 Nov: reviewed by George; `tests/test_vocabulary.py` checks it; NAICS codes stay drafts for V2*
   - Hand-authored `vocab/kpi-vocabulary.ttl` with the Category (Balanced Scorecard + themes), Business line, Measure Type and Metric Type schemes. Every concept has a `skos:definition`, because the ML encodes it. Done when: rdflib parses the file without errors.
 - [x] **D6 · Write `kpigen`** · by 15 Nov · F0, §3.4 · needs D3, D4, D5
   - Seed 42, reference date 2026-10-01, no network or LLM calls. Random fill: ~50 users, owners, statuses, review history, ~35 dashboards, ~40 community tags. `uv run kpigen` entry point. Done when: it writes `data/seed/*.csv` and `excluded.csv` with ~105 definitions, and two runs give byte-identical files.
 - [x] **D7 · Validate the seed** · by 15 Nov · §3.6 · needs D6
   - Load into SQLite with `schema.sql`, plus the seven business rules in `tests/test_seed_rules.py`. Done when: `uv run kpigen` fails on a deliberately broken seed and passes on the real one.
-- [ ] **D8 · Start `data/quality_log.md`** · by 17 Nov · §3.7 · needs D4
+- [x] **D8 · Start `data/quality_log.md`** · by 17 Nov · §3.7 · needs D4 · *done 12 Nov: reviewed by George*
   - Done when: findings S1–S6, every exclusion reason, the seeded *Operating Expenses* error and the lessons from the sample catalog are logged. Feeds R1 and R3.
 - [x] **M10 · Decide whether ML tags superseded definitions** · by 17 Nov · §4.5, §6, §14 Q8 · *done 11 Nov: the ML batch skips deprecated definitions*
   - The seed moves dashboards, lineage and community tags off a superseded definition (DEF-0025); M2 would still tag it. Done when: the decision is in PRD §6 and §14 Q8, and M2 follows it.
@@ -90,9 +90,9 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
 ### George
 - [ ] **V3 · Official tags and measure type at load** · by 22 Nov · §4.2–4.3, §5 · needs V1, W2
   - `vocab/skos.py`: create official tags from the Category and Business line concepts, and map `unit` to Measure Type. Done when: the loader calls it and the facets can query both.
-- [ ] **M3 · Gold labels** · George + one other member (TBD) · by 26 Nov · §6 · needs D7
-  - Done when: 40 definitions have T1 theme labels from two annotators working independently, disagreements are resolved, and the T1 and T2 gold sets are in `data/gold/`.
-- [ ] **V2 · Check the NAICS 2022 codes** · by 26 Nov · §5, §14 Q4
+- [x] **M3 · Gold labels** · George · by 26 Nov · §6 · needs D7 · *done 15 Nov: 40 definitions labelled by George (one annotator), 5 with a second theme; T1 and T2 gold sets in `data/gold/`*
+  - Done when: 40 definitions have hand-made T1 theme labels, `finalize` passes, and the T1 and T2 gold sets are in `data/gold/`.
+- [x] **V2 · Check the NAICS 2022 codes** · by 26 Nov · §5, §14 Q4 · *done 12 Nov: all v0 codes confirmed against the Census NAICS 2022 code list, concordance and manual; none changed*
   - Done when: every Business line's `skos:closeMatch` and `skos:notation` has been checked against NAICS 2022, with the source cited.
 - [ ] **V4 · Vocabulary v1** · by 27 Nov · §5 · needs V3
   - Generate the Division and KPI Glossary schemes from the database (altLabels from `display_name`, `dct:subject`, lineage properties), plus an altLabel lookup for search expansion (W5). Done when: rdflib parses the combined vocabulary and "Stock Turnover Rate" resolves to Inventory Turnover.
@@ -215,4 +215,4 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
 - [ ] **S2 · Semantic search with the stored embeddings** · George · F3, §9
 - [ ] **S3 · Comments on definitions** · Liam · §9
 - [ ] **S4 · Dashboard page listing its definitions** · Liam · §9
-- [ ] **S5 · Cohen's κ on the gold set** · George + the second M3 annotator · needs M3 · §6
+- [x] **S5 · Cohen's κ on the gold set** · *dropped 15 Nov: the gold set has one annotator (M3)*
