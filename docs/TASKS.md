@@ -94,7 +94,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - Done when: 40 definitions have hand-made T1 theme labels, `finalize` passes, and the T1 and T2 gold sets are in `data/gold/`.
 - [x] **V2 · Check the NAICS 2022 codes** · by 26 Nov · §5, §14 Q4 · *done 12 Nov: all v0 codes confirmed against the Census NAICS 2022 code list, concordance and manual; none changed*
   - Done when: every Business line's `skos:closeMatch` and `skos:notation` has been checked against NAICS 2022, with the source cited.
-- [ ] **V4 · Vocabulary v1** · by 27 Nov · §5 · needs V3
+- [x] **V4 · Vocabulary v1** · by 27 Nov · §5 · needs V3 · *done 16 Nov: `vocab/glossary.py`; 8 divisions, 59 glossary concepts (3 KPIs have only drafts); altLabels from every non-draft definition; `label_index()` for W5; export to a file is V6*
   - Generate the Division and KPI Glossary schemes from the database (altLabels from `display_name`, `dct:subject`, lineage properties), plus an altLabel lookup for search expansion (W5). Done when: rdflib parses the combined vocabulary and "Stock Turnover Rate" resolves to Inventory Turnover.
 - [x] **M4 · Unit check (T3)** · by 1 Dec · F9, §6 · needs M2, V3 · *done 15 Nov: neighbour vote (5 nearest definitions, ≥ 80%); Operating Expenses flagged at 100%; the 3 other flags reviewed and logged as C10*
   - Done when: *Operating Expenses* gets a `unit_mismatch` flag, and every other mismatch has been reviewed and logged in the quality log.

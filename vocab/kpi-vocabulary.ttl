@@ -5,7 +5,7 @@
 #   - Business line  Konfusio's lines of business, linked to NAICS 2022. ML target T2; facet.
 #   - Measure Type   What kind of number a definition gives; maps from `definitions.unit`. Facet; ML unit check T3.
 #   - Metric Type    dbt Semantic Layer metric types; maps from `definitions.metric_type`. Facet.
-# The Division and KPI Glossary schemes are generated from the database later (task V4).
+# The Division and KPI Glossary schemes are generated from the database (task V4, kpi_catalog.vocab.glossary).
 #
 # Conventions (checked by tests/test_vocabulary.py):
 #   - Local names are stable identifiers, like the seed IDs: never rename them once something uses them.
@@ -22,6 +22,7 @@
 # GenAI and reviewed by the team (PRD §3.5). The definitions are ML input (M2 encodes
 # prefLabel + altLabels + definition), so they use the words that appear in KPI texts.
 
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix dct:  <http://purl.org/dc/terms/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -43,6 +44,32 @@ kv:MetricTypeCode a rdfs:Datatype ;
 kv:NAICS2022 a rdfs:Datatype ;
     rdfs:label "NAICS 2022 code"@en ;
     rdfs:comment "Code from the North American Industry Classification System, 2022 edition (US Census Bureau)."@en .
+
+kv:DivisionCode a rdfs:Datatype ;
+    rdfs:label "Division code"@en ;
+    rdfs:comment "Values of divisions.code in schema.sql (FIN, COM, ...); used by the generated Division scheme."@en .
+
+# ---------------------------------------------------------------------------------------------------------
+# Lineage properties between KPI Glossary concepts (values of kpi_relationships.relationship_type)
+# ---------------------------------------------------------------------------------------------------------
+# Each is a skos:related with a direction, so a SKOS-only reader still sees the KPIs as related. related_to
+# itself is written as skos:related. These link KPIs, not definitions: which division's definition feeds which
+# stays in the database (PRD §5, "What SKOS can't express").
+
+kv:composedOf a rdf:Property ;
+    rdfs:subPropertyOf skos:related ;
+    rdfs:label "composed of"@en ;
+    rdfs:comment "The KPI is calculated from the other KPI, e.g. as numerator or denominator (composed_of)."@en .
+
+kv:subsetOf a rdf:Property ;
+    rdfs:subPropertyOf skos:related ;
+    rdfs:label "subset of"@en ;
+    rdfs:comment "The KPI counts a filtered part of what the other KPI counts (subset_of)."@en .
+
+kv:cumulativeOf a rdf:Property ;
+    rdfs:subPropertyOf skos:related ;
+    rdfs:label "cumulative of"@en ;
+    rdfs:comment "The KPI accumulates the other KPI over a time window (cumulative_of)."@en .
 
 # =========================================================================================================
 # 1. Category: Balanced Scorecard perspectives -> themes

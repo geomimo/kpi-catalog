@@ -56,11 +56,16 @@ def test_declares_exactly_the_four_v1_schemes(g):
 
 
 def test_every_kv_term_is_declared(g, concepts):
-    """Catches typos: every kv: URI used as a subject or object must be a declared concept, scheme or datatype."""
-    declared = concepts | set(g.subjects(RDF.type, SKOS.ConceptScheme)) | set(g.subjects(RDF.type, RDFS.Datatype))
-    used = {t for triple in g for t in (triple[0], triple[2])
-            if isinstance(t, URIRef) and t.startswith(str(KV))}
+    """Catches typos: every kv: URI used must be a declared concept, scheme, datatype or property."""
+    declared = (concepts | set(g.subjects(RDF.type, SKOS.ConceptScheme)) | set(g.subjects(RDF.type, RDFS.Datatype))
+                | set(g.subjects(RDF.type, RDF.Property)))
+    used = {t for triple in g for t in triple if isinstance(t, URIRef) and t.startswith(str(KV))}
     assert used - declared == set()
+
+
+def test_lineage_properties_are_kinds_of_related(g):
+    for p in (KV.composedOf, KV.subsetOf, KV.cumulativeOf):
+        assert (p, RDFS.subPropertyOf, SKOS.related) in g
 
 
 def test_every_concept_has_one_label_one_definition_one_scheme(g, concepts):
