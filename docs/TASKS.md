@@ -18,7 +18,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
 | Ioanna | UI wireframes, personas, user journeys | U | W (personas, journeys) |
 | Everyone | Decisions, presentation, final checks | P | — |
 
-**Critical path to the mid-term:** M1 (ML stack on 3.14, done) and D3 (`schema.sql`, done) unblock the rest → D4–D5 (reviewed, done) → V1 (vocabulary v0, done) → M2 (first tagging run, waits on W2). Liam can build W1–W3 on the generated seed in `data/seed/` now.
+**Critical path to the mid-term:** M1 (ML stack on 3.14, done) and D3 (`schema.sql`, done) unblock the rest → D4–D5 (reviewed, done) → V1 (vocabulary v0, done) → M2 (first tagging run, done on a database built from the seed; it reruns on W2's database once that exists). Liam can build W1–W3 on the generated seed in `data/seed/` now.
 
 ---
 
@@ -56,7 +56,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - Done when: findings S1–S6, every exclusion reason, the seeded *Operating Expenses* error and the lessons from the sample catalog are logged. Feeds R1 and R3.
 - [x] **M10 · Decide whether ML tags superseded definitions** · by 17 Nov · §4.5, §6, §14 Q8 · *done 11 Nov: the ML batch skips deprecated definitions*
   - The seed moves dashboards, lineage and community tags off a superseded definition (DEF-0025); M2 would still tag it. Done when: the decision is in PRD §6 and §14 Q8, and M2 follows it.
-- [ ] **M2 · First tagging run (T1 theme, T2 business line)** · by 18 Nov · F9, §6 · needs M1, V1, D7, W2, M10
+- [x] **M2 · First tagging run (T1 theme, T2 business line)** · by 18 Nov · F9, §6 · needs M1, V1, D7, W2, M10 · *done 15 Nov: ran on a database built from the seed (`--from-seed`) because W2 isn't there yet; 107 definitions tagged; T1 34/40, T2 at the majority baseline; spot check in `reports/m2_spot_check.md`*
   - `ml/tagger.py`; embeddings saved as `.npy`. Done when: every definition except the deprecated ones (M10) has theme and business-line rows in `definition_tags` (`source = ml`, `status = auto`), and a short spot check is written up for the mid-term status.
 
 ### Liam
@@ -88,19 +88,19 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - The presentation has no owner yet. Done when: the owner is named in the Team table and on R10.
 
 ### George
-- [ ] **V3 · Official tags and measure type at load** · by 22 Nov · §4.2–4.3, §5 · needs V1, W2
-  - `vocab/skos.py`: create official tags from the Category and Business line concepts, and map `unit` to Measure Type. Done when: the loader calls it and the facets can query both.
+- [ ] **V3 · Official tags and measure type** · by 22 Nov · §4.2–4.3, §5 · needs V1, W2
+  - `vocab/skos.py`: create official tags from the Category and Business line concepts, and look up `unit` → Measure Type (not stored). Done when: the loader calls `ensure_official_tags` and the facets can query both (Measure Type through `measure_types()`). *15 Nov: `ensure_official_tags` (written for M2) and `measure_types()` are done and tested; only the loader call is left, once W2 exists.*
 - [x] **M3 · Gold labels** · George · by 26 Nov · §6 · needs D7 · *done 15 Nov: 40 definitions labelled by George (one annotator), 5 with a second theme; T1 and T2 gold sets in `data/gold/`*
   - Done when: 40 definitions have hand-made T1 theme labels, `finalize` passes, and the T1 and T2 gold sets are in `data/gold/`.
 - [x] **V2 · Check the NAICS 2022 codes** · by 26 Nov · §5, §14 Q4 · *done 12 Nov: all v0 codes confirmed against the Census NAICS 2022 code list, concordance and manual; none changed*
   - Done when: every Business line's `skos:closeMatch` and `skos:notation` has been checked against NAICS 2022, with the source cited.
 - [ ] **V4 · Vocabulary v1** · by 27 Nov · §5 · needs V3
   - Generate the Division and KPI Glossary schemes from the database (altLabels from `display_name`, `dct:subject`, lineage properties), plus an altLabel lookup for search expansion (W5). Done when: rdflib parses the combined vocabulary and "Stock Turnover Rate" resolves to Inventory Turnover.
-- [ ] **M4 · Unit check (T3)** · by 1 Dec · F9, §6 · needs M2, V3
+- [x] **M4 · Unit check (T3)** · by 1 Dec · F9, §6 · needs M2, V3 · *done 15 Nov: neighbour vote (5 nearest definitions, ≥ 80%); Operating Expenses flagged at 100%; the 3 other flags reviewed and logged as C10*
   - Done when: *Operating Expenses* gets a `unit_mismatch` flag, and every other mismatch has been reviewed and logged in the quality log.
 - [ ] **V5 · Validate the vocabulary** · by 3 Dec · §5 · needs V4
   - Done when: Skosify or SKOS Play reports no errors (any remaining warnings are explained), and its visualizations are saved as report figures.
-- [ ] **M5 · ML evaluation** · by 3 Dec · §6 · needs M2, M3
+- [x] **M5 · ML evaluation** · by 3 Dec · §6 · needs M2, M3 · *done 15 Nov: T1 85.0% / macro-F1 0.707 (keyword 57.5%, majority 37.5%); T2 48.1% / 0.506 (majority 46.9% / 0.071); `τ_min` tuned to 0.54; T2 fallback measured, not adopted*
   - `ml/evaluate.py`: accuracy and macro-F1 per task (T1 at theme and perspective level) against majority-class and keyword baselines; tune `τ_min`. Done when: the script generates `reports/ml_eval.md`.
 - [ ] **M6 · One build command** · by 3 Dec · §11 · needs W2, M2, M4
   - Done when: `uv run kpi-catalog build` goes from `data/seed/` to a tagged and flagged database, and the README lists the command.

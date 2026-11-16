@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Course** | Information Organization, group project |
-| **Status** | Draft v5, 15 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode (108 definitions); the ML stack runs on Python 3.14; curation files and the GenAI-drafted texts reviewed; company named Konfusio; the ML batch skips deprecated definitions (§14 Q8); vocabulary v0 written and reviewed (four hand-written SKOS schemes); data-quality log started (`data/quality_log.md`); NAICS codes checked (§14 Q4); gold-set sample and T2 gold ready, gold set labelled by one annotator, M3 done (§6); Flask skeleton with placeholder pages for the whole site map; the database loader builds `instance/catalog.sqlite` with an FTS5 index (§11); homepage layout from the wireframe, with category tiles and "Recently Viewed" (§10, W10 in progress); KPI concept, definition and compare pages with lineage, usage, review history and the divergence banner (§10, W6–W8); "log in as" with three personas, permission checks, the definition editor and My Definitions (§7, §8, §10, W3, W11, W12). History in [§15](#15-change-log) |
+| **Status** | Draft v5, 15 Nov 2026. `kpigen` and `schema.sql` written; the seed validates in strict mode (108 definitions); the ML stack runs on Python 3.14; curation files and the GenAI-drafted texts reviewed; company named Konfusio; the ML batch skips deprecated definitions (§14 Q8); vocabulary v0 written and reviewed (four hand-written SKOS schemes); data-quality log started (`data/quality_log.md`); NAICS codes checked (§14 Q4); gold-set sample and T2 gold ready, gold set labelled by one annotator, M3 done (§6); first ML tagging run done, M2; unit check done, M4; ML evaluation done and `τ_min` tuned, M5 (§6); Flask skeleton with placeholder pages for the whole site map; the database loader builds `instance/catalog.sqlite` with an FTS5 index (§11); homepage layout from the wireframe, with category tiles and "Recently Viewed" (§10, W10 in progress); KPI concept, definition and compare pages with lineage, usage, review history and the divergence banner (§10, W6–W8); "log in as" with three personas, permission checks, the definition editor and My Definitions (§7, §8, §10, W3, W11, W12). History in [§15](#15-change-log) |
 | **Deadlines** | Mid-term description **19 Nov 2026** · Final delivery **21 Dec 2026** |
 | **Team** | **A** = George (dataset, vocabulary, ML) · **B** = Liam (web app) · **W** = Liam (report) and Ioanna (personas, user journeys, UI wireframes). Slides owner still open ([§14](#14-open-questions)) |
 | **Tasks and progress** | [`docs/TASKS.md`](TASKS.md) |
@@ -15,7 +15,7 @@ Guiding rule: **build the smallest thing that satisfies every course requirement
 
 ## At a glance (5-minute read)
 
-**Status (11 Nov 2026):** planning is done (this PRD). The seed generator `kpigen` (written from scratch; there was no earlier generator to rework) and `schema.sql` (reviewed by Liam, 5 Nov) exist, and the generated seed passes validation. The curation files and the GenAI-drafted texts (see [§3.5](#35-real-vs-synthetic-state-this-in-the-report)) have been reviewed (George, 11 Nov); more demo cases may be added once the user journeys are written ([§3](#3-collection-and-generation-plan)). Vocabulary v0 (the four hand-written SKOS schemes, `vocab/kpi-vocabulary.ttl`) is written and reviewed (George, 11 Nov); the website and ML are not started.
+**Status (11 Nov 2026):** planning is done (this PRD). The seed generator `kpigen` (written from scratch; there was no earlier generator to rework) and `schema.sql` (reviewed by Liam, 5 Nov) exist, and the generated seed passes validation. The curation files and the GenAI-drafted texts (see [§3.5](#35-real-vs-synthetic-state-this-in-the-report)) have been reviewed (George, 11 Nov); more demo cases may be added once the user journeys are written ([§3](#3-collection-and-generation-plan)). Vocabulary v0 (the four hand-written SKOS schemes, `vocab/kpi-vocabulary.ttl`) is written and reviewed (George, 11 Nov). The first ML tagging run (theme and business line) and the unit check are done (15 Nov, [§6](#6-ml-approach)); the website is not started.
 
 **The problem.** In a company with many departments, the same KPI name means different things: *Turnover* is counted one way in Finance, another in Commercial and a third in Product. Different names also mean the same thing (*Inventory Turnover* = *Stock Turnover Rate*). New employees can't tell which KPIs matter to them or what they mean, and departments argue about numbers that were never comparable.
 
@@ -263,12 +263,12 @@ The app has one check function: *does user U hold a role with permission P in di
 | `assets` | `asset_id` PK · `asset_type` ∈ {dashboard, report} · `name` UNIQUE · `description` · `tool` · `url` · `division_id` FK · `owner_user_id` FK · `created_at` | ✅ |
 | `asset_definitions` | `asset_id` FK · `definition_id` FK · PK (both) | ✅ |
 
-**Derived at load time, not in the seed:** each definition's **measure type**, taken from `unit` through the SKOS Measure Type mapping ([§5](#5-controlled-vocabulary-skos)).
+**Looked up, not stored:** each definition's **measure type** comes from its `unit` through the SKOS Measure Type notations ([§5](#5-controlled-vocabulary-skos)). `vocab/skos.measure_types()` reads the mapping from the vocabulary, and the Measure Type facet, the unit check (T3) and the editor look the unit up in it. There is no measure-type column or table (decided 15 Nov, V3): it is the smallest change, and the vocabulary stays the only place that mapping is written down. The cost is that the facet maps units in Python instead of joining in SQL.
 
 ### 4.3 Tags (official and community)
 | Table | Columns (constraints) | In seed |
 |---|---|---|
-| `tags` | `tag_id` PK · `kind` ∈ {official, community} · `label` · `facet` ∈ {category, business_line}, required for official, NULL for community · `concept_uri`, required for official, NULL for community · `created_by` FK NULL · `created_at` · UNIQUE (kind, label) | Community tags only; official tags are generated from the SKOS file at load |
+| `tags` | `tag_id` PK · `kind` ∈ {official, community} · `label` · `facet` ∈ {category, business_line}, required for official, NULL for community · `concept_uri`, required for official, NULL for community · `created_by` FK NULL · `created_at` · UNIQUE (kind, label) | Community tags only; official tags are generated from the SKOS file at load: one per Category concept (perspectives and themes) and Business line concept, with the stable ID `TAG-<concept local name>` (e.g. `TAG-Revenue`) |
 | `definition_tags` | `definition_id` FK · `tag_id` FK · `source` ∈ {ml, curator, user} · `confidence` (ML only) · `status` ∈ {auto, accepted, rejected}, NULL for community tags · `tagged_by` FK NULL (NULL for ML) · `tagged_at` · PK (definition, tag) | Community taggings only |
 
 - **Official tags** are SKOS concepts. They come from ML (`status = auto` until checked) or from curators (`accepted`). A curator accepting or rejecting a tag changes its status; rejected tags are hidden.
@@ -386,15 +386,19 @@ The seed has **no** theme or business-line tags, so ML is their only automatic s
 |---|---|---|---|
 | **T1 Theme** | 1–2 Category themes (perspective derived via `skos:broader`) | `display_name + definition_text` (+ formula, when present) | 40 definitions labelled by hand by one team member, George (details under **Gold set** below) |
 | **T2 Business line** | 1 Business line concept | same | The original HF `domain`, mapped through `domain_to_division.csv` (all non-deprecated HF definitions; not evaluated on dbt and hand-written ones) |
-| **T3 Unit check** | Measure Type, predicted from the text alone | same | Compared with the measure type derived from `unit`; a disagreement creates a `unit_mismatch` flag (the seeded *Operating Expenses* error must be caught) |
+| **T3 Unit check** | Measure Type, predicted from the units of the definition's 5 most similar other definitions (method below) | same | Compared with the measure type looked up from `unit`; a disagreement creates a `unit_mismatch` flag (the seeded *Operating Expenses* error must be caught) |
 
 **Method (embedding similarity, no training):**
 1. Encode each definition with `sentence-transformers/all-MiniLM-L6-v2` (small and CPU-friendly).
 2. Encode each concept as `prefLabel + altLabels + skos:definition`.
-3. Compute cosine similarity and keep the top-k concepts above a minimum score `τ_min`.
+3. Compute cosine similarity. T1 keeps the best theme plus a second one if it scores at least `τ_min`; T2 keeps the best business line. The best concept is always kept, however low its score, so every definition gets a theme and a business line; low scores come first in the curator's queue.
 4. Write `definition_tags` rows with `source = ml`, the `confidence`, and `status = auto`. They show up straight away as official tags with an **"auto"** marker. The curator's validation queue lists them lowest confidence first.
 
-Embeddings for the seed data are **computed offline once**; the web app only encodes new submissions.
+Embeddings for the seed data are **computed offline once** (`instance/embeddings.npy`, with the definition IDs in `embeddings.ids.txt`); the web app only encodes new submissions. A rerun replaces the `auto` tags and keeps every tag a curator has accepted or rejected.
+
+**First run (M2, 15 Nov, untuned, `τ_min` = 0.45):** the top theme matches the T1 gold label for 34 of 40 definitions, but 21 of 107 definitions get a second theme, against 5 of 40 in the gold set, so `τ_min` is too low. T2 matches 39 of 81, no better than always guessing Group-wide (38 of 81): the HF texts rarely name a business line, and Membership's concept text attracts customer-related definitions. Details in `reports/m2_spot_check.md`; M5 tunes and evaluates.
+
+**T3 unit check (decided 15 Nov, task M4):** the 5 most similar other definitions vote on a definition's measure type with their own (looked up from their units), weighted by cosine similarity. If at least 80% of the vote disagrees with the definition's own unit, it gets an open `unit_mismatch` flag, scored with that share. Comparing the text with the Measure Type concepts, as first planned, was rejected: MiniLM captures what a text is about, not what kind of number it gives, so 33 of 107 definitions disagreed, 23 of them money amounts read as counts, and *Operating Expenses* came only third. The neighbour vote uses the catalog's own units as examples, so it catches a unit that is odd *for its topic*. First run: 4 flags. *Operating Expenses* is unanimous (100%), and the other three are reviewed false positives, all percentages among same-topic amounts or ratios (`data/quality_log.md` C10). Limitation: it can't catch a wrong unit shared by most definitions on the same topic, such as every variant of one KPI. A rerun replaces open flags and keeps resolved ones.
 
 **Scope (decided 11 Nov, [§14 Q8](#14-open-questions)):** the batch tasks (T1, T2, T3 and the similarity flags) skip definitions with `status = deprecated`; in the seed that is only DEF-0025, *Capital Expenditure* v1, superseded by DEF-0041. Drafts, in-review and rejected definitions are tagged like approved ones. Deprecated definitions are also left out of the gold set and the evaluation. Reasons: [§4.5](#45-definition-lifecycle-and-visibility) already moves every other live link off a superseded definition; its auto tags and flags would sit in the curator queues for a definition nobody should fix; and its text is nearly the same as its successor's, so it would count twice in the evaluation. Cost: it drops out of the Category and Business line facets and is reached through its successor's version chain. If superseding in the app is built (Q7, task W20), the same rule applies to the old version.
 
@@ -404,6 +408,8 @@ Embeddings for the seed data are **computed offline once**; the web app only enc
 - **Metrics:** accuracy and macro-F1 per task. T1 at both theme and perspective level.
 - **Baselines:** majority class, and keyword rules (e.g. "revenue|sales" → revenue).
 - Use the gold set to tune `τ_min`.
+- **Results (M5, 15 Nov; generated in `reports/ml_eval.md` by `uv run python -m kpi_catalog.ml.evaluate`):** T1 top theme 85.0% accuracy, macro-F1 0.707, against keyword rules (57.5%, 0.278) and the majority class (37.5%, 0.078). At perspective level the majority class already reaches 82.5%, because 33 of the 40 gold themes are Financial, so that level says little. T2 reaches 48.1% accuracy, close to the majority class (46.9%) and below keyword rules (56.8%), but has the best macro-F1 (0.506, against 0.380 and 0.071): it gets the smaller business lines right more often and misses Stores most (12 of 16 read as Group-wide). A "Group-wide below a score" fallback was measured (54.3%, 0.513, tuned on the same data) and **not adopted**: the gain is small and optimistic. The keyword baseline is built from the vocabulary's prefLabels and altLabels, so no rule was written after seeing the gold labels.
+- **`τ_min` = 0.54 (tuned 15 Nov):** second themes never improved the match with the gold theme sets (micro-F1 0.737 at 0.45, 0.800 once no second themes are added), so `τ_min` is the lowest value with the best F1. In effect a second theme is now rare: 1 of 107 definitions. Tuned on 40 definitions, so the numbers are optimistic.
 
 **Runtime reuse of the same model:**
 - **Submit suggestions:** while a contributor or curator writes a definition, the form suggests a theme and a business line, shows the measure type derived from the chosen unit, and warns "a similar KPI already exists: …".
@@ -535,7 +541,7 @@ Embeddings for the seed data are **computed offline once**; the web app only enc
 
 ```
 data/raw (pinned downloads) + kpigen/curation + scenarios.yaml ──► kpigen ──► data/seed/*.csv
-data/seed ──► validate (schema.sql + pytest) ──► load (+ official tags from SKOS, measure type) ──► instance/catalog.sqlite
+data/seed ──► validate (schema.sql + pytest) ──► load (+ official tags from SKOS) ──► instance/catalog.sqlite
 catalog.sqlite ──► ml tag / unit check / similarity ──► definition_tags (source=ml), similarity_flags
 data/gold/*.csv ──► ml evaluate ──► reports/ml_eval.md
 catalog.sqlite ──► Flask app ──► export ──► data/annotated/, vocab/kpi-vocabulary.export.ttl
@@ -554,8 +560,8 @@ vocab/                      hand-authored SKOS seed + generated exports
 src/kpigen/                 seed generator: download, inputs + coverage check, generate, write, validate
 src/kpi_catalog/
   db.py                     create from schema.sql + load seed CSVs (shared loader in kpigen), FTS5 index, get_db()
-  vocab/skos.py             load / query / export SKOS; unit → measure type; official tags
-  ml/tagger.py              T1/T2 tagging, T3 unit check, submit suggestions
+  vocab/skos.py             load / query / export SKOS; unit → measure type lookup; official tags
+  ml/tagger.py              T1/T2 tagging (done), T3 unit check, submit suggestions
   ml/similarity.py          synonym / divergence flags
   ml/gold.py                gold-set sample, annotator sheet, T2 export, T1 gold check
   ml/evaluate.py            gold-set metrics vs baselines
@@ -563,6 +569,8 @@ src/kpi_catalog/
   web/                      Flask app factory, routes, templates/, static/
 tests/test_seed_rules.py    business-rule checks (§3.6)
 tests/test_kpigen.py        generator tests (determinism, coverage, validation catches errors)
+instance/                   catalog.sqlite + embeddings.npy (built, git-ignored)
+reports/                    ML spot check (M2) and evaluation (M5)
 docs/PRD.md
 ```
 
@@ -629,7 +637,7 @@ docs/PRD.md
 ## 14. Open questions
 1. **Company name:** resolved 11 Nov: **Konfusio** (replaces the working name "Acme"; set in `scenarios.yaml`, which also gives the `konfusio.example` email and BI domains).
 2. **Theme *quality*:** resolved 6 Nov: one hand-written quality KPI, *Food Safety Incident Rate* (Operations), was added so the theme isn't empty. An empty concept would still be a T1 candidate that no gold label can match, and would show as an empty facet value.
-3. **Thresholds:** `τ_min`, `τ_high`, `τ_low`, tuned on the gold set.
+3. **Thresholds:** `τ_min`, `τ_high`, `τ_low`, tuned on the gold set. `τ_min` = 0.54, tuned on the T1 gold set by M5 (15 Nov; it was 0.45, picked by eye, in M2's first run; see [§6](#6-ml-approach)). The unit check uses 5 neighbours and an 80% vote (M4, 15 Nov).
 4. **NAICS codes:** resolved 12 Nov: every Business line code was checked against the Census Bureau's NAICS 2022 code list, the 2022-to-2017 concordance and the 2022 NAICS Manual, and all v0 codes stand. Online keeps a `broadMatch` to 445110 (NAICS 2022 dropped the nonstore industries and classifies retailers by merchandise line), Membership has no match, Insurance is a direct carrier (524126, because Konfusio underwrites its policies) and Mobile a reseller (517121, MVNO). Task V2.
 5. **OWL (S1):** go/no-go on 12 Dec.
 6. **Team split:** resolved 5 Nov (see the header; George owns `kpigen`). Still open: who makes the slides and leads the demo (task P4).
@@ -668,3 +676,7 @@ Every change to a feature or decision gets a row here, with the PRD sections it 
 | 15 Nov 2026 | v5 | W10 (in progress): homepage from Ioanna's wireframe: shared top bar (Catalog dropdown, decorative bell, account icon for W3), search box, "Browse by Category" tiles (divisions for now), "Recently Viewed" in the Flask session; Simple.css replaced by `app.css` with CSS variables; Tabler icons | header, §10, §11 |
 | 15 Nov 2026 | v5 | W6–W8: KPI concept page (overview, definitions, dependencies, related KPIs), new definition page `/definitions/<id>` (overview, definition, dependencies, usage, history) and new compare page `/kpis/<slug>/compare` (columns are definitions, not divisions), from Ioanna's wireframes; divergence banner from open `definitions_diverge` flags; one visibility helper, everyone an Observer until W3; KPIs without a visible definition return 404 | header, §10 |
 | 15 Nov 2026 | v5 | W3, W11, W12: "log in as" offers only the three personas (Emma, Katerina, Noah); Anna and Dimitris stay seed users and are covered by tests; in UC3 Noah approves Katerina's submission instead of Dimitris. One permission check `has_permission(user, code, division)`, visibility follows the logged-in user, 403 page; role-based top bar and Catalog dropdown from Ioanna's wireframe; new pages `/definitions/new` (editor; the wireframe's "Data Source" dropdown dropped, "name used in your division" added) and `/my-definitions`; ML suggestions are a stub until M8 | header, §7, §8, §9 F1, §10 |
+| 15 Nov 2026 | v5 | M2: first tagging run (`ml/tagger.py`). Every definition gets its best theme and business line even below `τ_min`, which only gates a second theme (provisional 0.45). Official tags created from the vocabulary as `TAG-<local name>` (the official-tag part of V3). Until the loader (W2) exists, `--from-seed` builds `instance/catalog.sqlite` from the seed. First results: T1 34/40, T2 at the majority baseline | header, top, §4.3, §6, §11, §14 Q3 |
+| 15 Nov 2026 | v5 | M4: T3 predicts the measure type by a vote of the 5 most similar definitions' units (≥ 80% to flag), not by comparing the text with the Measure Type concepts (33 of 107 false mismatches). 4 flags: *Operating Expenses* (100%) and 3 reviewed false positives | header, top, §6, §14 Q3 |
+| 15 Nov 2026 | v5 | M5: `ml/evaluate.py` writes `reports/ml_eval.md` (T1 and T2 against majority-class and vocabulary-keyword baselines, T3 flags, unscored GenAI-drafted definitions); `τ_min` tuned from 0.45 to 0.54; the Group-wide fallback for T2 measured, not adopted; scikit-learn added for the metrics | header, §6, §14 Q3 |
+| 15 Nov 2026 | v5 | V3: measure type is a lookup from `unit` through the vocabulary's unit notations (`vocab/skos.measure_types()`), not a stored column or table; the load step only adds the official tags | §4.2, §11 |
