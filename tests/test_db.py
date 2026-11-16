@@ -28,8 +28,10 @@ def built(tmp_path_factory):
 
 def test_real_seed_loads_with_matching_counts(built):
     _, con = built
+    official = con.execute("SELECT count(*) FROM tags WHERE kind = 'official'").fetchone()[0]  # added by the loader (V3)
     for table in SEED_TABLES:
-        assert con.execute(f"SELECT count(*) FROM {table}").fetchone()[0] == len(csv_rows(table)), table
+        extra = official if table == "tags" else 0
+        assert con.execute(f"SELECT count(*) FROM {table}").fetchone()[0] == len(csv_rows(table)) + extra, table
     counts = {t: con.execute(f"SELECT count(*) FROM {t}").fetchone()[0] for t in ("definitions", "kpis", "users")}
     assert counts == {"definitions": 108, "kpis": 62, "users": 53}
 

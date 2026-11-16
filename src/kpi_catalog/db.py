@@ -1,6 +1,8 @@
-"""The app database (PRD §4, §11): build instance/catalog.sqlite from schema.sql + data/seed/, search index, Flask access.
+"""The app database (PRD §4, §11): build instance/catalog.sqlite from schema.sql + data/seed/, official tags,
+search index, Flask access.
 
-Build it with: uv run flask --app kpi_catalog.web init-db
+Build it with `uv run kpi-catalog build` (this, then ML tagging and flags; M6), or untagged with
+`uv run flask --app kpi_catalog.web init-db`.
 """
 
 import os
@@ -11,6 +13,7 @@ import click
 from flask import Flask, current_app, g
 from flask.cli import with_appcontext
 
+from kpi_catalog.vocab import skos
 from kpigen.paths import ROOT, SCHEMA, SEED
 from kpigen.validate import SeedError, fill_from_seed
 
@@ -29,11 +32,12 @@ def connect(path: Path) -> sqlite3.Connection:
 
 
 def build(db_path: Path = DATABASE, seed_dir: Path = SEED, schema: Path = SCHEMA) -> None:
-    """Build the database from scratch: schema.sql, then every seed CSV (foreign-key order), then the search index.
+    """Build the database from scratch: schema.sql, every seed CSV (foreign-key order), an official tag for every
+    Category and Business line concept in the vocabulary (V3, PRD §4.3), then the search index. No ML tags yet.
 
     Any old file is deleted first. The build writes to a temporary file that only replaces the target once
     everything has loaded and passed PRAGMA foreign_key_check, so a failed build (SeedError) leaves no database.
-    Called by `flask init-db` and, later, by `kpi-catalog build` (M6).
+    Called by `flask init-db` and by `kpi-catalog build` (M6), which then tags the result.
     """
     db_path = Path(db_path)
     db_path.parent.mkdir(parents=True, exist_ok=True)
@@ -45,6 +49,8 @@ def build(db_path: Path = DATABASE, seed_dir: Path = SEED, schema: Path = SCHEMA
         try:
             con.executescript(schema.read_text(encoding="utf-8"))
             fill_from_seed(con, seed_dir)
+            with con:
+                skos.ensure_official_tags(con, skos.load_vocab())
             build_search_index(con)
         finally:
             con.close()
@@ -58,8 +64,8 @@ def build_search_index(con: sqlite3.Connection) -> None:
     """(Re)build the FTS5 table definitions_fts: one row per definition with its KPI name, display name,
     definition text and the labels of all its tags (official and community).
 
-    Safe to re-run whenever tags change (official tags arrive with V3 and M2). Every definition is indexed;
-    the visibility rule (PRD §4.5) is applied when querying, by joining back to definitions.
+    Safe to re-run whenever tags change (the ML batch, `tagger.run`, re-runs it after tagging). Every definition is
+    indexed; the visibility rule (PRD §4.5) is applied when querying, by joining back to definitions.
     """
     with con:
         con.execute("DROP TABLE IF EXISTS definitions_fts")
@@ -105,7 +111,7 @@ def close_db(_exc=None) -> None:
 @click.command("init-db")
 @with_appcontext
 def init_db_command() -> None:
-    """Build instance/catalog.sqlite from schema.sql and data/seed/ (deletes the old file)."""
+    """Build instance/catalog.sqlite from schema.sql and data/seed/, without ML tags (deletes the old file)."""
     path = Path(current_app.config["DATABASE"])
     try:
         build(path)
@@ -114,7 +120,8 @@ def init_db_command() -> None:
     con = connect(path)
     counts = {t: con.execute(f"SELECT count(*) FROM {t}").fetchone()[0] for t in ("kpis", "definitions", "users")}
     con.close()
-    click.echo(f"Built {path}: " + ", ".join(f"{n} {t}" for t, n in counts.items()) + "; search index ready.")
+    click.echo(f"Built {path}: " + ", ".join(f"{n} {t}" for t, n in counts.items())
+               + "; search index ready; no ML tags (use `uv run kpi-catalog build` for those).")
 
 
 def init_app(app: Flask) -> None:

@@ -59,7 +59,7 @@ def test_concept_page_overview(client):
     page = html(client, "/kpis/turnover")
     assert KPIS["turnover"]["description"] in page.replace("&#39;", "'")
     assert "KPI Concept" in page and 'href="/kpis/turnover/compare"' in page
-    assert "Not categorised yet" in page  # no official tags until V3/M2
+    assert "Not categorised yet" in page  # the test database has official tags (V3) but no ML tags on them (M2)
     cards = re.search(r'<ul class="division-cards">.*?</ul>', page, re.S).group(0)
     divisions = {DIVISIONS[DEFS[i]["division_id"]]["name"] for i in defs_of("turnover")}
     assert set(re.findall(r"<span>(.*?)</span>", cards)) == divisions
@@ -256,21 +256,18 @@ def test_divergence_banner(own_client):
 def test_official_tags_grouped_by_facet_with_auto_marker(own_client):
     path, client = own_client
     con = db.connect(path)
-    with con:
-        con.execute("INSERT INTO tags (tag_id, kind, label, facet, concept_uri, created_at) VALUES "
-                    "('TAG-T1', 'official', 'Revenue', 'category', 'https://example.org/kpi-catalog/vocab/theme-revenue', '2026-11-15T00:00:00Z'),"
-                    "('TAG-T2', 'official', 'Grocery', 'business_line', 'https://example.org/kpi-catalog/vocab/bl-grocery', '2026-11-15T00:00:00Z')")
+    with con:  # the loader already made the official tags from the vocabulary (V3); attach two of them
         con.execute("INSERT INTO definition_tags (definition_id, tag_id, source, confidence, status, tagged_at) "
-                    "VALUES ('DEF-0301', 'TAG-T1', 'ml', 0.83, 'auto', '2026-11-15T00:00:00Z')")
+                    "VALUES ('DEF-0301', 'TAG-Revenue', 'ml', 0.83, 'auto', '2026-11-15T00:00:00Z')")
         con.execute("INSERT INTO definition_tags (definition_id, tag_id, source, status, tagged_by, tagged_at) "
-                    "VALUES ('DEF-0302', 'TAG-T2', 'curator', 'accepted', 'USR-007', '2026-11-15T00:00:00Z')")
+                    "VALUES ('DEF-0302', 'TAG-Banking', 'curator', 'accepted', 'USR-007', '2026-11-15T00:00:00Z')")
     con.close()
     page = html(client, "/kpis/turnover")
     assert "Not categorised yet" not in page
     categories = re.search(r"<h3>Categories</h3>.*?</div>", page, re.S).group(0)
     assert "Revenue" in categories and '<span class="auto">auto</span>' in categories and "0.83" in categories
-    assert 'href="/vocabulary/theme-revenue"' in categories
+    assert 'href="/vocabulary/Revenue"' in categories
     business = re.search(r"<h3>Business line</h3>.*?</div>", page, re.S).group(0)
-    assert "Grocery" in business and "auto" not in business
+    assert "Banking" in business and "auto" not in business
     community = re.search(r'<div class="tag-group community">.*?</div>\s*</div>', page, re.S).group(0)
     assert "Revenue" not in community and "#" in community

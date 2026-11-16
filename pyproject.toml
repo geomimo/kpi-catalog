@@ -21,7 +21,7 @@ dependencies = [
 ]
 
 [project.scripts]
-kpi-catalog = "kpi_catalog:main"
+kpi-catalog = "kpi_catalog.cli:main"
 kpigen = "kpigen.cli:main"
 
 [build-system]

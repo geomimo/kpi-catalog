@@ -4,7 +4,8 @@
   Both need definition.propose in the chosen division. "Save Draft" keeps status draft, "Submit for Review" sets
   in_review. Validation happens on the server; errors are shown next to the fields and nothing is saved.
 - /my-definitions: the user's own definitions by status, with the latest review comment.
-Tag suggestions come from ml.suggest.suggest_for_definition (a stub until M8).
+Suggestions come from ml.suggest.suggest_for_definition(form) (a stub until M8): tags, measure type and similar
+definitions; the panel shows the tags so far (measure type and similar-KPI warning: W11).
 """
 
 import re
@@ -187,7 +188,7 @@ def _render(user: dict, form: dict, errors: dict, definition: dict | None = None
         owner_groups=[(d, members[d["division_id"]]) for d in pick_divisions],
         can_pick_owner=bool(pick_divisions),
         units=UNITS, grains=GRAINS, metric_types=METRIC_TYPES,
-        suggestions=suggest_for_definition(form.get("definition_text", "")),
+        suggestions=suggest_for_definition(form),
     ), status
 
 

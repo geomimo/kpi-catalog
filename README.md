@@ -19,7 +19,7 @@ Group project for the course *Information Organization*.
 The full scope, personas, use cases and plan are in **[docs/PRD.md](docs/PRD.md)**.
 
 ## Status
-The seed generator `kpigen` and `schema.sql` (reviewed) are written and the seed validates (108 definitions). The ML stack (`sentence-transformers` with `all-MiniLM-L6-v2`) runs on Python 3.14. The curation files and our own texts (drafted with GenAI) have been reviewed. Vocabulary v0 (`vocab/kpi-vocabulary.ttl`, SKOS) is written and reviewed, and its NAICS codes are checked against NAICS 2022. Data-quality findings and decisions are logged in `data/quality_log.md`. The first ML tagging run (theme and business line) and the unit check are done; the evaluation against hand-made gold labels and baselines is in `reports/ml_eval.md`. `flask init-db` builds the app database (SQLite with a full-text search index) from the seed. The web app has the homepage, the KPI, definition and compare pages, "log in as" with permission checks, the definition editor and My Definitions; the other pages are placeholders. Next: browse and search (mid-term: 19 Nov 2026; final: 21 Dec 2026). Tasks and progress are tracked in [docs/TASKS.md](docs/TASKS.md).
+The seed generator `kpigen` and `schema.sql` (reviewed) are written and the seed validates (108 definitions). The ML stack (`sentence-transformers` with `all-MiniLM-L6-v2`) runs on Python 3.14. The curation files and our own texts (drafted with GenAI) have been reviewed. Vocabulary v0 (`vocab/kpi-vocabulary.ttl`, SKOS) is written and reviewed, and its NAICS codes are checked against NAICS 2022. Data-quality findings and decisions are logged in `data/quality_log.md`. The first ML tagging run (theme and business line) and the unit check are done; the evaluation against hand-made gold labels and baselines is in `reports/ml_eval.md`. `uv run kpi-catalog build` builds the app database (SQLite with a full-text search index) from the seed and auto-tags it. The web app has the homepage, the KPI, definition and compare pages, "log in as" with permission checks, the definition editor and My Definitions; the other pages are placeholders. Next: browse and search (mid-term: 19 Nov 2026; final: 21 Dec 2026). Tasks and progress are tracked in [docs/TASKS.md](docs/TASKS.md).
 
 ## Setup
 Requires [uv](https://docs.astral.sh/uv/) and Python 3.14.
@@ -28,18 +28,17 @@ Requires [uv](https://docs.astral.sh/uv/) and Python 3.14.
 uv sync
 uv run kpigen download                 # fetch the pinned sources into data/raw/ (git-ignored)
 uv run kpigen                          # generate data/seed/*.csv and validate it against schema.sql + business rules
-uv run pytest                          # generator, seed, vocabulary, gold-set, tagger, evaluation, database and web tests
+uv run pytest                          # generator, seed, vocabulary, gold-set, tagger, evaluation, database, build and web tests
 uv run python -m kpi_catalog.ml.gold prepare   # gold-set sample and annotator sheet (see data/gold/README.md)
-uv run flask --app kpi_catalog.web init-db       # build instance/catalog.sqlite from schema.sql + data/seed/
-uv run python -m kpi_catalog.ml.tagger              # auto-tag instance/catalog.sqlite (after init-db) and check units
+uv run kpi-catalog build                         # build instance/catalog.sqlite from the seed, auto-tag it and check units
 uv run python -m kpi_catalog.ml.evaluate            # score the ML against the gold sets, write reports/ml_eval.md
 uv run flask --app kpi_catalog.web run --debug   # web app at http://127.0.0.1:5000 (some pages are still placeholders)
 uv run jupyter lab exploration.ipynb   # explore the dataset
 ```
 
-`uv run kpigen --strict` also fails if any `TODO(george)` placeholder is left in the curation files. The first ML run downloads the `all-MiniLM-L6-v2` model (about 90 MB) into the Hugging Face cache; after that it runs offline. The `kpi-catalog build` command (load → tag → flag) will be added as it is implemented (see PRD §11).
+`uv run kpigen --strict` also fails if any `TODO(george)` placeholder is left in the curation files. The first ML run downloads the `all-MiniLM-L6-v2` model (about 90 MB) into the Hugging Face cache; after that it runs offline. `uv run python -m kpi_catalog.ml.tagger` re-runs the auto-tagging on an existing database (e.g. after adding definitions in the app); `uv run flask --app kpi_catalog.web init-db` builds the database quickly without auto-tags.
 
-**Note:** `init-db` rebuilds the database from the seed, so definitions created or edited in the app are lost. That is fine for the demo; rebuild before a demo run to start clean.
+**Note:** `kpi-catalog build` (and `init-db`) rebuild the database from the seed, so definitions created or edited in the app are lost. That is fine for the demo; rebuild before a demo run to start clean.
 
 ## Data
 The seed catalog (108 KPI definitions of 62 KPIs for Konfusio, a fictional retail group with 8 divisions) is generated by a deterministic script, `kpigen` (code in `src/kpigen/`, hand-edited inputs in `kpigen/curation/` and `kpigen/scenarios.yaml`, output in `data/seed/`, never edited by hand). The KPI text is real:

@@ -18,7 +18,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
 | Ioanna | UI wireframes, personas, user journeys | U | W (personas, journeys) |
 | Everyone | Decisions, presentation, final checks | P | — |
 
-**Critical path to the mid-term:** M1 (ML stack on 3.14, done) and D3 (`schema.sql`, done) unblock the rest → D4–D5 (reviewed, done) → V1 (vocabulary v0, done) → M2 (first tagging run, done on a database built from the seed; it reruns on W2's database once that exists). Liam can build W1–W3 on the generated seed in `data/seed/` now.
+**Critical path to the mid-term:** M1 (ML stack on 3.14, done) and D3 (`schema.sql`, done) unblock the rest → D4–D5 (reviewed, done) → V1 (vocabulary v0, done) → M2 (first tagging run, done) → M6 (`uv run kpi-catalog build`, done 16 Nov: W2's loader + the ML batch). Liam builds on the generated seed in `data/seed/`; `kpi-catalog build` gives him a tagged database.
 
 ---
 
@@ -88,8 +88,8 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - The presentation has no owner yet. Done when: the owner is named in the Team table and on R10.
 
 ### George
-- [ ] **V3 · Official tags and measure type** · by 22 Nov · §4.2–4.3, §5 · needs V1, W2
-  - `vocab/skos.py`: create official tags from the Category and Business line concepts, and look up `unit` → Measure Type (not stored). Done when: the loader calls `ensure_official_tags` and the facets can query both (Measure Type through `measure_types()`). *15 Nov: `ensure_official_tags` (written for M2) and `measure_types()` are done and tested; only the loader call is left, once W2 exists.*
+- [x] **V3 · Official tags and measure type** · by 22 Nov · §4.2–4.3, §5 · needs V1, W2 · *done 16 Nov: `db.build()` calls `ensure_official_tags`, so every built database has the 25 official tags; Measure Type through `measure_types()`*
+  - `vocab/skos.py`: create official tags from the Category and Business line concepts, and look up `unit` → Measure Type (not stored). Done when: the loader calls `ensure_official_tags` and the facets can query both (Measure Type through `measure_types()`).
 - [x] **M3 · Gold labels** · George · by 26 Nov · §6 · needs D7 · *done 15 Nov: 40 definitions labelled by George (one annotator), 5 with a second theme; T1 and T2 gold sets in `data/gold/`*
   - Done when: 40 definitions have hand-made T1 theme labels, `finalize` passes, and the T1 and T2 gold sets are in `data/gold/`.
 - [x] **V2 · Check the NAICS 2022 codes** · by 26 Nov · §5, §14 Q4 · *done 12 Nov: all v0 codes confirmed against the Census NAICS 2022 code list, concordance and manual; none changed*
@@ -102,7 +102,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - Done when: Skosify or SKOS Play reports no errors (any remaining warnings are explained), and its visualizations are saved as report figures.
 - [x] **M5 · ML evaluation** · by 3 Dec · §6 · needs M2, M3 · *done 15 Nov: T1 85.0% / macro-F1 0.707 (keyword 57.5%, majority 37.5%); T2 48.1% / 0.506 (majority 46.9% / 0.071); `τ_min` tuned to 0.54; T2 fallback measured, not adopted*
   - `ml/evaluate.py`: accuracy and macro-F1 per task (T1 at theme and perspective level) against majority-class and keyword baselines; tune `τ_min`. Done when: the script generates `reports/ml_eval.md`.
-- [ ] **M6 · One build command** · by 3 Dec · §11 · needs W2, M2, M4
+- [x] **M6 · One build command** · by 3 Dec · §11 · needs W2, M2, M4 · *done 16 Nov: `cli.py`; load → T1/T2 → T3 → search index rebuilt (it missed the ML tags before); `--from-seed` removed; `tests/test_build.py` checks loader → tagger → index → web; M7 adds its flags here*
   - Done when: `uv run kpi-catalog build` goes from `data/seed/` to a tagged and flagged database, and the README lists the command.
 
 ### Liam
@@ -120,7 +120,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - Use a few hand-inserted `similarity_flags` rows until M7 lands. Done when: Turnover shows a "definitions diverge" warning.
 - [ ] **W9 · Vocabulary browser** · by 3 Dec · F8 · needs V4
   - Done when: `/vocabulary` lists the schemes, and each concept page shows its definition, broader, narrower and related concepts, and the definitions tagged with it.
-- [ ] **W10 · Home page** · by 3 Dec · §10 · needs W4, W5 · *(in progress): top bar, search box (GET to `/kpis`), "Browse by Category" tiles and "Recently Viewed" built from Ioanna's wireframe on 15 Nov; search results (W5) and "KPIs of <your divisions>" (W3) still missing*
+- [ ] **W10 · Home page** · by 3 Dec · §10 · needs W4, W5 · *(in progress): top bar, search box (GET to `/kpis`), "Browse by Category" tiles and "Recently Viewed" built from Ioanna's wireframe on 15 Nov; search results (W5) and "KPIs of <your divisions>" (W3) still missing; the tiles can switch to the SKOS categories now that `kpi-catalog build` tags every live definition (16 Nov)*
   - Done when: it shows search, "KPIs of <your divisions>" for the logged-in user, and facet entry points.
 - [ ] **R3 · Dataset and data-quality section** · Liam + George · by 3 Dec · §3, §13 · needs D8
 - [ ] **R4 · Six-question case study** · by 3 Dec · §13
@@ -138,7 +138,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
 - [ ] **M7 · Similarity flags** · by 7 Dec · F9, §6, §14 Q3 · needs M2
   - `ml/similarity.py`: `possible_synonym` (above `τ_high`) and `definitions_diverge` (below `τ_low`). Done when: the expected hits listed in §6 are flagged, the false friend (*Inventory Amount* vs *Investment Amount*) is not, and the thresholds are recorded.
 - [ ] **M8 · Suggestions for new submissions** · by 8 Dec · F10, §6 · needs M2, M7
-  - One function the editor calls: theme and business-line suggestions, the measure type from the unit, and "a similar KPI already exists". It encodes only the new text. Done when: W11 can call it and Katerina's scenario draft gets the near-duplicate warning (UC3).
+  - One function the editor calls, `ml/suggest.py: suggest_for_definition(form)` (interface fixed 16 Nov, stub until now): theme and business-line suggestions, the measure type from the unit, and "a similar KPI already exists". It encodes only the new text, built like the batch's input (`tagger.definition_input`). Done when: W11 can call it and Katerina's scenario draft gets the near-duplicate warning (UC3).
 - [ ] **V6 · TTL export** · by 10 Dec · F15, §5 · needs V4
   - Done when: it writes `vocab/kpi-vocabulary.export.ttl` from the database, including promoted and merged labels, and rdflib parses the result.
 - [ ] **P5 · OWL go/no-go** · 12 Dec · §5 (stretch S1), §14 Q5
@@ -151,7 +151,7 @@ Progress tracker for the KPI Catalog, derived from the PRD's features (§9) and 
   - Done when: a Reviewer can approve, reject or request changes with a comment, only in their own divisions and never on their own definitions, and the decision appears in the review history (UC3 as Noah; Dimitris's division-scoped case in pytest).
 - [ ] **W14 · Community tags** · by 8 Dec · F14 · needs W6
   - Done when: any user can add a tag to a definition, and browse shows a tag cloud.
-- [ ] **W11 · Definition editor and submit** · by 10 Dec · F10 · needs M8, U5 · *(in progress): form from Ioanna's wireframe, create and edit drafts, Save Draft / Submit for Review and server-side validation done on 15 Nov; ML suggestions (M8, stub `ml/suggest.py`) and the similar-KPI warning missing*
+- [ ] **W11 · Definition editor and submit** · by 10 Dec · F10 · needs M8, U5 · *(in progress): form from Ioanna's wireframe, create and edit drafts, Save Draft / Submit for Review and server-side validation done on 15 Nov; ML suggestions (M8, stub `ml/suggest.py`) and the similar-KPI warning missing; since 16 Nov the editor passes the whole form and the panel reads `suggestions.tags`, so measure type and similar KPIs only need rendering once M8 fills them*
   - Build the form first; plug in M8 when it is ready. Done when: a Contributor or Curator can create and edit a draft, sees the ML suggestions and the similar-KPI warning, and submits it (draft → in_review).
 - [ ] **R5 · Personas and use cases section** · Liam + Ioanna · by 10 Dec · §7–8 · needs U1, U2
 - [ ] **W15 · ML tag validation queue** · by 12 Dec · F13 · needs W6, M2 · cut #3

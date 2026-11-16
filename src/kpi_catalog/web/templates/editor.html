@@ -94,8 +94,8 @@
   <aside class="editor-side">
     <div class="card side-panel">
       <h2>Suggested Tags (ML) <span title="Theme and business line suggested from the definition text">{{ icon("info-circle", 18) }}</span></h2>
-      {% if suggestions %}
-      <div class="chips">{% for s in suggestions %}<span class="chip">{{ s.label }}</span>{% endfor %}</div>
+      {% if suggestions.tags %}
+      <div class="chips">{% for s in suggestions.tags %}<span class="chip">{{ s.label }}</span>{% endfor %}</div>
       {% else %}
       <p class="muted small">Tag suggestions arrive with the ML model.</p>
       {% endif %}

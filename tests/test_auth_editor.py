@@ -431,3 +431,23 @@ def test_my_definitions_needs_propose(client, login_as):
     for user_id in (EMMA, DIMITRIS):
         login_as(user_id)
         assert client.get("/my-definitions").status_code == 403
+
+
+def test_editor_passes_the_form_to_the_m8_suggestions(client, login_as, monkeypatch):
+    """The interface M8 fills in (ml/suggest.py): the editor passes the whole form, the panel shows the tags."""
+    seen = []
+
+    def fake_suggest(form):
+        seen.append(dict(form))
+        return {"tags": [{"label": "Revenue", "facet": "category", "concept_uri": "u", "confidence": 0.9}],
+                "measure_type": None, "similar": []}
+
+    monkeypatch.setattr("kpi_catalog.web.editor.suggest_for_definition", fake_suggest)
+    login_as(KATERINA)
+    page = html(client, "/definitions/new")
+    assert '<span class="chip">Revenue</span>' in page
+    assert "Tag suggestions arrive with the ML model" not in page
+    response = client.post("/definitions/new", data={"display_name": "Shrink", "definition_text": "Lost stock.",
+                                                     "formula": "", "unit": "%", "action": "draft"})
+    assert response.status_code == 422  # incomplete form: re-rendered with the suggestions for what was typed
+    assert {"display_name": "Shrink", "definition_text": "Lost stock.", "formula": "", "unit": "%"}.items() <= seen[-1].items()

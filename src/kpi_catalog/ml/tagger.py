@@ -16,8 +16,11 @@ type other than the one the definition's own unit gives, it gets an open `unit_m
 its score. Comparing the text with the Measure Type concepts directly was tried first and rejected: MiniLM
 captures what a text is about, not what kind of number it gives, so it flagged 33 of 107 definitions (PRD §6).
 
+`run` does all of it on a built database (tagging, unit check, then the search index again, so search sees the
+new tags). `uv run kpi-catalog build` builds the database from the seed and calls it (M6); this module's command
+re-tags an existing database, e.g. after definitions were added in the app:
+
     uv run python -m kpi_catalog.ml.tagger [--db instance/catalog.sqlite]
-    uv run python -m kpi_catalog.ml.tagger --from-seed   # build the database from data/seed first (until W2)
 """
 
 import argparse
@@ -30,11 +33,11 @@ from pathlib import Path
 
 import numpy as np
 
+from kpi_catalog import db
 from kpi_catalog.vocab import skos
-from kpigen.paths import ROOT, SEED
 
 MODEL = "sentence-transformers/all-MiniLM-L6-v2"
-DB = ROOT / "instance" / "catalog.sqlite"
+DB = db.DATABASE
 MAX_THEMES = 2
 TAU_MIN = 0.54  # a second theme needs at least this score; tuned on the T1 gold set by M5 (PRD §14 Q3)
 K_UNIT = 5  # neighbours that vote on a definition's measure type (T3)
@@ -144,39 +147,38 @@ def check_units(con: sqlite3.Connection, ids: Sequence[str], vectors: np.ndarray
     return found
 
 
-def build_from_seed(db: Path, seed_dir: Path = SEED) -> None:
-    """Stopgap until the loader (W2, db.py) exists: schema.sql + the seed CSVs, written to `db`."""
-    from kpigen.validate import load_seed
-    mem = load_seed(seed_dir)
-    mem.commit()  # load_seed leaves its inserts in an open transaction, which would block the backup
-    db.parent.mkdir(parents=True, exist_ok=True)
-    db.unlink(missing_ok=True)
-    with sqlite3.connect(db) as out:
-        mem.backup(out)
+def run(con: sqlite3.Connection, encode: Encoder, embeddings: Path, g=None) -> tuple[dict[str, Counter], list[dict]]:
+    """The whole ML batch on a built database: T1/T2 tags, the T3 unit check, then the search index again (its
+    tag labels now include the ML tags). The embeddings are saved to `embeddings` (+ `.ids.txt`). Returns the tag
+    counts per facet and the unit mismatches."""
+    g = g if g is not None else skos.load_vocab()
+    counts = tag(con, encode, g, embeddings=embeddings)
+    mismatches = check_units(con, *load_embeddings(embeddings), g)
+    db.build_search_index(con)
+    return counts, mismatches
+
+
+def report(counts: dict[str, Counter], mismatches: list[dict]) -> None:
+    for facet, c in counts.items():
+        print(f"{facet}: {sum(c.values())} auto tags; {dict(c.most_common())}")
+    print(f"unit check: {len(mismatches)} unit_mismatch flag(s)")
+    for f in mismatches:
+        print(f"  {f['definition_id']}: unit {f['unit']} ({f['measure_type']}), neighbours say {f['predicted']}"
+              f" ({f['share']:.0%})")
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="python -m kpi_catalog.ml.tagger", description=__doc__.splitlines()[0])
     parser.add_argument("--db", type=Path, default=DB)
-    parser.add_argument("--from-seed", action="store_true", help="(re)build the database from data/seed first")
     args = parser.parse_args(argv)
-    if args.from_seed:
-        build_from_seed(args.db)
-    elif not args.db.exists():
-        print(f"{args.db} doesn't exist: build it with the loader, or pass --from-seed")
+    if not args.db.exists():
+        print(f"{args.db} doesn't exist: build it with `uv run kpi-catalog build`")
         return 1
-    con = sqlite3.connect(args.db)
-    con.execute("PRAGMA foreign_keys = ON")
-    g = skos.load_vocab()
-    embeddings = args.db.with_name("embeddings.npy")
-    counts = tag(con, sentence_encoder(), g, embeddings=embeddings)
-    for facet, c in counts.items():
-        print(f"{facet}: {sum(c.values())} auto tags; {dict(c.most_common())}")
-    mismatches = check_units(con, *load_embeddings(embeddings), g)
-    print(f"unit check: {len(mismatches)} unit_mismatch flag(s)")
-    for f in mismatches:
-        print(f"  {f['definition_id']}: unit {f['unit']} ({f['measure_type']}), neighbours say {f['predicted']}"
-              f" ({f['share']:.0%})")
+    con = db.connect(args.db)
+    try:
+        report(*run(con, sentence_encoder(), args.db.with_name("embeddings.npy")))
+    finally:
+        con.close()
     return 0
 
 
